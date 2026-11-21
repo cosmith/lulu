@@ -106,10 +106,10 @@ class AppViewModel(private val c: AppContainer) : ViewModel() {
         stores.values.forEach { it.clear() }
     }
 
-    fun saveProfile(id: String?, firstName: String, avatar: Int): Profile {
+    fun saveProfile(id: String?, firstName: String, avatar: Int, mascotSeed: Long): Profile {
         val existing = id?.let(::profile)
-        val profile = existing?.copy(firstName = firstName.trim(), avatar = avatar)
-            ?: Profile(UUID.randomUUID().toString(), firstName.trim(), avatar, c.now())
+        val profile = existing?.copy(firstName = firstName.trim(), avatar = avatar, mascotSeed = mascotSeed)
+            ?: Profile(UUID.randomUUID().toString(), firstName.trim(), avatar, c.now(), mascotSeed = mascotSeed)
         c.store.saveProfile(profile)
         refresh()
         return profile
@@ -204,8 +204,8 @@ private fun ScreenContent(c: AppContainer, vm: AppViewModel, s: Screen) {
                 is Screen.EditProfile -> EditProfileScreen(
                     existing = s.profileId?.let(vm::profile),
                     firstRun = s.firstRun,
-                    onSave = { name, avatar ->
-                        val saved = vm.saveProfile(s.profileId, name, avatar)
+                    onSave = { name, avatar, seed ->
+                        val saved = vm.saveProfile(s.profileId, name, avatar, seed)
                         if (s.firstRun) vm.resetTo(Screen.Home(saved.id)) else vm.back()
                     },
                     onCancel = if (s.firstRun) null else ({ vm.back() }),

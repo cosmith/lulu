@@ -48,5 +48,8 @@ class ProfileStoreTest {
         val profile = ProfileStore(dir).profiles().single()
         assertEquals("Lucie", profile.firstName)
         assertEquals(5, profile.settings.sessionMinutes)
+        // No mascot seed yet: the personality comes from the id, so it stays the same.
+        assertEquals(null, profile.mascotSeed)
+        assertEquals("p-1".hashCode().toLong(), profile.mascot)
     }
 }

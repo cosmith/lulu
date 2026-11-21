@@ -56,6 +56,7 @@ import com.cosmith.lulu.ui.components.Grapheme
 import com.cosmith.lulu.ui.components.Hill
 import com.cosmith.lulu.ui.components.LuluIcon
 import com.cosmith.lulu.ui.components.Mascot
+import com.cosmith.lulu.ui.components.MascotLook
 import com.cosmith.lulu.ui.components.Mood
 import com.cosmith.lulu.ui.components.PebbleShape
 import com.cosmith.lulu.ui.components.RoundButton
@@ -70,13 +71,14 @@ fun SessionScreen(c: AppContainer, profile: Profile, runKey: Long, onExit: () ->
     val vm: SessionViewModel = viewModel(key = "session-$runKey") { SessionViewModel(c, profile) }
     SessionContent(
         state = vm,
-        mascotColor = Lulu.mascots[profile.avatar % Lulu.mascots.size],
+        mascotColor = mascotColor(profile),
+        look = mascotLook(profile),
         onExit = onExit,
     )
 }
 
 @Composable
-internal fun SessionContent(state: SessionViewModel, mascotColor: Color, onExit: () -> Unit) {
+internal fun SessionContent(state: SessionViewModel, mascotColor: Color, look: MascotLook, onExit: () -> Unit) {
     val view = LocalView.current
     LaunchedEffect(state.confettiKey) {
         if (state.confettiKey > 0) {
@@ -121,7 +123,7 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, onExit:
 
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                 when {
-                    state.finished -> Finished(state.cardsDone > 0, mascotColor, state.jumpKey, onExit)
+                    state.finished -> Finished(state.cardsDone > 0, mascotColor, look, state.jumpKey, onExit)
                     step is Step.Meet -> BigLetter(step.sound, state, onTap = state::onSpeaker)
                     step is Step.SeeAndSay -> BigLetter(step.sound, state, onTap = state::onSpeaker)
                     step is Step.ListenAndChoose -> Choices(step, state)
@@ -129,7 +131,7 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, onExit:
             }
 
             if (!state.finished) {
-                BottomBar(step, state, mascotColor)
+                BottomBar(step, state, mascotColor, look)
             }
         }
 
@@ -138,12 +140,12 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, onExit:
 }
 
 @Composable
-private fun BottomBar(step: Step?, state: SessionViewModel, mascotColor: Color) {
+private fun BottomBar(step: Step?, state: SessionViewModel, mascotColor: Color, look: MascotLook) {
     Row(
         Modifier.fillMaxWidth().height(150.dp).padding(start = 12.dp, end = 24.dp, bottom = 12.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
-        Mascot(mascotColor, state.mood, Modifier.size(130.dp), jumpKey = state.jumpKey)
+        Mascot(mascotColor, state.mood, Modifier.size(130.dp), look = look, jumpKey = state.jumpKey)
         Box(Modifier.weight(1f).height(110.dp), contentAlignment = Alignment.BottomCenter) {
             when (step) {
                 is Step.SeeAndSay -> ParentVerdict(enabled = !state.busy, onVerdict = state::onVerdict)
@@ -328,12 +330,13 @@ private fun Pebble(sound: Sound, step: Step.ListenAndChoose, state: SessionViewM
 }
 
 @Composable
-private fun Finished(didSomething: Boolean, mascotColor: Color, jumpKey: Int, onExit: () -> Unit) {
+private fun Finished(didSomething: Boolean, mascotColor: Color, look: MascotLook, jumpKey: Int, onExit: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Mascot(
             mascotColor,
             if (didSomething) Mood.Happy else Mood.Sleepy,
             Modifier.size(240.dp),
+            look = look,
             jumpKey = jumpKey,
         )
         Spacer(Modifier.height(32.dp))

@@ -63,7 +63,11 @@ data class Profile(
     val avatar: Int,
     val createdAt: Instant,
     val settings: LearningSettings = LearningSettings(),
-)
+    /** Draws the mascot's personality. Profiles from before it existed use their id instead. */
+    val mascotSeed: Long? = null,
+) {
+    val mascot: Long get() = mascotSeed ?: id.hashCode().toLong()
+}
 
 @Serializable
 data class CardProgress(

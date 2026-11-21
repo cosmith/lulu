@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -67,6 +68,7 @@ import com.cosmith.lulu.ui.components.Glyph
 import com.cosmith.lulu.ui.components.Hill
 import com.cosmith.lulu.ui.components.LuluIcon
 import com.cosmith.lulu.ui.components.Mascot
+import com.cosmith.lulu.ui.components.MascotLook
 import com.cosmith.lulu.ui.components.Mood
 import com.cosmith.lulu.ui.components.RoundButton
 import com.cosmith.lulu.ui.components.bouncyClick
@@ -79,6 +81,8 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 fun mascotColor(profile: Profile) = Lulu.mascots[profile.avatar % Lulu.mascots.size]
+
+fun mascotLook(profile: Profile) = MascotLook.from(profile.mascot)
 
 @Composable
 fun HomeScreen(
@@ -111,7 +115,7 @@ fun HomeScreen(
                         Modifier.size(56.dp).bouncyClick(onClick = onSwitch).clip(CircleShape).background(Lulu.Sand),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Mascot(mascotColor(profile), Mood.Idle, Modifier.size(42.dp))
+                        Mascot(mascotColor(profile), Mood.Idle, Modifier.size(42.dp), look = mascotLook(profile))
                     }
                 }
                 Spacer(Modifier.weight(1f))
@@ -143,7 +147,7 @@ fun HomeScreen(
                 Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Mascot(mascotColor(profile), if (hasWork) Mood.Idle else Mood.Sleepy, Modifier.size(120.dp))
+                Mascot(mascotColor(profile), if (hasWork) Mood.Idle else Mood.Sleepy, Modifier.size(120.dp), look = mascotLook(profile))
                 if (profile.firstName.isNotBlank()) {
                     Spacer(Modifier.width(12.dp))
                     ChildName(profile.firstName, Modifier.weight(1f).padding(bottom = 72.dp))
@@ -188,7 +192,7 @@ fun ProfilesScreen(profiles: List<Profile>, onPick: (Profile) -> Unit, onParent:
                         Modifier.width(140.dp).bouncyClick { onPick(p) },
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Mascot(mascotColor(p), Mood.Idle, Modifier.size(130.dp))
+                        Mascot(mascotColor(p), Mood.Idle, Modifier.size(130.dp), look = mascotLook(p))
                         if (p.firstName.isNotBlank()) {
                             Text(p.firstName, color = Lulu.Navy, fontSize = 20.sp, textAlign = TextAlign.Center)
                         }
@@ -205,11 +209,12 @@ fun ProfilesScreen(profiles: List<Profile>, onPick: (Profile) -> Unit, onParent:
 fun EditProfileScreen(
     existing: Profile?,
     firstRun: Boolean,
-    onSave: (firstName: String, avatar: Int) -> Unit,
+    onSave: (firstName: String, avatar: Int, mascotSeed: Long) -> Unit,
     onCancel: (() -> Unit)?,
 ) {
     var name by remember { mutableStateOf(existing?.firstName.orEmpty()) }
-    var avatar by remember { mutableIntStateOf(existing?.avatar ?: 0) }
+    var avatar by remember { mutableIntStateOf(existing?.avatar ?: Random.nextInt(Lulu.mascots.size)) }
+    var seed by remember { mutableLongStateOf(existing?.mascot ?: Random.nextLong()) }
     var jump by remember { mutableIntStateOf(0) }
     val initial = Curriculum.initialSoundOf(name)
 
@@ -244,8 +249,14 @@ fun EditProfileScreen(
             )
         }
         Spacer(Modifier.height(20.dp))
-        Mascot(Lulu.mascots[avatar], Mood.Happy, Modifier.size(150.dp), jumpKey = jump)
-        Spacer(Modifier.height(12.dp))
+        Mascot(
+            Lulu.mascots[avatar], Mood.Idle,
+            Modifier.size(150.dp).bouncyClick { seed = Random.nextLong(); jump++ },
+            look = MascotLook.from(seed), jumpKey = jump,
+        )
+        TextButton(onClick = { seed = Random.nextLong(); jump++ }) {
+            Text("Un autre personnage", color = Lulu.Navy)
+        }
         Text("Sa couleur, pour qu'il ou elle se reconnaisse :", color = Lulu.Muted)
         Spacer(Modifier.height(10.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -283,7 +294,7 @@ fun EditProfileScreen(
         )
         Spacer(Modifier.height(28.dp))
         Button(
-            onClick = { onSave(name, avatar) },
+            onClick = { onSave(name, avatar, seed) },
             colors = ButtonDefaults.buttonColors(containerColor = Lulu.Terracotta),
             shape = RoundedCornerShape(24.dp),
             modifier = Modifier.fillMaxWidth().height(56.dp),

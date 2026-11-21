@@ -14,6 +14,17 @@ import com.cosmith.lulu.core.store.CardKind
 import com.cosmith.lulu.core.store.Judge
 import com.cosmith.lulu.core.store.Profile
 import com.cosmith.lulu.core.store.Progress
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.cosmith.lulu.ui.components.Mascot
+import com.cosmith.lulu.ui.components.MascotLook
+import com.cosmith.lulu.ui.components.Mood
 import com.cosmith.lulu.ui.screens.EditProfileScreen
 import com.cosmith.lulu.ui.screens.HomeScreen
 import com.cosmith.lulu.ui.screens.ParentGateScreen
@@ -57,7 +68,7 @@ class ScreenshotTest {
     @Test
     fun seeAndSay() {
         val vm = session(listOf(Step.SeeAndSay(Curriculum["ou"]), Step.SeeAndSay(Curriculum["a"])))
-        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Terracotta, onExit = {}) } }
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Terracotta, MascotLook.from(7), onExit = {}) } }
         shot("1-voir-et-dire")
     }
 
@@ -65,7 +76,7 @@ class ScreenshotTest {
     fun listenAndChoose() {
         val ou = Curriculum["ou"]
         val vm = session(listOf(Step.ListenAndChoose(ou, listOf(Curriculum["a"], ou, Curriculum["ch"])), Step.SeeAndSay(ou)))
-        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sky, onExit = {}) } }
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sky, MascotLook.from(7), onExit = {}) } }
         shot("2-ecouter-et-choisir")
     }
 
@@ -73,14 +84,14 @@ class ScreenshotTest {
     fun listenAndChooseFour() {
         val s = Curriculum["s"]
         val vm = session(listOf(Step.ListenAndChoose(s, listOf(Curriculum["ch"], s, Curriculum["f"], Curriculum["on"]))))
-        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Mustard, onExit = {}) } }
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Mustard, MascotLook.from(7), onExit = {}) } }
         shot("3-ecouter-et-choisir-4")
     }
 
     @Test
     fun meet() {
         val vm = session(listOf(Step.Meet(Curriculum["ch"]), Step.ListenAndChoose(Curriculum["ch"], listOf(Curriculum["ch"], Curriculum["a"]))))
-        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sage, onExit = {}) } }
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sage, MascotLook.from(7), onExit = {}) } }
         rule.mainClock.advanceTimeBy(1500)
         shot("4-nouveau-son")
     }
@@ -88,7 +99,7 @@ class ScreenshotTest {
     @Test
     fun finished() {
         val vm = session(emptyList())
-        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Terracotta, onExit = {}) } }
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Terracotta, MascotLook.from(7), onExit = {}) } }
         shot("5-fin-sans-carte")
     }
 
@@ -106,8 +117,28 @@ class ScreenshotTest {
 
     @Test
     fun welcome() {
-        rule.setContent { LuluTheme { EditProfileScreen(null, firstRun = true, onSave = { _, _ -> }, onCancel = null) } }
+        rule.setContent { LuluTheme { EditProfileScreen(null, firstRun = true, onSave = { _, _, _ -> }, onCancel = null) } }
         shot("8-bienvenue")
+    }
+
+    @Test
+    fun personalities() {
+        rule.setContent {
+            LuluTheme {
+                Column(Modifier.fillMaxSize().background(Lulu.Cream).padding(8.dp)) {
+                    for (row in 0 until 5) {
+                        Row {
+                            for (col in 0 until 3) {
+                                val i = row * 3 + col
+                                val mood = listOf(Mood.Idle, Mood.Listening, Mood.Happy, Mood.Encourage, Mood.Idle)[row]
+                                Mascot(Lulu.mascots[i % Lulu.mascots.size], mood, Modifier.size(130.dp), look = MascotLook.from(i * 7919L + 3))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        shot("12-personnalites")
     }
 
     @Test

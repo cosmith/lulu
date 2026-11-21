@@ -33,6 +33,9 @@ Done:
   the session ends; time stops while the app is in the background.
 - **Choices** grow from 2 to 3 to 4 as a card settles; decoys are sounds already
   met, with look-alikes (on/an, p/b, m/n…) once the card is solid.
+- **Each child has their own mascot**: colour chosen by the parent, personality
+  drawn at random (silhouette, eyes, mouth, a detail like a tuft or an antenna,
+  and an idle habit), in the logo's style with thick legs and a painted texture.
 - **Profiles** picked by mascot colour, with the child's first name next to
   their mascot on the home screen. **Parent area** behind a multiplication lock: progress per sound,
   last answers with one-tap correction (the card's memory is replayed from its

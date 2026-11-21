@@ -142,7 +142,7 @@ fun ParentScreen(
                 Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Color.White.copy(alpha = 0.6f)).padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Mascot(mascotColor(p), Mood.Idle, Modifier.size(44.dp))
+                Mascot(mascotColor(p), Mood.Idle, Modifier.size(44.dp), look = mascotLook(p))
                 Spacer(Modifier.width(12.dp))
                 Text(p.firstName.ifBlank { "Sans prénom" }, Modifier.weight(1f), color = Lulu.Ink, fontSize = 17.sp)
                 TextButton(onClick = { onEditProfile(p.id) }) { Text("Modifier", color = Lulu.Navy) }
