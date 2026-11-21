@@ -39,13 +39,18 @@ enum class Judge {
     Recognizer,
 }
 
+/**
+ * The parent's only setting. Which cards, how many new sounds and how many choices
+ * are decided by the session planner from the child's answers.
+ */
 @Serializable
 data class LearningSettings(
-    val cardsPerSession: Int = 8,
-    val newSoundsPerSession: Int = 1,
-    /** No new sound is introduced while this many sounds are still being learned. */
-    val maxSoundsInLearning: Int = 3,
-)
+    val sessionMinutes: Int = 5,
+) {
+    companion object {
+        val MINUTES = 2..15
+    }
+}
 
 /**
  * A child. They pick themselves by their mascot's colour, not by name, since they

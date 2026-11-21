@@ -29,59 +29,78 @@ sealed interface Step {
 }
 
 /**
- * Builds a session: due cards first, then a new sound when the child is not already
- * busy learning several, then cards still in their short learning steps.
+ * Chooses the cards of one session, one at a time, from the child's progress and the
+ * clock. The parent only sets how long a session lasts; everything else is decided here:
+ *
+ * 1. cards that are due, the most overdue first;
+ * 2. a new sound, met then picked out by ear, while the child is learning fewer than
+ *    [MAX_SOUNDS_IN_LEARNING] sounds: about one per 2½ minutes of session at most;
+ * 3. practice on sounds still being learned, even a little before they are due.
+ *
+ * The same sound never comes twice in a row when something else can come, and a card
+ * is shown at most [MAX_SHOWS_PER_CARD] times per session. A missed card is due again
+ * a minute later (its first learning step), so it comes back by itself.
+ * [next] returns null when there is nothing useful left: the session ends early.
  */
-class SessionPlanner(private val random: Random = Random.Default) {
+class SessionPlanner(private val profile: Profile, private val random: Random = Random.Default) {
+    private val order = Curriculum.orderFor(profile.firstName)
+    private val shown = mutableMapOf<String, Int>()
+    private var lastSound: String? = null
+    private var newSounds = 0
+    private var justMet: Sound? = null
+    private val maxNewSounds = maxOf(1, (profile.settings.sessionMinutes + 1) / 3)
 
-    fun plan(profile: Profile, progress: Progress, now: Instant): List<Step> {
-        val settings = profile.settings
-        val size = settings.cardsPerSession.coerceAtLeast(1)
-        val cards = progress.cards.values
-
-        val due = cards.filter { !it.memory.due.isAfter(now) }.sortedBy { it.memory.due }
-        val picked = due.take(size).toMutableList()
-
-        val order = Curriculum.orderFor(profile.firstName)
-        val learning = progress.soundsInLearning().size
-        // The very first session meets two sounds, so that "écouter et choisir" has a real decoy.
-        val wanted = settings.newSoundsPerSession + if (progress.introduced.isEmpty()) 1 else 0
-        val room = minOf(wanted, settings.maxSoundsInLearning - learning, size - picked.size)
-        val newSounds = if (room > 0) order.filter { it.id !in progress.introduced }.take(room) else emptyList()
-
-        // Fill up with cards that are in their learning steps anyway: they are due within minutes.
-        if (picked.size + 2 * newSounds.size < size) {
-            val soon = cards
-                .filter { it !in picked && it.memory.state != CardState.Review }
-                .sortedBy { it.memory.due }
-            picked += soon.take(size - picked.size - 2 * newSounds.size)
-        }
-
-        val known = progress.introducedSounds() + newSounds
-        val reviewSteps = spreadOut(picked.shuffled(random)).map { card ->
-            val sound = Curriculum[card.key.soundId]
-            when (card.key.kind) {
-                CardKind.SeeAndSay -> Step.SeeAndSay(sound)
-                CardKind.ListenAndChoose -> Step.ListenAndChoose(sound, choicesFor(sound, card, known, order))
+    fun next(progress: Progress, now: Instant): Step? {
+        val step = choose(progress, now) ?: return null
+        lastSound = step.sound.id
+        when (step) {
+            is Step.Meet -> {
+                newSounds++
+                justMet = step.sound
             }
+            is Step.SeeAndSay -> shown.merge(step.key.id, 1, Int::plus)
+            is Step.ListenAndChoose -> shown.merge(step.key.id, 1, Int::plus)
+        }
+        return step
+    }
+
+    private fun choose(progress: Progress, now: Instant): Step? {
+        // A sound just met is picked out by ear right away.
+        justMet?.let { sound ->
+            justMet = null
+            val card = progress.card(CardKey(sound.id, CardKind.ListenAndChoose))
+            return Step.ListenAndChoose(sound, choicesFor(sound, card, progress.introducedSounds() + sound))
+        }
+        val open = progress.cards.values.filter { (shown[it.key.id] ?: 0) < MAX_SHOWS_PER_CARD }
+        val due = open.filter { !it.memory.due.isAfter(now) }.sortedBy { it.memory.due }
+        val practice = open.filter { it.memory.state != CardState.Review && it.memory.due.isAfter(now) }
+            .sortedBy { it.memory.due }
+        val newSound = order.firstOrNull { it.id !in progress.introduced }?.takeIf {
+            newSounds < maxNewSounds && progress.soundsInLearning().size < MAX_SOUNDS_IN_LEARNING
         }
 
-        // New sounds come after a short warm-up, each one met and then picked out by ear.
-        val steps = reviewSteps.toMutableList()
-        var insertAt = minOf(2, steps.size)
-        for (sound in newSounds) {
-            steps.add(insertAt, Step.Meet(sound))
-            steps.add(insertAt + 1, Step.ListenAndChoose(sound, choicesFor(sound, null, known, order)))
-            insertAt = minOf(insertAt + 4, steps.size)
+        val card = due.firstOrNull { it.key.soundId != lastSound }
+            ?: return when {
+                newSound != null -> Step.Meet(newSound)
+                else -> (practice.firstOrNull { it.key.soundId != lastSound } ?: due.firstOrNull() ?: practice.firstOrNull())
+                    ?.let { stepFor(it, progress) }
+            }
+        return stepFor(card, progress)
+    }
+
+    private fun stepFor(card: CardProgress, progress: Progress): Step {
+        val sound = Curriculum[card.key.soundId]
+        return when (card.key.kind) {
+            CardKind.SeeAndSay -> Step.SeeAndSay(sound)
+            CardKind.ListenAndChoose -> Step.ListenAndChoose(sound, choicesFor(sound, card, progress.introducedSounds()))
         }
-        return steps
     }
 
     /**
      * Two choices while a card is new, three while it is settling, four once it is solid.
      * Decoys are sounds the child has met; a solid card gets look-alikes first.
      */
-    fun choicesFor(target: Sound, card: CardProgress?, known: List<Sound>, order: List<Sound>): List<Sound> {
+    fun choicesFor(target: Sound, card: CardProgress?, known: List<Sound>): List<Sound> {
         val stability = card?.memory?.stability ?: 0.0
         val solid = card != null && card.memory.state == CardState.Review && stability >= SOLID_DAYS
         val count = when {
@@ -98,25 +117,11 @@ class SessionPlanner(private val random: Random = Random.Default) {
         return (decoys + target).shuffled(random)
     }
 
-    /** Avoids showing the same sound twice in a row when another order allows it. */
-    private fun spreadOut(cards: List<CardProgress>): List<CardProgress> {
-        val left = cards.toMutableList()
-        val out = mutableListOf<CardProgress>()
-        while (left.isNotEmpty()) {
-            val previous = out.lastOrNull()?.key?.soundId
-            val remaining = left.groupingBy { it.key.soundId }.eachCount()
-            // Take the sound with the most cards left first, so none is stuck at the end.
-            val next = left.filter { it.key.soundId != previous }
-                .maxByOrNull { remaining.getValue(it.key.soundId) }
-                ?: left.first()
-            left.remove(next)
-            out += next
-        }
-        return out
-    }
-
     companion object {
+        /** A card this stable (in days) is solid: four choices, look-alike decoys. */
         const val SOLID_DAYS = 7.0
+        const val MAX_SOUNDS_IN_LEARNING = 3
+        const val MAX_SHOWS_PER_CARD = 3
     }
 }
 
@@ -169,8 +174,8 @@ class ListenAndChooseFlow {
 }
 
 /**
- * Walks through a planned session. A card rated "À revoir" comes back once,
- * a few screens later, so the child ends on a success with it.
+ * Walks through a fixed list of steps (screenshots and tests). A card rated
+ * "À revoir" comes back once, a few screens later.
  */
 class SessionRunner(planned: List<Step>) {
     private val steps = planned.toMutableList()

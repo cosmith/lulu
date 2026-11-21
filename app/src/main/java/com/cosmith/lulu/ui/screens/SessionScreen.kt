@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cosmith.lulu.AppContainer
 import com.cosmith.lulu.core.content.Sound
@@ -82,6 +86,19 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, onExit:
             )
         }
     }
+    // Session time only runs while the app is on screen.
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle, state) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> state.onPause()
+                Lifecycle.Event.ON_RESUME -> state.onResume()
+                else -> Unit
+            }
+        }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
     var center by remember { mutableStateOf(Offset.Zero) }
 
     Box(
@@ -102,12 +119,12 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, onExit:
             ) {
                 RoundButton(Glyph.Back, onExit, tint = Lulu.Terracotta)
                 Spacer(Modifier.weight(1f))
-                if (state.total > 0) ProgressDots(state.done, state.total)
+                ProgressDots(state.dotsDone, state.dots)
             }
 
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                 when {
-                    state.finished -> Finished(state.total > 0, mascotColor, state.jumpKey, onExit)
+                    state.finished -> Finished(state.cardsDone > 0, mascotColor, state.jumpKey, onExit)
                     step is Step.Meet -> BigLetter(step.sound, state, onTap = state::onSpeaker)
                     step is Step.SeeAndSay -> BigLetter(step.sound, state, onTap = state::onSpeaker)
                     step is Step.ListenAndChoose -> Choices(step, state)
@@ -199,7 +216,7 @@ private fun SpeakerButton(playing: Boolean, onClick: () -> Unit) {
 /** The grapheme alone on screen: pops in, wiggles when its sound plays, shakes softly on a miss. */
 @Composable
 private fun BigLetter(sound: Sound, state: SessionViewModel, onTap: () -> Unit) {
-    val appear = remember(sound.id, state.done) { Animatable(0.4f) }
+    val appear = remember(sound.id, state.stepIndex) { Animatable(0.4f) }
     LaunchedEffect(appear) { appear.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 380f)) }
     val wiggle = remember { Animatable(0f) }
     LaunchedEffect(state.soundKey) {

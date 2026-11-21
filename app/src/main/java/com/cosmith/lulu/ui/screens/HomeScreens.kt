@@ -45,9 +45,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -88,7 +90,7 @@ fun HomeScreen(
     var hasWork by remember { mutableStateOf(true) }
     LaunchedEffect(profile) {
         hasWork = withContext(Dispatchers.IO) {
-            SessionPlanner().plan(profile, c.store.progress(profile.id), c.now()).isNotEmpty()
+            SessionPlanner(profile).next(c.store.progress(profile.id), c.now()) != null
         }
     }
     val pulse by rememberInfiniteTransition(label = "play").animateFloat(
@@ -115,8 +117,11 @@ fun HomeScreen(
             Image(
                 painter = painterResource(R.drawable.lulu_logo),
                 contentDescription = "Lulu",
-                modifier = Modifier.padding(top = 8.dp).size(250.dp),
+                modifier = Modifier.padding(top = 8.dp).size(230.dp),
             )
+            if (profile.firstName.isNotBlank()) {
+                ChildName(profile.firstName, mascotColor(profile), Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp))
+            }
             Spacer(Modifier.weight(1f))
             if (hasWork) {
                 Box(
@@ -138,6 +143,26 @@ fun HomeScreen(
                 Mascot(mascotColor(profile), if (hasWork) Mood.Idle else Mood.Sleepy, Modifier.size(120.dp))
             }
         }
+    }
+}
+
+/**
+ * The child's first name, big, with a bar in their mascot's colour: children often
+ * recognise their own name before they can read.
+ */
+@Composable
+private fun ChildName(name: String, color: Color, modifier: Modifier = Modifier) {
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            name,
+            color = Lulu.Navy,
+            fontSize = 48.sp,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            softWrap = false,
+        )
+        Box(Modifier.size(width = 72.dp, height = 8.dp).clip(RoundedCornerShape(4.dp)).background(color))
     }
 }
 

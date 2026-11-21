@@ -6,7 +6,6 @@ import com.cosmith.lulu.core.fsrs.Rating
 import com.cosmith.lulu.core.store.CardKey
 import com.cosmith.lulu.core.store.CardKind
 import com.cosmith.lulu.core.store.Judge
-import com.cosmith.lulu.core.store.LearningSettings
 import com.cosmith.lulu.core.store.Profile
 import com.cosmith.lulu.core.store.Progress
 import com.cosmith.lulu.core.store.luluScheduler
@@ -26,14 +25,74 @@ class SessionTest {
     private val profile = Profile("p1", "", avatar = 0, createdAt = t0)
     private val scheduler = luluScheduler()
 
+    /** Plays a session like the app does: meets introduce, answers are recorded, 10 s per screen. */
+    private class Played(val steps: List<Step>, val progress: Progress, val end: Instant)
+
+    private fun play(
+        progress: Progress,
+        start: Instant,
+        seed: Int = 1,
+        maxSteps: Int = 200,
+        answer: (Step) -> Rating = { Rating.Good },
+    ): Played {
+        val planner = SessionPlanner(profile, Random(seed))
+        var p = progress
+        var t = start
+        val steps = mutableListOf<Step>()
+        while (steps.size < maxSteps) {
+            val step = planner.next(p, t) ?: break
+            steps += step
+            p = when (step) {
+                is Step.Meet -> p.introduce(step.sound, t)
+                is Step.SeeAndSay -> p.record(step.key, answer(step), t, Judge.Parent, scheduler)
+                is Step.ListenAndChoose -> p.record(step.key, answer(step), t, Judge.Tap, scheduler)
+            }
+            t = t.plusSeconds(10)
+        }
+        return Played(steps, p, t)
+    }
+
+    private fun Step.label() = (if (this is Step.Meet) "meet " else if (this is Step.SeeAndSay) "see " else "listen ") + sound.id
+
     @Test
-    fun firstSessionMeetsTwoSoundsWithListenCards() {
-        val steps = SessionPlanner(Random(1)).plan(profile, Progress(), t0)
-        assertEquals(listOf("a", "a", "e_acute", "e_acute"), steps.map { it.sound.id })
-        assertIs<Step.Meet>(steps[0])
-        val listen = assertIs<Step.ListenAndChoose>(steps[1])
-        assertEquals(2, listen.choices.size)
-        assertTrue(listen.choices.any { it.id == "a" })
+    fun firstSessionMeetsTwoSoundsAndInterleavesThem() {
+        val played = play(Progress(), t0)
+        assertEquals(
+            listOf("meet a", "listen a", "meet e_acute", "listen e_acute", "see a", "see e_acute"),
+            played.steps.take(6).map { it.label() },
+        )
+        val firstListen = assertIs<Step.ListenAndChoose>(played.steps[1])
+        assertEquals(2, firstListen.choices.size)
+        assertEquals(2, played.steps.count { it is Step.Meet })
+    }
+
+    @Test
+    fun sessionEndsWhenNothingUsefulIsLeft() {
+        val played = play(Progress(), t0)
+        assertTrue(played.steps.size < 200, "session never ends")
+        val perCard = played.steps.filterNot { it is Step.Meet }.groupingBy { it.label() }.eachCount()
+        assertTrue(perCard.values.all { it <= SessionPlanner.MAX_SHOWS_PER_CARD }, perCard.toString())
+    }
+
+    @Test
+    fun sameSoundNeverTwiceInARowWhenThereIsAChoice() {
+        var p = Progress()
+        for (id in listOf("a", "e_acute", "i")) {
+            p = p.introduce(Curriculum[id], t0)
+            p = p.record(CardKey(id, CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
+        }
+        for (seed in 0 until 30) {
+            val rnd = Random(seed)
+            val played = play(p, t0.plus(Duration.ofHours(3)), seed = seed, maxSteps = 12) {
+                if (rnd.nextInt(4) == 0) Rating.Again else Rating.Good
+            }
+            val steps = played.steps
+            for (i in 1 until steps.size) {
+                // A sound just met is picked out by ear right after: that pair is on purpose.
+                if (steps[i - 1] is Step.Meet) continue
+                assertTrue(steps[i].sound.id != steps[i - 1].sound.id, "same sound twice in a row: ${steps.map { it.label() }}")
+            }
+        }
     }
 
     @Test
@@ -51,50 +110,56 @@ class SessionTest {
     }
 
     @Test
-    fun dueCardsComeFirstAndNoNewSoundWhenBusy() {
+    fun noNewSoundWhileThreeAreBeingLearned() {
         var p = Progress()
         for (id in listOf("a", "e_acute", "i")) {
             p = p.introduce(Curriculum[id], t0)
             p = p.record(CardKey(id, CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
         }
-        // Three sounds in learning: no fourth one yet.
-        val later = t0.plus(Duration.ofHours(2))
-        val steps = SessionPlanner(Random(2)).plan(profile, p, later)
-        assertTrue(steps.none { it is Step.Meet })
-        assertEquals(6, steps.size) // 3 listen + 3 see-and-say cards, all due
-        for (seed in 0 until 50) {
-            val ids = SessionPlanner(Random(seed)).plan(profile, p, later).map { it.sound.id }
-            for (i in 1 until ids.size) assertTrue(ids[i] != ids[i - 1], "same sound twice in a row: $ids")
-        }
+        val played = play(p, t0.plus(Duration.ofHours(2))) { Rating.Again }
+        assertTrue(played.steps.none { it is Step.Meet })
+        assertTrue(played.steps.isNotEmpty())
     }
 
     @Test
     fun newSoundArrivesOnceOthersAreSettled() {
-        var p = Progress()
-        var t = t0
-        for (id in listOf("a", "e_acute")) p = p.introduce(Curriculum[id], t)
-        // Graduate every card to Review with "Bien" until nothing is in learning.
-        repeat(6) {
-            for (card in p.cards.values.toList()) {
-                if (!card.memory.due.isAfter(t)) p = p.record(card.key, Rating.Good, t, Judge.Tap, scheduler)
-            }
-            t = t.plus(Duration.ofMinutes(15))
-        }
-        assertTrue(p.cards.values.all { it.memory.state == CardState.Review }, p.cards.values.toString())
-        val steps = SessionPlanner(Random(3)).plan(profile, p, t.plus(Duration.ofDays(30)))
-        assertEquals(listOf("i"), steps.filterIsInstance<Step.Meet>().map { it.sound.id })
+        // Two days of play with good answers: a and é settle, and new sounds keep coming.
+        var played = play(Progress(), t0)
+        played = play(played.progress, t0.plus(Duration.ofDays(1)))
+        played = play(played.progress, t0.plus(Duration.ofDays(2)))
+        assertTrue(played.progress.introduced.size >= 4, played.progress.introduced.toString())
+        assertEquals(Curriculum.sounds.take(played.progress.introduced.size).map { it.id }, played.progress.introduced)
     }
 
     @Test
-    fun sessionIsCappedAtSettingsSize() {
+    fun missedCardComesBackAfterAMinute() {
         var p = Progress()
-        for (s in Curriculum.sounds.take(10)) {
-            p = p.introduce(s, t0)
-            p = p.record(CardKey(s.id, CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
+        for (id in listOf("a", "e_acute", "i")) {
+            p = p.introduce(Curriculum[id], t0)
+            if (id != "a") p = p.record(CardKey(id, CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
         }
-        val small = profile.copy(settings = LearningSettings(cardsPerSession = 5))
-        val steps = SessionPlanner(Random(4)).plan(small, p, t0.plus(Duration.ofDays(1)))
-        assertEquals(5, steps.size)
+        val key = CardKey("a", CardKind.ListenAndChoose)
+        p = p.record(key, Rating.Again, t0, Judge.Tap, scheduler)
+        assertEquals(t0.plusSeconds(60), p.card(key)!!.memory.due)
+        // é and i are next due in 10 minutes, but their "voir et dire" cards just opened.
+        p = p.record(CardKey("e_acute", CardKind.SeeAndSay), Rating.Good, t0, Judge.Parent, scheduler)
+        p = p.record(CardKey("i", CardKind.SeeAndSay), Rating.Good, t0, Judge.Parent, scheduler)
+        // A minute later the missed card is the only one due, so it comes first.
+        assertEquals(key, (SessionPlanner(profile).next(p, t0.plusSeconds(61)) as Step.ListenAndChoose).key)
+    }
+
+    @Test
+    fun nothingToDoWhenEverythingIsSolidAndNotDue() {
+        var p = Progress()
+        var t = t0
+        for (s in Curriculum.sounds) p = p.introduce(s, t)
+        repeat(8) {
+            for (card in p.cards.values.toList()) p = p.record(card.key, Rating.Good, t, Judge.Tap, scheduler)
+            t = t.plus(Duration.ofDays(1))
+        }
+        for (card in p.cards.values.toList()) p = p.record(card.key, Rating.Good, t, Judge.Tap, scheduler)
+        assertTrue(p.cards.values.all { it.memory.state == CardState.Review })
+        assertNull(SessionPlanner(profile).next(p, t.plusSeconds(60)))
     }
 
     @Test
@@ -110,7 +175,7 @@ class SessionTest {
         }
         val card = p.card(key)!!
         assertTrue(card.memory.stability!! >= SessionPlanner.SOLID_DAYS)
-        val choices = SessionPlanner(Random(5)).choicesFor(ou, card, p.introducedSounds(), Curriculum.sounds)
+        val choices = SessionPlanner(profile, Random(5)).choicesFor(ou, card, p.introducedSounds())
         assertEquals(4, choices.size)
         // "on" is a look-alike too but has not been met yet; o and u have.
         assertTrue(choices.map { it.id }.containsAll(listOf("ou", "o", "u")), choices.map { it.id }.toString())

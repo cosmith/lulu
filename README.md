@@ -24,12 +24,19 @@ Done:
   after hearing the sound → Difficile, wrong twice → À revoir. Écouter et
   choisir: right first tap → Bien, otherwise → À revoir. A card rated À revoir
   comes back once later in the same session.
+- **Sessions last a set time** (5 minutes by default, the parent's only setting).
+  Lulu picks each next card live: due cards first, then a new sound while fewer
+  than 3 are being learned, then practice. A missed card is due a minute later
+  and comes back by itself. When time is up the card on screen is finished, then
+  the session ends; time stops while the app is in the background. One progress
+  dot per minute.
 - **Choices** grow from 2 to 3 to 4 as a card settles; decoys are sounds already
   met, with look-alikes (on/an, p/b, m/n…) once the card is solid.
-- **Profiles** picked by mascot colour, **parent area** behind a multiplication
-  lock: progress per sound, last answers with one-tap correction (the card's
-  memory is replayed from its review log), session settings, recording the
-  reference sounds, profile management.
+- **Profiles** picked by mascot colour, with the child's first name big on the
+  home screen. **Parent area** behind a multiplication lock: progress per sound,
+  last answers with one-tap correction (the card's memory is replayed from its
+  review log), session length, recording the reference sounds, profile
+  management.
 - **Art direction** from the mockups: cream background, short warm palette,
   Fredoka, organic pebbles, the mascot drawn in code with moods (listening,
   happy jump, encouraging, sleepy), squash-and-bounce on every tap, confetti,

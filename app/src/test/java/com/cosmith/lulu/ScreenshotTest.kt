@@ -1,7 +1,11 @@
 package com.cosmith.lulu
 
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollToNode
 import com.cosmith.lulu.core.content.Curriculum
 import com.cosmith.lulu.core.fsrs.Rating
 import com.cosmith.lulu.core.session.Step
@@ -43,7 +47,7 @@ class ScreenshotTest {
 
     private val c get() = RuntimeEnvironment.getApplication().container
     private val t0 = Instant.parse("2026-11-21T17:00:00Z")
-    private val lucie = Profile("p1", "Lucie", avatar = 0, createdAt = t0)
+    private val lucie = Profile("p1", "Lucie", avatar = 4, createdAt = t0)
     private val tom = Profile("p2", "Tom", avatar = 1, createdAt = t0)
 
     private fun shot(name: String) = rule.onRoot().captureRoboImage("build/screenshots/$name.png")
@@ -133,5 +137,7 @@ class ScreenshotTest {
             }
         }
         shot("10-espace-parent")
+        rule.onAllNodes(hasScrollAction()).onFirst().performScrollToNode(hasText("Durée"))
+        shot("11-espace-parent-seance")
     }
 }

@@ -1,5 +1,6 @@
 package com.cosmith.lulu.ui.screens
 
+import android.os.SystemClock
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +18,7 @@ import com.cosmith.lulu.core.session.SessionRunner
 import com.cosmith.lulu.core.session.Step
 import com.cosmith.lulu.core.store.CardKey
 import com.cosmith.lulu.core.store.Judge
+import com.cosmith.lulu.core.store.LearningSettings
 import com.cosmith.lulu.core.store.Profile
 import com.cosmith.lulu.core.store.Progress
 import com.cosmith.lulu.ui.components.Mood
@@ -36,16 +38,30 @@ class SessionViewModel(
     planned: List<Step>? = null,
 ) : ViewModel() {
     private var progress: Progress = c.store.progress(profile.id)
-    private val runner = SessionRunner(planned ?: SessionPlanner().plan(profile, progress, c.now()))
+    private val planner = SessionPlanner(profile)
+    private val fixed = planned?.let { SessionRunner(it) }
+    private var fixedStarted = false
 
     var step by mutableStateOf<Step?>(null)
         private set
-    var done by mutableIntStateOf(0)
+
+    /** Counts screens, so a card shown twice still pops in again. */
+    var stepIndex by mutableIntStateOf(0)
         private set
-    var total by mutableIntStateOf(runner.total)
+    var cardsDone by mutableIntStateOf(0)
         private set
     var finished by mutableStateOf(false)
         private set
+
+    /** One progress dot per minute of session. */
+    val dots = profile.settings.sessionMinutes.coerceIn(3, 10)
+    var dotsDone by mutableIntStateOf(0)
+        private set
+    private val durationMs = profile.settings.sessionMinutes.coerceIn(LearningSettings.MINUTES) * 60_000L
+
+    /** Time counts only while the app is on screen. */
+    private var activeMs = 0L
+    private var resumedAt: Long? = SystemClock.elapsedRealtime()
 
     var mood by mutableStateOf(Mood.Listening)
         private set
@@ -92,14 +108,30 @@ class SessionViewModel(
     }
 
     init {
-        enter()
+        enter(pick(null))
     }
 
-    private fun enter() {
-        val s = runner.current
+    fun onPause() {
+        resumedAt?.let { activeMs += SystemClock.elapsedRealtime() - it }
+        resumedAt = null
+    }
+
+    fun onResume() {
+        if (resumedAt == null) resumedAt = SystemClock.elapsedRealtime()
+    }
+
+    private fun elapsedMs() = activeMs + (resumedAt?.let { SystemClock.elapsedRealtime() - it } ?: 0L)
+
+    private fun pick(rating: Rating?): Step? {
+        val runner = fixed ?: return planner.next(progress, c.now())
+        if (fixedStarted) runner.next(rating) else fixedStarted = true
+        return runner.current
+    }
+
+    private fun enter(s: Step?) {
         step = s
-        done = runner.index
-        total = runner.total
+        stepIndex++
+        dotsDone = minOf(dots, (elapsedMs() * dots / durationMs).toInt())
         wrongChoices = emptySet()
         rightChoice = null
         shakingChoice = null
@@ -227,12 +259,14 @@ class SessionViewModel(
         next(rating)
     }
 
+    /** When time is up, the card that just ended was the last one (a sound just met still gets its card). */
     private fun next(rating: Rating?) {
         stepJob?.cancel()
         soundJob?.cancel()
         c.sounds.stop()
-        runner.next(rating)
-        enter()
+        val wasMeet = step is Step.Meet
+        if (!wasMeet) cardsDone++
+        enter(if (elapsedMs() >= durationMs && !wasMeet) null else pick(rating))
     }
 
     private fun successFeedback() {
@@ -268,9 +302,9 @@ class SessionViewModel(
     private fun finish() {
         if (finished) return
         finished = true
-        done = total
+        dotsDone = dots
         mood = Mood.Happy
-        if (total > 0) {
+        if (cardsDone > 0) {
             c.tones.fanfare()
             confettiKey++
             jumpKey++

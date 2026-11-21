@@ -18,7 +18,7 @@ class ProfileStoreTest {
         val tom = Profile("p-2", "Tom", avatar = 1, createdAt = t0.plusSeconds(5))
         store.saveProfile(lucie)
         store.saveProfile(tom)
-        store.saveProfile(lucie.copy(settings = LearningSettings(cardsPerSession = 6)))
+        store.saveProfile(lucie.copy(settings = LearningSettings(sessionMinutes = 7)))
 
         val key = CardKey("a", CardKind.ListenAndChoose)
         val progress = Progress()
@@ -28,12 +28,25 @@ class ProfileStoreTest {
 
         val reopened = ProfileStore(dir)
         assertEquals(listOf("Lucie", "Tom"), reopened.profiles().map { it.firstName })
-        assertEquals(6, reopened.profiles().first().settings.cardsPerSession)
+        assertEquals(7, reopened.profiles().first().settings.sessionMinutes)
         assertEquals(progress, reopened.progress("p-1"))
         assertEquals(Progress(), reopened.progress("p-2"))
 
         reopened.deleteProfile("p-1")
         assertEquals(listOf("Tom"), reopened.profiles().map { it.firstName })
         assertTrue(dir.listFiles()!!.none { it.name.contains("p-1") })
+    }
+
+    @Test
+    fun profilesSavedBeforeTheDurationSettingStillLoad() {
+        val dir = Files.createTempDirectory("lulu-store-v1").toFile()
+        // Written by the first version, which had three session settings.
+        dir.resolve("profiles.json").writeText(
+            """[{"id":"p-1","firstName":"Lucie","avatar":0,"createdAt":1763744400000,""" +
+                """"settings":{"cardsPerSession":8,"newSoundsPerSession":1,"maxSoundsInLearning":3}}]""",
+        )
+        val profile = ProfileStore(dir).profiles().single()
+        assertEquals("Lucie", profile.firstName)
+        assertEquals(5, profile.settings.sessionMinutes)
     }
 }

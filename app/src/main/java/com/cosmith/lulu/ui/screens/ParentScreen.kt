@@ -243,21 +243,24 @@ private fun LazyListScope.answersSection(progress: Progress, now: Instant, onCor
 @Composable
 private fun SettingsCard(settings: LearningSettings, onChange: (LearningSettings) -> Unit) {
     var s by remember(settings) { mutableStateOf(settings) }
+    val range = LearningSettings.MINUTES
     Column(Modifier.padding(top = 8.dp)) {
-        SectionTitle("Réglages de la séance")
-        Stepper("Cartes par séance", s.cardsPerSession, 3..20) { s = s.copy(cardsPerSession = it); onChange(s) }
-        Stepper("Nouveaux sons par séance", s.newSoundsPerSession, 0..3) { s = s.copy(newSoundsPerSession = it); onChange(s) }
-        Stepper("Sons en cours d'apprentissage, au plus", s.maxSoundsInLearning, 1..8) { s = s.copy(maxSoundsInLearning = it); onChange(s) }
-    }
-}
-
-@Composable
-private fun Stepper(label: String, value: Int, range: IntRange, onChange: (Int) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f), color = Lulu.Ink)
-        RoundButton(Glyph.Minus, { if (value > range.first) onChange(value - 1) }, size = 40.dp, enabled = value > range.first)
-        Text("$value", Modifier.widthIn(min = 44.dp).padding(horizontal = 8.dp), color = Lulu.Navy, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-        RoundButton(Glyph.Plus, { if (value < range.last) onChange(value + 1) }, size = 40.dp, enabled = value < range.last)
+        SectionTitle("Séance")
+        Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("Durée", Modifier.weight(1f), color = Lulu.Ink)
+            RoundButton(Glyph.Minus, { s = s.copy(sessionMinutes = s.sessionMinutes - 1); onChange(s) }, size = 40.dp, enabled = s.sessionMinutes > range.first)
+            Text(
+                "${s.sessionMinutes} min",
+                Modifier.widthIn(min = 76.dp).padding(horizontal = 8.dp),
+                color = Lulu.Navy, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center,
+            )
+            RoundButton(Glyph.Plus, { s = s.copy(sessionMinutes = s.sessionMinutes + 1); onChange(s) }, size = 40.dp, enabled = s.sessionMinutes < range.last)
+        }
+        Text(
+            "Lulu choisit seule les cartes, les nouveaux sons et le nombre de choix d'après les réponses. " +
+                "Quand le temps est écoulé, la séance se termine après la carte en cours.",
+            color = Lulu.Muted, fontSize = 14.sp,
+        )
     }
 }
 

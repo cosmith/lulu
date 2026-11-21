@@ -7,6 +7,7 @@ import com.cosmith.lulu.core.session.Step
 import com.cosmith.lulu.core.store.CardKey
 import com.cosmith.lulu.core.store.CardKind
 import com.cosmith.lulu.core.store.Judge
+import com.cosmith.lulu.core.store.LearningSettings
 import com.cosmith.lulu.core.store.Profile
 import com.cosmith.lulu.core.store.Progress
 import com.cosmith.lulu.ui.screens.SessionViewModel
@@ -54,7 +55,6 @@ class SessionViewModelTest {
         vm.onChoice(ou) // right on the second try: "À revoir", and the card comes back later
         settle()
         assertTrue(vm.step is Step.SeeAndSay)
-        assertEquals(3, vm.total)
 
         vm.onVerdict(true) // the parent says the sound was right
         settle()
@@ -89,5 +89,48 @@ class SessionViewModelTest {
         assertEquals(listOf("ch"), saved.introduced)
         // First success by ear opens "voir et dire" for this sound.
         assertTrue(saved.card(CardKey("ch", CardKind.SeeAndSay)) != null)
+    }
+
+    @Test
+    fun sessionStopsAfterTheCardInProgressWhenTimeIsUp() {
+        val profile = Profile("vm-time", "", 0, Instant.now(), LearningSettings(sessionMinutes = 2))
+        val ou = Curriculum["ou"]
+        val start = Instant.now().minus(Duration.ofDays(2))
+        c.store.saveProgress(
+            profile.id,
+            Progress().introduce(ou, start)
+                .record(CardKey("ou", CardKind.ListenAndChoose), Rating.Good, start, Judge.Tap, c.scheduler),
+        )
+        val many = List(30) { Step.SeeAndSay(ou) }
+        val vm = SessionViewModel(c, profile, planned = many)
+        settle()
+        assertEquals(3, vm.dots) // short sessions still show three dots
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMinutes(2))
+        assertFalse(vm.finished) // the child finishes the card on screen
+        vm.onVerdict(true)
+        settle()
+        assertTrue(vm.finished)
+        assertEquals(1, vm.cardsDone)
+        assertEquals(vm.dots, vm.dotsDone)
+    }
+
+    @Test
+    fun timeDoesNotRunWhileTheAppIsInTheBackground() {
+        val profile = Profile("vm-pause", "", 0, Instant.now(), LearningSettings(sessionMinutes = 2))
+        val ou = Curriculum["ou"]
+        val start = Instant.now().minus(Duration.ofDays(2))
+        c.store.saveProgress(
+            profile.id,
+            Progress().introduce(ou, start)
+                .record(CardKey("ou", CardKind.ListenAndChoose), Rating.Good, start, Judge.Tap, c.scheduler),
+        )
+        val vm = SessionViewModel(c, profile, planned = List(30) { Step.SeeAndSay(ou) })
+        vm.onPause()
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMinutes(10))
+        vm.onResume()
+        vm.onVerdict(true)
+        settle()
+        assertFalse(vm.finished)
+        assertTrue(vm.step is Step.SeeAndSay)
     }
 }
