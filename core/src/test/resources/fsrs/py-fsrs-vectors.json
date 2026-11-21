@@ -1,0 +1,6171 @@
+{
+ "fsrs_version": "6.3.3",
+ "cases": [
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767606840000000,
+     "rating": 2,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 1.2931,
+     "difficulty": 5.112170705601056,
+     "due_us": 1767607170000000
+    },
+    {
+     "at_us": 1767607560000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 1.3358997622047517,
+     "difficulty": 5.102286904192293,
+     "due_us": 1767608160000000
+    },
+    {
+     "at_us": 1768162800000000,
+     "rating": 3,
+     "retrievability_before": 0.7709507689745415,
+     "state": 2,
+     "step": null,
+     "stability": 11.099814134038674,
+     "difficulty": 5.0924129865849395,
+     "due_us": 1769113200000000
+    },
+    {
+     "at_us": 1768162830000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 3.3636559983590306,
+     "difficulty": 8.372137889578998,
+     "due_us": 1768163430000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767614280000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767614340000000
+    },
+    {
+     "at_us": 1767632280000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 6.402115069296838,
+     "due_us": 1767632880000000
+    },
+    {
+     "at_us": 1769979180000000,
+     "rating": 3,
+     "retrievability_before": 0.48558054795646327,
+     "state": 2,
+     "step": null,
+     "stability": 4.959060204798299,
+     "difficulty": 6.3909413235243795,
+     "due_us": 1770411180000000
+    },
+    {
+     "at_us": 1770065520000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 4.959060204798299,
+     "difficulty": 6.379778751497693,
+     "due_us": 1770497520000000
+    },
+    {
+     "at_us": 1770065550000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 4.959060204798299,
+     "difficulty": 6.368627342043034,
+     "due_us": 1770497550000000
+    },
+    {
+     "at_us": 1770066270000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 4.959060204798299,
+     "difficulty": 6.357487083997829,
+     "due_us": 1770498270000000
+    },
+    {
+     "at_us": 1770498270000000,
+     "rating": 2,
+     "retrievability_before": 0.8994341659287207,
+     "state": 2,
+     "step": null,
+     "stability": 10.70565693042416,
+     "difficulty": 7.567158554552711,
+     "due_us": 1771448670000000
+    },
+    {
+     "at_us": 1770516270000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 16.556047954330147,
+     "difficulty": 6.739444683192423,
+     "due_us": 1771985070000000
+    },
+    {
+     "at_us": 1771985070000000,
+     "rating": 1,
+     "retrievability_before": 0.8981717461403993,
+     "state": 3,
+     "step": 0,
+     "stability": 1.7542029373851264,
+     "difficulty": 8.913506008438342,
+     "due_us": 1771985670000000
+    },
+    {
+     "at_us": 1771985670000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.6002014243787229,
+     "difficulty": 9.628105182429664,
+     "due_us": 1771986270000000
+    },
+    {
+     "at_us": 1771986270000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.652187140720436,
+     "difficulty": 9.613705446544072,
+     "due_us": 1772072670000000
+    },
+    {
+     "at_us": 1771986300000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.7048126536489537,
+     "difficulty": 9.599320110394366,
+     "due_us": 1772072700000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767632940000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767633000000000
+    },
+    {
+     "at_us": 1767719280000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 6.402115069296838,
+     "due_us": 1767719880000000
+    },
+    {
+     "at_us": 1767719580000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.2842063592758949,
+     "difficulty": 6.3909413235243795,
+     "due_us": 1767805980000000
+    },
+    {
+     "at_us": 1767805980000000,
+     "rating": 3,
+     "retrievability_before": 0.7943861201504139,
+     "state": 2,
+     "step": null,
+     "stability": 2.1520782454047453,
+     "difficulty": 6.379778751497693,
+     "due_us": 1767978780000000
+    },
+    {
+     "at_us": 1767806100000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.7264966869725412,
+     "difficulty": 8.79528626241862,
+     "due_us": 1767806700000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767613980000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767614580000000
+    },
+    {
+     "at_us": 1767614100000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 4.752858488532557,
+     "due_us": 1767614700000000
+    },
+    {
+     "at_us": 1767614700000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 4.743333999340863,
+     "due_us": 1767787500000000
+    },
+    {
+     "at_us": 1767787500000000,
+     "rating": 1,
+     "retrievability_before": 0.9094932559773545,
+     "state": 3,
+     "step": 0,
+     "stability": 0.5782360558540961,
+     "difficulty": 8.257398000208983,
+     "due_us": 1767788100000000
+    },
+    {
+     "at_us": 1767788100000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.5782360558540961,
+     "difficulty": 8.828407956582371,
+     "due_us": 1767789000000000
+    },
+    {
+     "at_us": 1767874440000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.6298625720086521,
+     "difficulty": 8.814807917922627,
+     "due_us": 1767960840000000
+    },
+    {
+     "at_us": 1767874560000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.6822484886336064,
+     "difficulty": 8.801221479301542,
+     "due_us": 1767960960000000
+    },
+    {
+     "at_us": 1767875280000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.7351167426511961,
+     "difficulty": 8.78764862711908,
+     "due_us": 1767961680000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767615000000000,
+     "rating": 2,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 1.2931,
+     "difficulty": 5.112170705601056,
+     "due_us": 1767615330000000
+    },
+    {
+     "at_us": 1768953390000000,
+     "rating": 2,
+     "retrievability_before": 0.6784931959972915,
+     "state": 1,
+     "step": 0,
+     "stability": 9.612632384328375,
+     "difficulty": 6.7404595108297,
+     "due_us": 1768953720000000
+    },
+    {
+     "at_us": 1768953420000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 9.612632384328375,
+     "difficulty": 7.821393497998797,
+     "due_us": 1768953750000000
+    },
+    {
+     "at_us": 1768953450000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 9.612632384328375,
+     "difficulty": 7.808800473797637,
+     "due_us": 1768954050000000
+    },
+    {
+     "at_us": 1768954050000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 9.612632384328375,
+     "difficulty": 8.530608013905788,
+     "due_us": 1768954650000000
+    },
+    {
+     "at_us": 1768972050000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 14.97142774166851,
+     "difficulty": 8.024834055116493,
+     "due_us": 1770268050000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767634800000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767635400000000
+    },
+    {
+     "at_us": 1767635400000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.111214235785395,
+     "due_us": 1767808200000000
+    },
+    {
+     "at_us": 1767808200000000,
+     "rating": 1,
+     "retrievability_before": 0.9094932559773545,
+     "state": 3,
+     "step": 0,
+     "stability": 0.6077016626638644,
+     "difficulty": 7.392238132342694,
+     "due_us": 1767808800000000
+    },
+    {
+     "at_us": 1767808920000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.6077016626638644,
+     "difficulty": 8.254074519842886,
+     "due_us": 1767809820000000
+    },
+    {
+     "at_us": 1770849960000000,
+     "rating": 3,
+     "retrievability_before": 0.5354307933438159,
+     "state": 2,
+     "step": null,
+     "stability": 5.8828920540456044,
+     "difficulty": 8.24104881461988,
+     "due_us": 1771368360000000
+    },
+    {
+     "at_us": 1771368360000000,
+     "rating": 3,
+     "retrievability_before": 0.8986401176650374,
+     "state": 2,
+     "step": null,
+     "stability": 12.4841106553246,
+     "difficulty": 8.228036135102098,
+     "due_us": 1772405160000000
+    },
+    {
+     "at_us": 1772405160000000,
+     "rating": 2,
+     "retrievability_before": 0.9026940382444273,
+     "state": 2,
+     "step": null,
+     "stability": 19.640960094926935,
+     "difficulty": 8.808916182261505,
+     "due_us": 1774133160000000
+    },
+    {
+     "at_us": 1772405880000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 19.640960094926935,
+     "difficulty": 8.795335635376082,
+     "due_us": 1774133880000000
+    },
+    {
+     "at_us": 1772406000000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 19.640960094926935,
+     "difficulty": 8.781768669037543,
+     "due_us": 1774134000000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767606720000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767607320000000
+    },
+    {
+     "at_us": 1767607320000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.111214235785395,
+     "due_us": 1767780120000000
+    },
+    {
+     "at_us": 1767780120000000,
+     "rating": 2,
+     "retrievability_before": 0.9094932559773545,
+     "state": 2,
+     "step": null,
+     "stability": 7.517359325415191,
+     "difficulty": 4.748284761594571,
+     "due_us": 1768471320000000
+    },
+    {
+     "at_us": 1768471320000000,
+     "rating": 3,
+     "retrievability_before": 0.8956682365745637,
+     "state": 2,
+     "step": null,
+     "stability": 26.427128255446185,
+     "difficulty": 4.738764846129815,
+     "due_us": 1770717720000000
+    },
+    {
+     "at_us": 1770845880000000,
+     "rating": 3,
+     "retrievability_before": 0.8985198849136283,
+     "state": 2,
+     "step": null,
+     "stability": 78.88799194363058,
+     "difficulty": 4.729254450580523,
+     "due_us": 1777671480000000
+    },
+    {
+     "at_us": 1779273900000000,
+     "rating": 3,
+     "retrievability_before": 0.8851838225708276,
+     "state": 2,
+     "step": null,
+     "stability": 227.57991140631296,
+     "difficulty": 4.719753565426781,
+     "due_us": 1798973100000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767606840000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767606900000000
+    },
+    {
+     "at_us": 1767606870000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.42437996387663374,
+     "difficulty": 5.200020369516838,
+     "due_us": 1767693270000000
+    },
+    {
+     "at_us": 1767693210000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.8115971460296418,
+     "difficulty": 3.5813192253569843,
+     "due_us": 1767779610000000
+    },
+    {
+     "at_us": 1767693930000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.8645558610280719,
+     "difficulty": 3.572966275428466,
+     "due_us": 1767780330000000
+    },
+    {
+     "at_us": 1767694050000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.9171475912884147,
+     "difficulty": 3.5646216784498757,
+     "due_us": 1767780450000000
+    },
+    {
+     "at_us": 1767780390000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.96916535804678,
+     "difficulty": 3.556285426068264,
+     "due_us": 1767866790000000
+    },
+    {
+     "at_us": 1771248570000000,
+     "rating": 1,
+     "retrievability_before": 0.563065839517969,
+     "state": 3,
+     "step": 0,
+     "stability": 0.5498729862498437,
+     "difficulty": 7.86722320610458,
+     "due_us": 1771249170000000
+    },
+    {
+     "at_us": 1771249290000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.6009526759971909,
+     "difficulty": 7.854584352195314,
+     "due_us": 1771335690000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767632580000000,
+     "rating": 2,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 1.2931,
+     "difficulty": 5.112170705601056,
+     "due_us": 1767632910000000
+    },
+    {
+     "at_us": 1767632610000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.4514029154253082,
+     "difficulty": 8.378632117467106,
+     "due_us": 1767632670000000
+    },
+    {
+     "at_us": 1767632670000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.4997826535901225,
+     "difficulty": 8.365481854646477,
+     "due_us": 1767633270000000
+    },
+    {
+     "at_us": 1767719010000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.4997826535901225,
+     "difficulty": 8.900159055865597,
+     "due_us": 1767719610000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767614760000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767614820000000
+    },
+    {
+     "at_us": 1767614820000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 6.402115069296838,
+     "due_us": 1767615420000000
+    },
+    {
+     "at_us": 1768400880000000,
+     "rating": 3,
+     "retrievability_before": 0.5735983909691376,
+     "state": 2,
+     "step": null,
+     "stability": 4.0100848887957365,
+     "difficulty": 6.3909413235243795,
+     "due_us": 1768746480000000
+    },
+    {
+     "at_us": 1769713140000000,
+     "rating": 3,
+     "retrievability_before": 0.7885579195182554,
+     "state": 2,
+     "step": null,
+     "stability": 21.4896698978156,
+     "difficulty": 6.379778751497693,
+     "due_us": 1771527540000000
+    },
+    {
+     "at_us": 1770620340000000,
+     "rating": 3,
+     "retrievability_before": 0.9436948386206921,
+     "state": 2,
+     "step": null,
+     "stability": 39.242152567356555,
+     "difficulty": 6.368627342043034,
+     "due_us": 1773989940000000
+    },
+    {
+     "at_us": 1770638340000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 55.71546974245821,
+     "difficulty": 5.140420191016515,
+     "due_us": 1775476740000000
+    },
+    {
+     "at_us": 1770656340000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 55.71546974245821,
+     "difficulty": 5.130508140122338,
+     "due_us": 1775494740000000
+    },
+    {
+     "at_us": 1775494740000000,
+     "rating": 4,
+     "retrievability_before": 0.899649663787546,
+     "state": 2,
+     "step": null,
+     "stability": 225.2235021231475,
+     "difficulty": 3.4885792481687314,
+     "due_us": 1794934740000000
+    },
+    {
+     "at_us": 1794934740000000,
+     "rating": 3,
+     "retrievability_before": 0.9000681956063071,
+     "state": 2,
+     "step": null,
+     "stability": 594.609906140985,
+     "difficulty": 3.480319038217401,
+     "due_us": 1846342740000000
+    },
+    {
+     "at_us": 1848855720000000,
+     "rating": 2,
+     "retrievability_before": 0.8966513861985062,
+     "state": 2,
+     "step": null,
+     "stability": 1111.856857857179,
+     "difficulty": 5.65716032973273,
+     "due_us": 1944932520000000
+    },
+    {
+     "at_us": 1848855840000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1111.856857857179,
+     "difficulty": 7.10224901984479,
+     "due_us": 1944932640000000
+    },
+    {
+     "at_us": 1896894240000000,
+     "rating": 3,
+     "retrievability_before": 0.9403381485570306,
+     "state": 2,
+     "step": null,
+     "stability": 1537.887133973374,
+     "difficulty": 7.090375140121784,
+     "due_us": 2029777440000000
+    },
+    {
+     "at_us": 1963335840000000,
+     "rating": 2,
+     "retrievability_before": 0.9403407884997393,
+     "state": 2,
+     "step": null,
+     "stability": 1874.6397052323832,
+     "difficulty": 8.053683798791209,
+     "due_us": 2125335840000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767604320000000,
+     "rating": 2,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 1.2931,
+     "difficulty": 5.112170705601056,
+     "due_us": 1767604650000000
+    },
+    {
+     "at_us": 1767604350000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 1.3358997622047517,
+     "difficulty": 5.102286904192293,
+     "due_us": 1767604950000000
+    },
+    {
+     "at_us": 1767604470000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.3771622371865915,
+     "difficulty": 5.0924129865849395,
+     "due_us": 1767690870000000
+    },
+    {
+     "at_us": 1767690810000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.4168603251066396,
+     "difficulty": 5.082548942895193,
+     "due_us": 1767777210000000
+    },
+    {
+     "at_us": 1767708810000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.454979498676998,
+     "difficulty": 5.072694763249136,
+     "due_us": 1767795210000000
+    },
+    {
+     "at_us": 1767752010000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.4915164426544159,
+     "difficulty": 5.062850437782726,
+     "due_us": 1767838410000000
+    },
+    {
+     "at_us": 1767770010000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.5264777340001905,
+     "difficulty": 5.053015956641781,
+     "due_us": 1767942810000000
+    },
+    {
+     "at_us": 1767942810000000,
+     "rating": 1,
+     "retrievability_before": 0.8803912186948154,
+     "state": 3,
+     "step": 0,
+     "stability": 0.45131996434469074,
+     "difficulty": 8.359188353736485,
+     "due_us": 1767943410000000
+    },
+    {
+     "at_us": 1767942930000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.4996968547620777,
+     "difficulty": 8.346057534679586,
+     "due_us": 1768029330000000
+    },
+    {
+     "at_us": 1768029330000000,
+     "rating": 3,
+     "retrievability_before": 0.8458322543294798,
+     "state": 2,
+     "step": null,
+     "stability": 1.7635789639083832,
+     "difficulty": 8.332939846441745,
+     "due_us": 1768202130000000
+    },
+    {
+     "at_us": 1768202130000000,
+     "rating": 3,
+     "retrievability_before": 0.8911268171602948,
+     "state": 2,
+     "step": null,
+     "stability": 4.282722922346197,
+     "difficulty": 8.31983527589214,
+     "due_us": 1768547730000000
+    },
+    {
+     "at_us": 1768202160000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 4.282722922346197,
+     "difficulty": 8.306743809913087,
+     "due_us": 1768547760000000
+    },
+    {
+     "at_us": 1768202280000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 1.381753089477744,
+     "difficulty": 9.428666573757361,
+     "due_us": 1768202880000000
+    },
+    {
+     "at_us": 1768202880000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.4212722441971213,
+     "difficulty": 9.414466276480441,
+     "due_us": 1768289280000000
+    }
+   ]
+  },
+  {
+   "config": "default",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767606660000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767606720000000
+    },
+    {
+     "at_us": 1767606720000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.08335671711031604,
+     "difficulty": 8.806304468856837,
+     "due_us": 1767606780000000
+    },
+    {
+     "at_us": 1767607440000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.08335671711031604,
+     "difficulty": 9.192797649512254,
+     "due_us": 1767607770000000
+    },
+    {
+     "at_us": 1767625440000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.10314065007785231,
+     "difficulty": 9.17883322115958,
+     "due_us": 1767626040000000
+    },
+    {
+     "at_us": 1767625560000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.12584423732556518,
+     "difficulty": 9.164882757235258,
+     "due_us": 1767711960000000
+    },
+    {
+     "at_us": 1768319820000000,
+     "rating": 3,
+     "retrievability_before": 0.5274739973800402,
+     "state": 2,
+     "step": null,
+     "stability": 1.094395517412615,
+     "difficulty": 9.150946243774861,
+     "due_us": 1768406220000000
+    },
+    {
+     "at_us": 1768498320000000,
+     "rating": 4,
+     "retrievability_before": 0.85359135603863,
+     "state": 2,
+     "step": null,
+     "stability": 4.095148662728495,
+     "difficulty": 8.852460413646297,
+     "due_us": 1768843920000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767614520000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767787320000000
+    },
+    {
+     "at_us": 1767632520000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.111214235785395,
+     "due_us": 1767805320000000
+    },
+    {
+     "at_us": 1767632550000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.7750839828558984,
+     "difficulty": 7.392238132342694,
+     "due_us": 1767718950000000
+    },
+    {
+     "at_us": 1767632580000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.4246937658554968,
+     "difficulty": 6.5060740071714935,
+     "due_us": 1767718980000000
+    },
+    {
+     "at_us": 1767718920000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.5159300242364213,
+     "difficulty": 5.323795126616311,
+     "due_us": 1767978120000000
+    },
+    {
+     "at_us": 1767978120000000,
+     "rating": 2,
+     "retrievability_before": 0.887462053069692,
+     "state": 2,
+     "step": null,
+     "stability": 7.003995083063828,
+     "difficulty": 6.880945663197646,
+     "due_us": 1768582920000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767634140000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767720540000000
+    },
+    {
+     "at_us": 1767720480000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.212,
+     "difficulty": 7.604209769076838,
+     "due_us": 1767806880000000
+    },
+    {
+     "at_us": 1767720510000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.24668918777567272,
+     "difficulty": 7.5918339286046,
+     "due_us": 1767806910000000
+    },
+    {
+     "at_us": 1768198410000000,
+     "rating": 2,
+     "retrievability_before": 0.6259352360499486,
+     "state": 2,
+     "step": null,
+     "stability": 1.6865085692936794,
+     "difficulty": 8.386575510565644,
+     "due_us": 1768371210000000
+    },
+    {
+     "at_us": 1768198440000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.7121423088140777,
+     "difficulty": 8.373417304351916,
+     "due_us": 1768371240000000
+    },
+    {
+     "at_us": 1771318500000000,
+     "rating": 1,
+     "retrievability_before": 0.6225679883272998,
+     "state": 2,
+     "step": null,
+     "stability": 0.7274712782066567,
+     "difficulty": 9.450581697999644,
+     "due_us": 1771404900000000
+    },
+    {
+     "at_us": 1771975560000000,
+     "rating": 1,
+     "retrievability_before": 0.6965617676127392,
+     "state": 2,
+     "step": null,
+     "stability": 0.32938064871878014,
+     "difficulty": 9.804638309473773,
+     "due_us": 1772061960000000
+    },
+    {
+     "at_us": 1772018760000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.1258088486192478,
+     "difficulty": 9.921014310080363,
+     "due_us": 1772105160000000
+    },
+    {
+     "at_us": 1772036760000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.15150862102008025,
+     "difficulty": 9.90632166506712,
+     "due_us": 1772123160000000
+    },
+    {
+     "at_us": 1772079960000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.15150862102008025,
+     "difficulty": 9.923040325157984,
+     "due_us": 1772166360000000
+    },
+    {
+     "at_us": 1772123160000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.06090349405919532,
+     "difficulty": 9.959932247502055,
+     "due_us": 1772209560000000
+    },
+    {
+     "at_us": 1772123280000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.07693073920022918,
+     "difficulty": 9.94520068455139,
+     "due_us": 1772209680000000
+    },
+    {
+     "at_us": 1772166480000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.09569333390793532,
+     "difficulty": 9.930483853163675,
+     "due_us": 1772252880000000
+    },
+    {
+     "at_us": 1772252880000000,
+     "rating": 4,
+     "retrievability_before": 0.6885635433805992,
+     "state": 2,
+     "step": null,
+     "stability": 0.6141117706331327,
+     "difficulty": 9.892483165640256,
+     "due_us": 1772339280000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767612540000000,
+     "rating": 2,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 1.2931,
+     "difficulty": 5.112170705601056,
+     "due_us": 1767698940000000
+    },
+    {
+     "at_us": 1767698940000000,
+     "rating": 1,
+     "retrievability_before": 0.9166697187203525,
+     "state": 2,
+     "step": null,
+     "stability": 0.3753949287873252,
+     "difficulty": 8.378632117467106,
+     "due_us": 1767785340000000
+    },
+    {
+     "at_us": 1767785280000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.4207016529818211,
+     "difficulty": 8.365481854646477,
+     "due_us": 1767871680000000
+    },
+    {
+     "at_us": 1767785400000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.15812274889625763,
+     "difficulty": 9.447973369642522,
+     "due_us": 1767871800000000
+    },
+    {
+     "at_us": 1767828600000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.3226951494188437,
+     "difficulty": 9.248740163514865,
+     "due_us": 1767915000000000
+    },
+    {
+     "at_us": 1767828720000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.12342170336993324,
+     "difficulty": 9.738294369611062,
+     "due_us": 1767915120000000
+    },
+    {
+     "at_us": 1767846720000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.14882131121296763,
+     "difficulty": 9.723784444538287,
+     "due_us": 1767933120000000
+    },
+    {
+     "at_us": 1767847440000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.3049268529128193,
+     "difficulty": 9.616714446844703,
+     "due_us": 1767933840000000
+    },
+    {
+     "at_us": 1767847560000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.34643578828516897,
+     "difficulty": 9.602326101694697,
+     "due_us": 1767933960000000
+    },
+    {
+     "at_us": 1767933960000000,
+     "rating": 2,
+     "retrievability_before": 0.8129692517626284,
+     "state": 2,
+     "step": null,
+     "stability": 0.7091229668928545,
+     "difficulty": 9.721233903998117,
+     "due_us": 1768020360000000
+    },
+    {
+     "at_us": 1768020360000000,
+     "rating": 3,
+     "retrievability_before": 0.8747061094315453,
+     "state": 2,
+     "step": null,
+     "stability": 1.3639829833118873,
+     "difficulty": 9.706741039390957,
+     "due_us": 1768106760000000
+    },
+    {
+     "at_us": 1768106700000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.4041893568402455,
+     "difficulty": 9.692262667648404,
+     "due_us": 1768193100000000
+    },
+    {
+     "at_us": 1768320480000000,
+     "rating": 3,
+     "retrievability_before": 0.8739252417507527,
+     "state": 2,
+     "step": null,
+     "stability": 2.5953945362094406,
+     "difficulty": 9.677798774277592,
+     "due_us": 1768579680000000
+    },
+    {
+     "at_us": 1768406820000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 4.405961657760754,
+     "difficulty": 9.55536250851512,
+     "due_us": 1768752420000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767606360000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767692760000000
+    },
+    {
+     "at_us": 1767606480000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.24668918777567272,
+     "difficulty": 6.402115069296838,
+     "due_us": 1767692880000000
+    },
+    {
+     "at_us": 1767607200000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.24668918777567272,
+     "difficulty": 7.596784690858309,
+     "due_us": 1767693600000000
+    },
+    {
+     "at_us": 1767650400000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.24668918777567272,
+     "difficulty": 8.389862057255177,
+     "due_us": 1767736800000000
+    },
+    {
+     "at_us": 1767736800000000,
+     "rating": 2,
+     "retrievability_before": 0.7808502770196439,
+     "state": 2,
+     "step": null,
+     "stability": 0.8526091835588198,
+     "difficulty": 8.916343770474693,
+     "due_us": 1767823200000000
+    },
+    {
+     "at_us": 1767823140000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.9053026873503972,
+     "difficulty": 8.902655796001056,
+     "due_us": 1767909540000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767615420000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767788220000000
+    },
+    {
+     "at_us": 1767701760000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.7750839828558984,
+     "difficulty": 7.394502741279718,
+     "due_us": 1767788160000000
+    },
+    {
+     "at_us": 1767788160000000,
+     "rating": 3,
+     "retrievability_before": 0.8815635452138992,
+     "state": 2,
+     "step": null,
+     "stability": 2.649497856159571,
+     "difficulty": 7.382336607835277,
+     "due_us": 1768047360000000
+    },
+    {
+     "at_us": 1767874500000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.8822609359305373,
+     "difficulty": 9.12482021240336,
+     "due_us": 1767960900000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767627120000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767799920000000
+    },
+    {
+     "at_us": 1767627240000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.7750839828558984,
+     "difficulty": 7.394502741279718,
+     "due_us": 1767713640000000
+    },
+    {
+     "at_us": 1767627960000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.8281648000472626,
+     "difficulty": 7.382336607835277,
+     "due_us": 1767714360000000
+    },
+    {
+     "at_us": 1767714360000000,
+     "rating": 3,
+     "retrievability_before": 0.8865325230109102,
+     "state": 2,
+     "step": null,
+     "stability": 2.7284449688606975,
+     "difficulty": 7.37018264052428,
+     "due_us": 1767973560000000
+    },
+    {
+     "at_us": 1767715080000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.7284449688606975,
+     "difficulty": 7.358040827180594,
+     "due_us": 1767974280000000
+    },
+    {
+     "at_us": 1767715110000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.7284449688606975,
+     "difficulty": 8.231372755081862,
+     "due_us": 1767974310000000
+    },
+    {
+     "at_us": 1767715140000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.7284449688606975,
+     "difficulty": 8.218369751623618,
+     "due_us": 1767974340000000
+    },
+    {
+     "at_us": 1767733140000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.7284449688606975,
+     "difficulty": 8.205379751168831,
+     "due_us": 1767992340000000
+    },
+    {
+     "at_us": 1767733260000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.7284449688606975,
+     "difficulty": 8.793875818819112,
+     "due_us": 1767992460000000
+    },
+    {
+     "at_us": 1770363360000000,
+     "rating": 3,
+     "retrievability_before": 0.683650392694784,
+     "state": 2,
+     "step": null,
+     "stability": 12.210791010987634,
+     "difficulty": 8.78031031229713,
+     "due_us": 1771400160000000
+    },
+    {
+     "at_us": 1770381360000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 12.210791010987634,
+     "difficulty": 8.766758371281671,
+     "due_us": 1771418160000000
+    },
+    {
+     "at_us": 1770382080000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 12.210791010987634,
+     "difficulty": 8.753219982207227,
+     "due_us": 1771418880000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767601500000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767774300000000
+    },
+    {
+     "at_us": 1767774300000000,
+     "rating": 3,
+     "retrievability_before": 0.9094932559773545,
+     "state": 2,
+     "step": null,
+     "stability": 10.964332335820698,
+     "difficulty": 2.111214235785395,
+     "due_us": 1768724700000000
+    },
+    {
+     "at_us": 1767792300000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 10.964332335820698,
+     "difficulty": 4.748284761594571,
+     "due_us": 1768742700000000
+    },
+    {
+     "at_us": 1767792420000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 10.964332335820698,
+     "difficulty": 6.498895064113205,
+     "due_us": 1768742820000000
+    },
+    {
+     "at_us": 1767792450000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 10.964332335820698,
+     "difficulty": 6.48762453834593,
+     "due_us": 1768742850000000
+    },
+    {
+     "at_us": 1767810450000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.3252859975809317,
+     "difficulty": 8.830734439204285,
+     "due_us": 1768069650000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767628260000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767801060000000
+    },
+    {
+     "at_us": 1767646260000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 4.752858488532557,
+     "due_us": 1767819060000000
+    },
+    {
+     "at_us": 1767664260000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 6.501931317190316,
+     "due_us": 1767837060000000
+    },
+    {
+     "at_us": 1767750600000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 6.490657755169964,
+     "due_us": 1767923400000000
+    },
+    {
+     "at_us": 1767836940000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 7.6555634518300515,
+     "due_us": 1768009740000000
+    },
+    {
+     "at_us": 1770297840000000,
+     "rating": 4,
+     "retrievability_before": 0.6741270802929997,
+     "state": 2,
+     "step": null,
+     "stability": 26.512007879289623,
+     "difficulty": 6.857390377471638,
+     "due_us": 1772630640000000
+    },
+    {
+     "at_us": 1774533120000000,
+     "rating": 1,
+     "retrievability_before": 0.8526373154743553,
+     "state": 2,
+     "step": null,
+     "stability": 2.3363704220469215,
+     "difficulty": 8.952273956117198,
+     "due_us": 1774705920000000
+    },
+    {
+     "at_us": 1774619460000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.7844572779687146,
+     "difficulty": 9.640847943209659,
+     "due_us": 1774705860000000
+    },
+    {
+     "at_us": 1774705800000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.28299859397747046,
+     "difficulty": 9.86717753046384,
+     "due_us": 1774792200000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767626640000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767799440000000
+    },
+    {
+     "at_us": 1768514280000000,
+     "rating": 3,
+     "retrievability_before": 0.7743669167614039,
+     "state": 2,
+     "step": null,
+     "stability": 25.10872016830931,
+     "difficulty": 2.111214235785395,
+     "due_us": 1770674280000000
+    },
+    {
+     "at_us": 1768532280000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 25.10872016830931,
+     "difficulty": 4.748284761594571,
+     "due_us": 1770692280000000
+    },
+    {
+     "at_us": 1770692280000000,
+     "rating": 1,
+     "retrievability_before": 0.9002978437992382,
+     "state": 2,
+     "step": null,
+     "stability": 2.1572299764587357,
+     "difficulty": 8.259025282096594,
+     "due_us": 1770865080000000
+    },
+    {
+     "at_us": 1772010600000000,
+     "rating": 3,
+     "retrievability_before": 0.7282755900774146,
+     "state": 2,
+     "step": null,
+     "stability": 10.32523046505974,
+     "difficulty": 8.245994626111335,
+     "due_us": 1772874600000000
+    },
+    {
+     "at_us": 1772874600000000,
+     "rating": 3,
+     "retrievability_before": 0.9021836915256173,
+     "state": 2,
+     "step": null,
+     "stability": 20.473137344224657,
+     "difficulty": 8.23297700078206,
+     "due_us": 1774602600000000
+    },
+    {
+     "at_us": 1772874720000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 20.473137344224657,
+     "difficulty": 8.219972393078116,
+     "due_us": 1774602720000000
+    },
+    {
+     "at_us": 1772961060000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 20.473137344224657,
+     "difficulty": 8.206980789981875,
+     "due_us": 1774689060000000
+    },
+    {
+     "at_us": 1774689060000000,
+     "rating": 2,
+     "retrievability_before": 0.9015982681294622,
+     "state": 2,
+     "step": null,
+     "stability": 31.491068145549256,
+     "difficulty": 8.794938662991619,
+     "due_us": 1777367460000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767618120000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767704520000000
+    },
+    {
+     "at_us": 1767704520000000,
+     "rating": 3,
+     "retrievability_before": 0.7661957302284143,
+     "state": 2,
+     "step": null,
+     "stability": 1.8867876195204154,
+     "difficulty": 6.402115069296838,
+     "due_us": 1767877320000000
+    },
+    {
+     "at_us": 1767705240000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.9013742021062359,
+     "difficulty": 6.3909413235243795,
+     "due_us": 1767878040000000
+    },
+    {
+     "at_us": 1767791580000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.9151028518198474,
+     "difficulty": 6.379778751497693,
+     "due_us": 1767964380000000
+    },
+    {
+     "at_us": 1767791610000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.9151028518198474,
+     "difficulty": 7.581956802230827,
+     "due_us": 1767964410000000
+    },
+    {
+     "at_us": 1767809610000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.9280176991772233,
+     "difficulty": 7.569603214725435,
+     "due_us": 1767982410000000
+    },
+    {
+     "at_us": 1767896010000000,
+     "rating": 3,
+     "retrievability_before": 0.9385760661590724,
+     "state": 2,
+     "step": null,
+     "stability": 3.859777113841711,
+     "difficulty": 7.557261980807548,
+     "due_us": 1768241610000000
+    },
+    {
+     "at_us": 1768241610000000,
+     "rating": 3,
+     "retrievability_before": 0.8975297041494815,
+     "state": 2,
+     "step": null,
+     "stability": 9.723513206036536,
+     "difficulty": 7.544933088123578,
+     "due_us": 1769105610000000
+    },
+    {
+     "at_us": 1769105610000000,
+     "rating": 3,
+     "retrievability_before": 0.8980621968341495,
+     "state": 2,
+     "step": null,
+     "stability": 22.36452382020134,
+     "difficulty": 7.532616524332293,
+     "due_us": 1771006410000000
+    },
+    {
+     "at_us": 1773733530000000,
+     "rating": 4,
+     "retrievability_before": 0.830950201606235,
+     "state": 2,
+     "step": null,
+     "stability": 103.42349238910805,
+     "difficulty": 6.69336031613095,
+     "due_us": 1782632730000000
+    },
+    {
+     "at_us": 1773734250000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 103.42349238910805,
+     "difficulty": 6.6818953251116575,
+     "due_us": 1782633450000000
+    },
+    {
+     "at_us": 1773820590000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 103.42349238910805,
+     "difficulty": 6.670441799083385,
+     "due_us": 1782719790000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767620580000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767793380000000
+    },
+    {
+     "at_us": 1767638580000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.111214235785395,
+     "due_us": 1767811380000000
+    },
+    {
+     "at_us": 1767639300000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.7750839828558984,
+     "difficulty": 7.392238132342694,
+     "due_us": 1767725700000000
+    },
+    {
+     "at_us": 1767657300000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.4246937658554968,
+     "difficulty": 6.5060740071714935,
+     "due_us": 1767743700000000
+    },
+    {
+     "at_us": 1767700500000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.4624930180722053,
+     "difficulty": 6.49479630246116,
+     "due_us": 1767786900000000
+    }
+   ]
+  },
+  {
+   "config": "no_steps",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.9,
+    "learning_steps_s": [],
+    "relearning_steps_s": [],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767604440000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767777240000000
+    },
+    {
+     "at_us": 1767690840000000,
+     "rating": 1,
+     "retrievability_before": 0.9468474993825461,
+     "state": 2,
+     "step": null,
+     "stability": 0.5712991793450282,
+     "difficulty": 7.394502741279718,
+     "due_us": 1767777240000000
+    },
+    {
+     "at_us": 1767777240000000,
+     "rating": 3,
+     "retrievability_before": 0.8572118285676134,
+     "state": 2,
+     "step": null,
+     "stability": 2.341168848592034,
+     "difficulty": 7.382336607835277,
+     "due_us": 1767950040000000
+    },
+    {
+     "at_us": 1767795240000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.7859622796537719,
+     "difficulty": 9.12482021240336,
+     "due_us": 1767881640000000
+    },
+    {
+     "at_us": 1767795270000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.8390182843569853,
+     "difficulty": 9.110923761487795,
+     "due_us": 1767881670000000
+    },
+    {
+     "at_us": 1767795390000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.8918142742449356,
+     "difficulty": 9.097041207023144,
+     "due_us": 1767881790000000
+    },
+    {
+     "at_us": 1767813390000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.3190244755897459,
+     "difficulty": 9.688431954165138,
+     "due_us": 1767899790000000
+    },
+    {
+     "at_us": 1770494850000000,
+     "rating": 3,
+     "retrievability_before": 0.4944832947962836,
+     "state": 2,
+     "step": null,
+     "stability": 1.9495090501726,
+     "difficulty": 9.67397189150781,
+     "due_us": 1770667650000000
+    },
+    {
+     "at_us": 1770494970000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.9603577214125734,
+     "difficulty": 9.65952628891314,
+     "due_us": 1770667770000000
+    },
+    {
+     "at_us": 1770667770000000,
+     "rating": 3,
+     "retrievability_before": 0.8986186926458195,
+     "state": 2,
+     "step": null,
+     "stability": 3.244133463740892,
+     "difficulty": 9.645095131921064,
+     "due_us": 1770926970000000
+    },
+    {
+     "at_us": 1774316010000000,
+     "rating": 4,
+     "retrievability_before": 0.6679697406026193,
+     "state": 2,
+     "step": null,
+     "stability": 16.554940089718052,
+     "difficulty": 9.511730832872773,
+     "due_us": 1775784810000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767627180000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767627480000000
+    },
+    {
+     "at_us": 1770142800000000,
+     "rating": 3,
+     "retrievability_before": 0.6707659487653179,
+     "state": 1,
+     "step": 2,
+     "stability": 37.031719126652135,
+     "difficulty": 2.111214235785395,
+     "due_us": 1770144600000000
+    },
+    {
+     "at_us": 1770144600000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 37.031719126652135,
+     "difficulty": 2.1043313908464483,
+     "due_us": 1776279000000000
+    },
+    {
+     "at_us": 1770162600000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 37.031719126652135,
+     "difficulty": 2.0974554287524403,
+     "due_us": 1776297000000000
+    },
+    {
+     "at_us": 1770248940000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 37.031719126652135,
+     "difficulty": 2.0905863426205262,
+     "due_us": 1776383340000000
+    },
+    {
+     "at_us": 1779186600000000,
+     "rating": 2,
+     "retrievability_before": 0.8163965135130815,
+     "state": 2,
+     "step": null,
+     "stability": 148.2725674513642,
+     "difficulty": 4.73459100485191,
+     "due_us": 1803637800000000
+    },
+    {
+     "at_us": 1803637800000000,
+     "rating": 1,
+     "retrievability_before": 0.849900573332231,
+     "state": 3,
+     "step": 0,
+     "stability": 4.7119923646122,
+     "difficulty": 8.254524237372827,
+     "due_us": 1803638100000000
+    },
+    {
+     "at_us": 1803724140000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 4.7119923646122,
+     "difficulty": 8.826500218894381,
+     "due_us": 1803724890000000
+    },
+    {
+     "at_us": 1803724890000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 4.7119923646122,
+     "difficulty": 9.206204529509128,
+     "due_us": 1803725640000000
+    },
+    {
+     "at_us": 1804252500000000,
+     "rating": 1,
+     "retrievability_before": 0.8825583899341877,
+     "state": 3,
+     "step": 0,
+     "stability": 0.9128817258383412,
+     "difficulty": 9.724313195955688,
+     "due_us": 1804252800000000
+    },
+    {
+     "at_us": 1804252800000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 0.9649535144878942,
+     "difficulty": 9.709817252056569,
+     "due_us": 1804254000000000
+    },
+    {
+     "at_us": 1804270800000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.34340254743689463,
+     "difficulty": 9.889847273290517,
+     "due_us": 1804271100000000
+    },
+    {
+     "at_us": 1804271100000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.34340254743689463,
+     "difficulty": 9.912103856190017,
+     "due_us": 1804271850000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767628620000000,
+     "rating": 2,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 1.2931,
+     "difficulty": 5.112170705601056,
+     "due_us": 1767628800000000
+    },
+    {
+     "at_us": 1767628800000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 1.2931,
+     "difficulty": 6.7404595108297,
+     "due_us": 1767628980000000
+    },
+    {
+     "at_us": 1767628890000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.2981513617969918,
+     "difficulty": 5.636501343232619,
+     "due_us": 1767974490000000
+    },
+    {
+     "at_us": 1767628920000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.2981513617969918,
+     "difficulty": 5.626093211186225,
+     "due_us": 1767974520000000
+    },
+    {
+     "at_us": 1767801720000000,
+     "rating": 2,
+     "retrievability_before": 0.9092593883393549,
+     "state": 2,
+     "step": null,
+     "stability": 5.447394897795614,
+     "difficulty": 7.081625218825897,
+     "due_us": 1768665720000000
+    },
+    {
+     "at_us": 1767801750000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.807234155385968,
+     "difficulty": 6.091668732519153,
+     "due_us": 1769270550000000
+    },
+    {
+     "at_us": 1767888090000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.807234155385968,
+     "difficulty": 6.080805433083473,
+     "due_us": 1769356890000000
+    },
+    {
+     "at_us": 1769356890000000,
+     "rating": 3,
+     "retrievability_before": 0.8489387926371061,
+     "state": 2,
+     "step": null,
+     "stability": 33.85954791277541,
+     "difficulty": 6.069952996947228,
+     "due_us": 1774972890000000
+    },
+    {
+     "at_us": 1778355990000000,
+     "rating": 3,
+     "retrievability_before": 0.807190431882338,
+     "state": 2,
+     "step": null,
+     "stability": 133.99047841127623,
+     "difficulty": 6.059111413247119,
+     "due_us": 1800387990000000
+    },
+    {
+     "at_us": 1778442330000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 133.99047841127623,
+     "difficulty": 6.04828067113071,
+     "due_us": 1800474330000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767601740000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767602040000000
+    },
+    {
+     "at_us": 1767602040000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 2,
+     "stability": 2.3065,
+     "difficulty": 2.111214235785395,
+     "due_us": 1767603840000000
+    },
+    {
+     "at_us": 1767603840000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.946054067969477,
+     "difficulty": 1.0,
+     "due_us": 1768295040000000
+    },
+    {
+     "at_us": 1767949440000000,
+     "rating": 3,
+     "retrievability_before": 0.8990644441721714,
+     "state": 2,
+     "step": null,
+     "stability": 21.024528834334458,
+     "difficulty": 1.0,
+     "due_us": 1771405440000000
+    },
+    {
+     "at_us": 1771405440000000,
+     "rating": 3,
+     "retrievability_before": 0.8501741995638351,
+     "state": 2,
+     "step": null,
+     "stability": 125.2803940305362,
+     "difficulty": 1.0,
+     "due_us": 1792055040000000
+    },
+    {
+     "at_us": 1771405470000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 32.3683113485085,
+     "difficulty": 7.0269895692968385,
+     "due_us": 1771405770000000
+    },
+    {
+     "at_us": 1771405770000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 9.141801457215719,
+     "difficulty": 9.008020057195637,
+     "due_us": 1771406070000000
+    },
+    {
+     "at_us": 1771406070000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 2.8059086923920584,
+     "difficulty": 9.659171307560655,
+     "due_us": 1771406370000000
+    },
+    {
+     "at_us": 1771492410000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 2.8059086923920584,
+     "difficulty": 9.758970400638534,
+     "due_us": 1771493160000000
+    },
+    {
+     "at_us": 1771510410000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 2.8059086923920584,
+     "difficulty": 9.744439799534733,
+     "due_us": 1771511610000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767620700000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767621000000000
+    },
+    {
+     "at_us": 1767621000000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 4.752858488532557,
+     "due_us": 1767621300000000
+    },
+    {
+     "at_us": 1767621120000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 2,
+     "stability": 2.3065,
+     "difficulty": 4.743333999340863,
+     "due_us": 1767622920000000
+    },
+    {
+     "at_us": 1767990000000000,
+     "rating": 2,
+     "retrievability_before": 0.8579857892330743,
+     "state": 1,
+     "step": 2,
+     "stability": 8.182760876270342,
+     "difficulty": 6.4956085174236735,
+     "due_us": 1767991800000000
+    },
+    {
+     "at_us": 1767990120000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.182760876270342,
+     "difficulty": 6.484341278203089,
+     "due_us": 1769372520000000
+    },
+    {
+     "at_us": 1767990150000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.182760876270342,
+     "difficulty": 6.473085306221724,
+     "due_us": 1769372550000000
+    },
+    {
+     "at_us": 1768008150000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 2.529931078898957,
+     "difficulty": 8.825955492471836,
+     "due_us": 1768008450000000
+    },
+    {
+     "at_us": 1768008180000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 2.529931078898957,
+     "difficulty": 8.812357906276201,
+     "due_us": 1768009380000000
+    },
+    {
+     "at_us": 1768026180000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.8450098653050263,
+     "difficulty": 9.594858489056062,
+     "due_us": 1768026480000000
+    },
+    {
+     "at_us": 1768026300000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 0.8977624322823845,
+     "difficulty": 9.580491999863844,
+     "due_us": 1768027500000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767613380000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767613680000000
+    },
+    {
+     "at_us": 1767614100000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 2,
+     "stability": 2.3065,
+     "difficulty": 2.111214235785395,
+     "due_us": 1767615900000000
+    },
+    {
+     "at_us": 1767614220000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.1043313908464483,
+     "due_us": 1767959820000000
+    },
+    {
+     "at_us": 1767614940000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.946054067969477,
+     "difficulty": 1.0,
+     "due_us": 1768306140000000
+    },
+    {
+     "at_us": 1767615060000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.946054067969477,
+     "difficulty": 1.0,
+     "due_us": 1768306260000000
+    },
+    {
+     "at_us": 1767701400000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.946054067969477,
+     "difficulty": 1.0,
+     "due_us": 1768392600000000
+    },
+    {
+     "at_us": 1768392600000000,
+     "rating": 2,
+     "retrievability_before": 0.8447098906603085,
+     "state": 2,
+     "step": null,
+     "stability": 20.099564556994096,
+     "difficulty": 4.010608969296839,
+     "due_us": 1771675800000000
+    },
+    {
+     "at_us": 1768410600000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 5.857531169384841,
+     "difficulty": 8.016556265363716,
+     "due_us": 1768410900000000
+    },
+    {
+     "at_us": 1768428600000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 1.8512992618076518,
+     "difficulty": 9.333283901139287,
+     "due_us": 1768428900000000
+    },
+    {
+     "at_us": 1768514940000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 1.86794386006313,
+     "difficulty": 9.319178986534986,
+     "due_us": 1768516140000000
+    },
+    {
+     "at_us": 1768515540000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.8836284185755754,
+     "difficulty": 9.305088176845288,
+     "due_us": 1768861140000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767634740000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767635040000000
+    },
+    {
+     "at_us": 1767635040000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.7750839828558984,
+     "difficulty": 7.394502741279718,
+     "due_us": 1767635100000000
+    },
+    {
+     "at_us": 1767635100000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.2798383649511081,
+     "difficulty": 9.128819137736839,
+     "due_us": 1767635160000000
+    },
+    {
+     "at_us": 1767635160000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.3197333301621218,
+     "difficulty": 9.114918687895939,
+     "due_us": 1767635460000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767606480000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767606780000000
+    },
+    {
+     "at_us": 1767606780000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 2,
+     "stability": 2.3065,
+     "difficulty": 2.111214235785395,
+     "due_us": 1767608580000000
+    },
+    {
+     "at_us": 1767608580000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.7750839828558984,
+     "difficulty": 7.392238132342694,
+     "due_us": 1767608640000000
+    },
+    {
+     "at_us": 1769201640000000,
+     "rating": 3,
+     "retrievability_before": 0.6135149030814782,
+     "state": 1,
+     "step": 1,
+     "stability": 7.608974207352577,
+     "difficulty": 7.38007426350719,
+     "due_us": 1769201940000000
+    },
+    {
+     "at_us": 1771908900000000,
+     "rating": 3,
+     "retrievability_before": 0.7803660322671508,
+     "state": 1,
+     "step": 2,
+     "stability": 32.01022313720534,
+     "difficulty": 7.3679225585405215,
+     "due_us": 1771910700000000
+    },
+    {
+     "at_us": 1771909800000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 2,
+     "stability": 32.01022313720534,
+     "difficulty": 8.237932708847264,
+     "due_us": 1771911600000000
+    },
+    {
+     "at_us": 1771927800000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 32.01022313720534,
+     "difficulty": 8.224923145435255,
+     "due_us": 1777198200000000
+    },
+    {
+     "at_us": 1771927920000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 32.01022313720534,
+     "difficulty": 8.806849634655338,
+     "due_us": 1777198320000000
+    },
+    {
+     "at_us": 1777198320000000,
+     "rating": 2,
+     "retrievability_before": 0.8500351608264928,
+     "state": 2,
+     "step": null,
+     "stability": 51.549442467998766,
+     "difficulty": 9.193159555974026,
+     "due_us": 1785665520000000
+    },
+    {
+     "at_us": 1785665520000000,
+     "rating": 3,
+     "retrievability_before": 0.8502393577235369,
+     "state": 2,
+     "step": null,
+     "stability": 91.30769470865206,
+     "difficulty": 9.17919476571489,
+     "due_us": 1800699120000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767623280000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767623580000000
+    },
+    {
+     "at_us": 1767623580000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.7750839828558984,
+     "difficulty": 7.394502741279718,
+     "due_us": 1767623640000000
+    },
+    {
+     "at_us": 1767641580000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.7750839828558984,
+     "difficulty": 8.25557787278606,
+     "due_us": 1767641760000000
+    },
+    {
+     "at_us": 1767727920000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.7750839828558984,
+     "difficulty": 8.827199671181095,
+     "due_us": 1767728100000000
+    },
+    {
+     "at_us": 1767728010000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.8281648000472626,
+     "difficulty": 8.813600840806751,
+     "due_us": 1767728310000000
+    },
+    {
+     "at_us": 1767814350000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 2,
+     "stability": 0.8810323149596583,
+     "difficulty": 8.800015609262783,
+     "due_us": 1767816150000000
+    },
+    {
+     "at_us": 1768944570000000,
+     "rating": 2,
+     "retrievability_before": 0.6555418363101743,
+     "state": 1,
+     "step": 2,
+     "stability": 3.323190467785936,
+     "difficulty": 9.188622811452865,
+     "due_us": 1768946370000000
+    },
+    {
+     "at_us": 1768946370000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.323190467785936,
+     "difficulty": 9.17466255793825,
+     "due_us": 1769464770000000
+    },
+    {
+     "at_us": 1768964370000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.323190467785936,
+     "difficulty": 9.160716264677149,
+     "due_us": 1769482770000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767630120000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767630180000000
+    },
+    {
+     "at_us": 1767648120000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 6.402115069296838,
+     "due_us": 1767648420000000
+    },
+    {
+     "at_us": 1767666120000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 7.596784690858309,
+     "due_us": 1767666420000000
+    },
+    {
+     "at_us": 1767666270000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 8.389862057255177,
+     "due_us": 1767666570000000
+    },
+    {
+     "at_us": 1770625290000000,
+     "rating": 3,
+     "retrievability_before": 0.4687604434192874,
+     "state": 1,
+     "step": 2,
+     "stability": 3.0291322242665646,
+     "difficulty": 8.37670056449476,
+     "due_us": 1770627090000000
+    },
+    {
+     "at_us": 1772549490000000,
+     "rating": 3,
+     "retrievability_before": 0.7240122458136639,
+     "state": 2,
+     "step": null,
+     "stability": 13.583803998738773,
+     "difficulty": 8.363552233227102,
+     "due_us": 1774795890000000
+    },
+    {
+     "at_us": 1772635830000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 13.583803998738773,
+     "difficulty": 8.898878083247057,
+     "due_us": 1774882230000000
+    },
+    {
+     "at_us": 1772653830000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 4.062059110136391,
+     "difficulty": 9.623297082889179,
+     "due_us": 1772654130000000
+    },
+    {
+     "at_us": 1772671830000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 4.062059110136391,
+     "difficulty": 9.735155418562737,
+     "due_us": 1772672580000000
+    },
+    {
+     "at_us": 1773721140000000,
+     "rating": 2,
+     "retrievability_before": 0.8108204964297167,
+     "state": 3,
+     "step": 0,
+     "stability": 6.647369993544697,
+     "difficulty": 9.809412194381288,
+     "due_us": 1773721890000000
+    },
+    {
+     "at_us": 1773721890000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 6.647369993544697,
+     "difficulty": 9.858707302535395,
+     "due_us": 1773722640000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767632220000000,
+     "rating": 4,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 1.0,
+     "due_us": 1769014620000000
+    },
+    {
+     "at_us": 1767650220000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 4.010608969296839,
+     "due_us": 1769032620000000
+    },
+    {
+     "at_us": 1769032620000000,
+     "rating": 1,
+     "retrievability_before": 0.8490052843213628,
+     "state": 3,
+     "step": 0,
+     "stability": 1.39259602210552,
+     "difficulty": 8.016556265363716,
+     "due_us": 1769032920000000
+    },
+    {
+     "at_us": 1769032650000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 1.4316887395938547,
+     "difficulty": 8.00376807839519,
+     "due_us": 1769033850000000
+    },
+    {
+     "at_us": 1769033370000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 1.4316887395938547,
+     "difficulty": 8.660036595328018,
+     "due_us": 1769034570000000
+    },
+    {
+     "at_us": 1769033400000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.4692000163132823,
+     "difficulty": 8.646604928029527,
+     "due_us": 1769292600000000
+    },
+    {
+     "at_us": 1769034120000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.505130489811127,
+     "difficulty": 8.633186692398334,
+     "due_us": 1769293320000000
+    },
+    {
+     "at_us": 1769293320000000,
+     "rating": 1,
+     "retrievability_before": 0.8461794690763236,
+     "state": 3,
+     "step": 0,
+     "stability": 0.4572920970462227,
+     "difficulty": 9.535966129418663,
+     "due_us": 1769293620000000
+    },
+    {
+     "at_us": 1769293350000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 0.5058713740818679,
+     "difficulty": 9.521658532586082,
+     "due_us": 1769294550000000
+    },
+    {
+     "at_us": 1769294550000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.5559060741811294,
+     "difficulty": 9.507365243350334,
+     "due_us": 1769380950000000
+    },
+    {
+     "at_us": 1769380950000000,
+     "rating": 1,
+     "retrievability_before": 0.8549223730117178,
+     "state": 3,
+     "step": 0,
+     "stability": 0.20222675808010096,
+     "difficulty": 9.823302674702438,
+     "due_us": 1769381250000000
+    },
+    {
+     "at_us": 1769380980000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.20222675808010096,
+     "difficulty": 9.867928450668957,
+     "due_us": 1769381730000000
+    },
+    {
+     "at_us": 1769381730000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.07976127349271821,
+     "difficulty": 9.94181734911826,
+     "due_us": 1769382030000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767603960000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767604020000000
+    },
+    {
+     "at_us": 1767603990000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.08335671711031604,
+     "difficulty": 8.806304468856837,
+     "due_us": 1767604050000000
+    },
+    {
+     "at_us": 1767604020000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.17743309201720897,
+     "difficulty": 8.39265541785738,
+     "due_us": 1767690420000000
+    },
+    {
+     "at_us": 1767604140000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.35936853812112524,
+     "difficulty": 7.840784130059683,
+     "due_us": 1767690540000000
+    },
+    {
+     "at_us": 1767604260000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.40389890081581153,
+     "difficulty": 7.828171715226462,
+     "due_us": 1767690660000000
+    },
+    {
+     "at_us": 1767690660000000,
+     "rating": 3,
+     "retrievability_before": 0.8270127171073953,
+     "state": 2,
+     "step": null,
+     "stability": 1.8342229841273563,
+     "difficulty": 7.815571912808074,
+     "due_us": 1767949860000000
+    },
+    {
+     "at_us": 1767820260000000,
+     "rating": 2,
+     "retrievability_before": 0.9361059210802684,
+     "state": 2,
+     "step": null,
+     "stability": 2.911448257278342,
+     "difficulty": 8.535103210669975,
+     "due_us": 1768338660000000
+    },
+    {
+     "at_us": 1770526320000000,
+     "rating": 4,
+     "retrievability_before": 0.6867526050557116,
+     "state": 2,
+     "step": null,
+     "stability": 23.625141201179,
+     "difficulty": 8.030831337163102,
+     "due_us": 1774414320000000
+    },
+    {
+     "at_us": 1770612660000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 23.625141201179,
+     "difficulty": 8.018028875122777,
+     "due_us": 1774500660000000
+    },
+    {
+     "at_us": 1774500660000000,
+     "rating": 2,
+     "retrievability_before": 0.8500750716264849,
+     "state": 2,
+     "step": null,
+     "stability": 44.244836017337306,
+     "difficulty": 8.669503576748918,
+     "due_us": 1781758260000000
+    }
+   ]
+  },
+  {
+   "config": "three_steps_r85",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.85,
+    "learning_steps_s": [
+     60,
+     300,
+     1800
+    ],
+    "relearning_steps_s": [
+     300,
+     1200
+    ],
+    "maximum_interval": 36500
+   },
+   "reviews": [
+    {
+     "at_us": 1767603660000000,
+     "rating": 4,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 1.0,
+     "due_us": 1768986060000000
+    },
+    {
+     "at_us": 1767621660000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 1.0,
+     "due_us": 1769004060000000
+    },
+    {
+     "at_us": 1767708000000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 1.0,
+     "due_us": 1769090400000000
+    },
+    {
+     "at_us": 1767708720000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 4.010608969296839,
+     "due_us": 1769091120000000
+    },
+    {
+     "at_us": 1769532720000000,
+     "rating": 1,
+     "retrievability_before": 0.8250030899176461,
+     "state": 3,
+     "step": 0,
+     "stability": 1.4487954167562986,
+     "difficulty": 8.016556265363716,
+     "due_us": 1769533020000000
+    },
+    {
+     "at_us": 1769533020000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 1.4855933696508707,
+     "difficulty": 8.00376807839519,
+     "due_us": 1769534220000000
+    },
+    {
+     "at_us": 1769534220000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 1.4855933696508707,
+     "difficulty": 8.660036595328018,
+     "due_us": 1769535420000000
+    },
+    {
+     "at_us": 1769552220000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 1,
+     "stability": 1.4855933696508707,
+     "difficulty": 9.095698218980917,
+     "due_us": 1769553420000000
+    },
+    {
+     "at_us": 1769638560000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.5208139563600351,
+     "difficulty": 9.081830890058773,
+     "due_us": 1769897760000000
+    },
+    {
+     "at_us": 1769897760000000,
+     "rating": 1,
+     "retrievability_before": 0.847073067387206,
+     "state": 3,
+     "step": 0,
+     "stability": 0.4586857056141198,
+     "difficulty": 9.683432426409103,
+     "due_us": 1769898060000000
+    },
+    {
+     "at_us": 1769915760000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.8727290167141836,
+     "difficulty": 9.562878664660794,
+     "due_us": 1770088560000000
+    },
+    {
+     "at_us": 1770002160000000,
+     "rating": 3,
+     "retrievability_before": 0.8903781366474033,
+     "state": 2,
+     "step": null,
+     "stability": 1.6334134765986232,
+     "difficulty": 9.548544155292971,
+     "due_us": 1770261360000000
+    },
+    {
+     "at_us": 1770020160000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.6617342170370826,
+     "difficulty": 9.534223980434515,
+     "due_us": 1770279360000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767633420000000,
+     "rating": 4,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 1.0,
+     "due_us": 1767892620000000
+    },
+    {
+     "at_us": 1767634140000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 2.5625081682260777,
+     "difficulty": 7.0269895692968385,
+     "due_us": 1767634740000000
+    },
+    {
+     "at_us": 1767634860000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.5625081682260777,
+     "difficulty": 7.0151909490243805,
+     "due_us": 1767721260000000
+    },
+    {
+     "at_us": 1767678060000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.5625081682260777,
+     "difficulty": 7.003404127372194,
+     "due_us": 1767764460000000
+    },
+    {
+     "at_us": 1767721260000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 4.353785159077589,
+     "difficulty": 5.987309797404484,
+     "due_us": 1767894060000000
+    },
+    {
+     "at_us": 1767894060000000,
+     "rating": 1,
+     "retrievability_before": 0.9442810048796827,
+     "state": 3,
+     "step": 0,
+     "stability": 0.8077577737459033,
+     "difficulty": 8.666284385997068,
+     "due_us": 1767894660000000
+    },
+    {
+     "at_us": 1767980400000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.8607344800467037,
+     "difficulty": 8.652846470907908,
+     "due_us": 1768066800000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767616680000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767617280000000
+    },
+    {
+     "at_us": 1767616800000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 2.111214235785395,
+     "due_us": 1767703200000000
+    },
+    {
+     "at_us": 1767703200000000,
+     "rating": 3,
+     "retrievability_before": 0.9468474993825461,
+     "state": 2,
+     "step": null,
+     "stability": 7.319186097840142,
+     "difficulty": 2.1043313908464483,
+     "due_us": 1767962400000000
+    },
+    {
+     "at_us": 1767832800000000,
+     "rating": 2,
+     "retrievability_before": 0.9808036913594662,
+     "state": 2,
+     "step": null,
+     "stability": 10.133188869598646,
+     "difficulty": 4.743715608383524,
+     "due_us": 1768178400000000
+    },
+    {
+     "at_us": 1767832920000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 10.133188869598646,
+     "difficulty": 6.495861847289173,
+     "due_us": 1768178520000000
+    },
+    {
+     "at_us": 1768005720000000,
+     "rating": 3,
+     "retrievability_before": 0.9730931605253496,
+     "state": 2,
+     "step": null,
+     "stability": 14.501580284978678,
+     "difficulty": 6.484594354738722,
+     "due_us": 1768524120000000
+    },
+    {
+     "at_us": 1768005750000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 21.98295711813954,
+     "difficulty": 5.295137975292311,
+     "due_us": 1768783350000000
+    },
+    {
+     "at_us": 1768092090000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 21.98295711813954,
+     "difficulty": 5.285071206613858,
+     "due_us": 1768869690000000
+    },
+    {
+     "at_us": 1768092810000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 21.98295711813954,
+     "difficulty": 5.275014504704083,
+     "due_us": 1768870410000000
+    },
+    {
+     "at_us": 1768870410000000,
+     "rating": 4,
+     "retrievability_before": 0.9492966523129713,
+     "state": 2,
+     "step": null,
+     "stability": 59.70653592108487,
+     "difficulty": 3.6813729057971063,
+     "due_us": 1770944010000000
+    },
+    {
+     "at_us": 1768871130000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 82.46155984865277,
+     "difficulty": 1.5552105482339273,
+     "due_us": 1771463130000000
+    },
+    {
+     "at_us": 1771463130000000,
+     "rating": 3,
+     "retrievability_before": 0.9540544800577915,
+     "state": 2,
+     "step": null,
+     "stability": 172.9107195594081,
+     "difficulty": 1.5488837069825316,
+     "due_us": 1774055130000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767630180000000,
+     "rating": 2,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 1.2931,
+     "difficulty": 5.112170705601056,
+     "due_us": 1767630510000000
+    },
+    {
+     "at_us": 1767630510000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 1.2931,
+     "difficulty": 6.7404595108297,
+     "due_us": 1767630840000000
+    },
+    {
+     "at_us": 1767630630000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 1.3358997622047517,
+     "difficulty": 6.728947420615708,
+     "due_us": 1767631230000000
+    },
+    {
+     "at_us": 1767631230000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.3771622371865915,
+     "difficulty": 6.717446842491931,
+     "due_us": 1767717630000000
+    },
+    {
+     "at_us": 1767717630000000,
+     "rating": 2,
+     "retrievability_before": 0.9204478823283715,
+     "state": 2,
+     "step": null,
+     "stability": 2.806616926013447,
+     "difficulty": 7.806116616365843,
+     "due_us": 1767804030000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767624600000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767625200000000
+    },
+    {
+     "at_us": 1767625200000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 4.752858488532557,
+     "due_us": 1767625800000000
+    },
+    {
+     "at_us": 1767625320000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.946054067969477,
+     "difficulty": 2.984736681491411,
+     "due_us": 1767798120000000
+    },
+    {
+     "at_us": 1767798120000000,
+     "rating": 3,
+     "retrievability_before": 0.9396939272859082,
+     "state": 2,
+     "step": null,
+     "stability": 11.99216216976129,
+     "difficulty": 2.976980314106758,
+     "due_us": 1768230120000000
+    },
+    {
+     "at_us": 1767798150000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 11.99216216976129,
+     "difficulty": 2.96923170308949,
+     "due_us": 1768230150000000
+    },
+    {
+     "at_us": 1770847530000000,
+     "rating": 1,
+     "retrievability_before": 0.8119461008716122,
+     "state": 3,
+     "step": 0,
+     "stability": 1.8207040129598298,
+     "difficulty": 7.6742626393267726,
+     "due_us": 1770848130000000
+    },
+    {
+     "at_us": 1772959950000000,
+     "rating": 3,
+     "retrievability_before": 0.6662513391582395,
+     "state": 2,
+     "step": null,
+     "stability": 12.663835667036889,
+     "difficulty": 7.661816745984284,
+     "due_us": 1773391950000000
+    },
+    {
+     "at_us": 1773391950000000,
+     "rating": 3,
+     "retrievability_before": 0.9507988606542678,
+     "state": 2,
+     "step": null,
+     "stability": 19.856578890838332,
+     "difficulty": 7.649383298535138,
+     "due_us": 1774083150000000
+    },
+    {
+     "at_us": 1773409950000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 19.856578890838332,
+     "difficulty": 8.424779464126173,
+     "due_us": 1774101150000000
+    },
+    {
+     "at_us": 1773410670000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 29.484531040996796,
+     "difficulty": 7.88364253561095,
+     "due_us": 1774447470000000
+    },
+    {
+     "at_us": 1774447470000000,
+     "rating": 3,
+     "retrievability_before": 0.9495441977728455,
+     "state": 2,
+     "step": null,
+     "stability": 43.41827549205982,
+     "difficulty": 7.870987262372178,
+     "due_us": 1775916270000000
+    },
+    {
+     "at_us": 1775916270000000,
+     "rating": 1,
+     "retrievability_before": 0.9511397074519834,
+     "state": 3,
+     "step": 0,
+     "stability": 2.423933982167499,
+     "difficulty": 9.285436359725187,
+     "due_us": 1775916870000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767614700000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767615300000000
+    },
+    {
+     "at_us": 1769953800000000,
+     "rating": 2,
+     "retrievability_before": 0.6776185220386829,
+     "state": 1,
+     "step": 1,
+     "stability": 22.697482557875087,
+     "difficulty": 4.752858488532557,
+     "due_us": 1769954400000000
+    },
+    {
+     "at_us": 1769953920000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 22.697482557875087,
+     "difficulty": 4.743333999340863,
+     "due_us": 1770731520000000
+    },
+    {
+     "at_us": 1769954040000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 22.697482557875087,
+     "difficulty": 4.733819034638361,
+     "due_us": 1770731640000000
+    },
+    {
+     "at_us": 1769954760000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 22.697482557875087,
+     "difficulty": 4.724313584900561,
+     "due_us": 1770732360000000
+    },
+    {
+     "at_us": 1770041100000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 22.697482557875087,
+     "difficulty": 4.714817640612499,
+     "due_us": 1770818700000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767616740000000,
+     "rating": 4,
+     "retrievability_before": 0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 1.0,
+     "due_us": 1767875940000000
+    },
+    {
+     "at_us": 1767634740000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 1.0,
+     "due_us": 1767893940000000
+    },
+    {
+     "at_us": 1767635460000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 8.2956,
+     "difficulty": 4.010608969296839,
+     "due_us": 1767894660000000
+    },
+    {
+     "at_us": 1767765060000000,
+     "rating": 3,
+     "retrievability_before": 0.9829234388308534,
+     "state": 2,
+     "step": null,
+     "stability": 11.922718343078493,
+     "difficulty": 4.00182672962438,
+     "due_us": 1768197060000000
+    },
+    {
+     "at_us": 1767765780000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 11.922718343078493,
+     "difficulty": 3.993053272191594,
+     "due_us": 1768197780000000
+    },
+    {
+     "at_us": 1767852120000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 11.922718343078493,
+     "difficulty": 3.984288588216241,
+     "due_us": 1768284120000000
+    },
+    {
+     "at_us": 1768284120000000,
+     "rating": 2,
+     "retrievability_before": 0.9482808549346373,
+     "state": 2,
+     "step": null,
+     "stability": 21.019905254425346,
+     "difficulty": 5.99171880200299,
+     "due_us": 1768975320000000
+    },
+    {
+     "at_us": 1770580920000000,
+     "rating": 1,
+     "retrievability_before": 0.8847398322998103,
+     "state": 3,
+     "step": 0,
+     "stability": 2.0159605758562273,
+     "difficulty": 8.667733595827366,
+     "due_us": 1770581520000000
+    },
+    {
+     "at_us": 1770667260000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.0227130232832438,
+     "difficulty": 8.654294231528377,
+     "due_us": 1770753660000000
+    },
+    {
+     "at_us": 1770710460000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 3.490564808771294,
+     "difficulty": 8.189850442890808,
+     "due_us": 1770796860000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767630060000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767630660000000
+    },
+    {
+     "at_us": 1767630660000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 4.752858488532557,
+     "due_us": 1767631260000000
+    },
+    {
+     "at_us": 1769819220000000,
+     "rating": 4,
+     "retrievability_before": 0.6850324758863973,
+     "state": 2,
+     "step": null,
+     "stability": 45.81008585904111,
+     "difficulty": 2.984736681491411,
+     "due_us": 1771374420000000
+    },
+    {
+     "at_us": 1769837220000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 64.38160144047211,
+     "difficulty": 1.0,
+     "due_us": 1772083620000000
+    },
+    {
+     "at_us": 1769855220000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 64.38160144047211,
+     "difficulty": 1.0,
+     "due_us": 1772101620000000
+    },
+    {
+     "at_us": 1769873220000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 64.38160144047211,
+     "difficulty": 1.0,
+     "due_us": 1772119620000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767625200000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767625800000000
+    },
+    {
+     "at_us": 1767625800000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 4.752858488532557,
+     "due_us": 1767626400000000
+    },
+    {
+     "at_us": 1767626520000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 2.3065,
+     "difficulty": 4.743333999340863,
+     "due_us": 1767712920000000
+    },
+    {
+     "at_us": 1767626550000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.7750839828558984,
+     "difficulty": 8.257398000208983,
+     "due_us": 1767627150000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767620340000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767620400000000
+    },
+    {
+     "at_us": 1767620400000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.08335671711031604,
+     "difficulty": 8.806304468856837,
+     "due_us": 1767620460000000
+    },
+    {
+     "at_us": 1767621120000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.10314065007785231,
+     "difficulty": 8.792726533684817,
+     "due_us": 1767621720000000
+    },
+    {
+     "at_us": 1767621840000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.042522992536866595,
+     "difficulty": 9.588405790378609,
+     "due_us": 1767621900000000
+    },
+    {
+     "at_us": 1767708180000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.042522992536866595,
+     "difficulty": 9.71199295265999,
+     "due_us": 1767708510000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767624420000000,
+     "rating": 3,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 1,
+     "stability": 2.3065,
+     "difficulty": 2.118103970459016,
+     "due_us": 1767625020000000
+    },
+    {
+     "at_us": 1769804460000000,
+     "rating": 3,
+     "retrievability_before": 0.6850324758863973,
+     "state": 2,
+     "step": null,
+     "stability": 35.33089023751621,
+     "difficulty": 2.111214235785395,
+     "due_us": 1771014060000000
+    },
+    {
+     "at_us": 1771014060000000,
+     "rating": 3,
+     "retrievability_before": 0.9506508979196379,
+     "state": 2,
+     "step": null,
+     "stability": 80.50720426380883,
+     "difficulty": 2.1043313908464483,
+     "due_us": 1773606060000000
+    },
+    {
+     "at_us": 1771014090000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 80.50720426380883,
+     "difficulty": 2.0974554287524403,
+     "due_us": 1773606090000000
+    },
+    {
+     "at_us": 1771032090000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 80.50720426380883,
+     "difficulty": 2.0905863426205262,
+     "due_us": 1773624090000000
+    },
+    {
+     "at_us": 1771118430000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 109.02415500255479,
+     "difficulty": 1.0,
+     "due_us": 1773710430000000
+    },
+    {
+     "at_us": 1771118550000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 109.02415500255479,
+     "difficulty": 1.0,
+     "due_us": 1773710550000000
+    },
+    {
+     "at_us": 1771118670000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 109.02415500255479,
+     "difficulty": 1.0,
+     "due_us": 1773710670000000
+    },
+    {
+     "at_us": 1771118790000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 109.02415500255479,
+     "difficulty": 1.0,
+     "due_us": 1773710790000000
+    },
+    {
+     "at_us": 1771205130000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 144.7256950524905,
+     "difficulty": 1.0,
+     "due_us": 1773797130000000
+    },
+    {
+     "at_us": 1771205160000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 144.7256950524905,
+     "difficulty": 4.010608969296839,
+     "due_us": 1773797160000000
+    },
+    {
+     "at_us": 1771205190000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 144.7256950524905,
+     "difficulty": 6.00919149749405,
+     "due_us": 1773797190000000
+    },
+    {
+     "at_us": 1773797190000000,
+     "rating": 3,
+     "retrievability_before": 0.9718765137041846,
+     "state": 2,
+     "step": null,
+     "stability": 191.14602146555814,
+     "difficulty": 5.998410675293394,
+     "due_us": 1776389190000000
+    },
+    {
+     "at_us": 1773815190000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 191.14602146555814,
+     "difficulty": 5.987640633914939,
+     "due_us": 1776407190000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767634740000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767634800000000
+    },
+    {
+     "at_us": 1767634860000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 6.402115069296838,
+     "due_us": 1767635460000000
+    },
+    {
+     "at_us": 1767635460000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.2842063592758949,
+     "difficulty": 6.3909413235243795,
+     "due_us": 1767721860000000
+    },
+    {
+     "at_us": 1767653460000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.32439327450133126,
+     "difficulty": 6.379778751497693,
+     "due_us": 1767739860000000
+    },
+    {
+     "at_us": 1767696660000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 3,
+     "step": 0,
+     "stability": 0.12402834691726569,
+     "difficulty": 8.79528626241862,
+     "due_us": 1767697260000000
+    },
+    {
+     "at_us": 1767697260000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.14950455693778533,
+     "difficulty": 8.781719345453038,
+     "due_us": 1767783660000000
+    },
+    {
+     "at_us": 1767783660000000,
+     "rating": 2,
+     "retrievability_before": 0.7320754532049241,
+     "state": 2,
+     "step": null,
+     "stability": 0.5726424296037116,
+     "difficulty": 9.176476898930062,
+     "due_us": 1767870060000000
+    },
+    {
+     "at_us": 1767783690000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.6241686355561001,
+     "difficulty": 9.16252879132797,
+     "due_us": 1767870090000000
+    },
+    {
+     "at_us": 1767870090000000,
+     "rating": 4,
+     "retrievability_before": 0.864513028978105,
+     "state": 2,
+     "step": null,
+     "stability": 2.344712573285408,
+     "difficulty": 8.86791330884494,
+     "due_us": 1767956490000000
+    },
+    {
+     "at_us": 1768911390000000,
+     "rating": 3,
+     "retrievability_before": 0.7582564506943847,
+     "state": 2,
+     "step": null,
+     "stability": 8.32947147245124,
+     "difficulty": 8.854273764832934,
+     "due_us": 1769170590000000
+    },
+    {
+     "at_us": 1769170590000000,
+     "rating": 4,
+     "retrievability_before": 0.9544419207890773,
+     "state": 2,
+     "step": null,
+     "stability": 13.976169413634569,
+     "difficulty": 8.456653817179497,
+     "due_us": 1769688990000000
+    },
+    {
+     "at_us": 1769256930000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 13.976169413634569,
+     "difficulty": 8.443425532659155,
+     "due_us": 1769775330000000
+    },
+    {
+     "at_us": 1769775330000000,
+     "rating": 3,
+     "retrievability_before": 0.9472756221413201,
+     "state": 2,
+     "step": null,
+     "stability": 20.39389046752036,
+     "difficulty": 8.430210476423333,
+     "due_us": 1770466530000000
+    },
+    {
+     "at_us": 1770466530000000,
+     "rating": 3,
+     "retrievability_before": 0.9510634512289872,
+     "state": 2,
+     "step": null,
+     "stability": 28.585204168843006,
+     "difficulty": 8.417008635243748,
+     "due_us": 1771503330000000
+    }
+   ]
+  },
+  {
+   "config": "max_interval_30_r95",
+   "scheduler": {
+    "parameters": [
+     0.212,
+     1.2931,
+     2.3065,
+     8.2956,
+     6.4133,
+     0.8334,
+     3.0194,
+     0.001,
+     1.8722,
+     0.1666,
+     0.796,
+     1.4835,
+     0.0614,
+     0.2629,
+     1.6483,
+     0.6014,
+     1.8729,
+     0.5425,
+     0.0912,
+     0.0658,
+     0.1542
+    ],
+    "desired_retention": 0.95,
+    "learning_steps_s": [
+     60,
+     600
+    ],
+    "relearning_steps_s": [
+     600
+    ],
+    "maximum_interval": 30
+   },
+   "reviews": [
+    {
+     "at_us": 1767612180000000,
+     "rating": 1,
+     "retrievability_before": 0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.212,
+     "difficulty": 6.4133,
+     "due_us": 1767612240000000
+    },
+    {
+     "at_us": 1767612240000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 6.402115069296838,
+     "due_us": 1767612840000000
+    },
+    {
+     "at_us": 1767612540000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.24668918777567272,
+     "difficulty": 7.596784690858309,
+     "due_us": 1767613140000000
+    },
+    {
+     "at_us": 1767698880000000,
+     "rating": 1,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.09603383636195935,
+     "difficulty": 9.195307839046066,
+     "due_us": 1767698940000000
+    },
+    {
+     "at_us": 1767698940000000,
+     "rating": 2,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 0,
+     "stability": 0.09603383636195935,
+     "difficulty": 9.451036214200915,
+     "due_us": 1767699270000000
+    },
+    {
+     "at_us": 1767699105000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 1,
+     "step": 1,
+     "stability": 0.11772478736294154,
+     "difficulty": 9.43681354728355,
+     "due_us": 1767699705000000
+    },
+    {
+     "at_us": 1767699135000000,
+     "rating": 4,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.244960870183048,
+     "difficulty": 9.233851248571247,
+     "due_us": 1767785535000000
+    },
+    {
+     "at_us": 1767785535000000,
+     "rating": 3,
+     "retrievability_before": 0.7801737393531792,
+     "state": 2,
+     "step": null,
+     "stability": 0.924993835042326,
+     "difficulty": 9.219845766619512,
+     "due_us": 1767871935000000
+    },
+    {
+     "at_us": 1767871875000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 0.9769088780953084,
+     "difficulty": 9.20585429014973,
+     "due_us": 1767958275000000
+    },
+    {
+     "at_us": 1767889875000000,
+     "rating": 3,
+     "retrievability_before": 1.0,
+     "state": 2,
+     "step": null,
+     "stability": 1.0280371603445493,
+     "difficulty": 9.191876805156419,
+     "due_us": 1767976275000000
+    }
+   ]
+  }
+ ]
+}
