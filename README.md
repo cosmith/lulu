@@ -32,8 +32,8 @@ Done:
   dot per minute.
 - **Choices** grow from 2 to 3 to 4 as a card settles; decoys are sounds already
   met, with look-alikes (on/an, p/b, m/n…) once the card is solid.
-- **Profiles** picked by mascot colour, with the child's first name big on the
-  home screen. **Parent area** behind a multiplication lock: progress per sound,
+- **Profiles** picked by mascot colour, with the child's first name next to
+  their mascot on the home screen. **Parent area** behind a multiplication lock: progress per sound,
   last answers with one-tap correction (the card's memory is replayed from its
   review log), session length, recording the reference sounds, profile
   management.

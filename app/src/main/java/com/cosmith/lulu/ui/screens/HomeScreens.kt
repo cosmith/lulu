@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -45,10 +47,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
@@ -69,6 +71,7 @@ import com.cosmith.lulu.ui.components.Mood
 import com.cosmith.lulu.ui.components.RoundButton
 import com.cosmith.lulu.ui.components.bouncyClick
 import com.cosmith.lulu.ui.components.rememberShake
+import com.cosmith.lulu.ui.theme.Fredoka
 import com.cosmith.lulu.ui.theme.Lulu
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -117,11 +120,8 @@ fun HomeScreen(
             Image(
                 painter = painterResource(R.drawable.lulu_logo),
                 contentDescription = "Lulu",
-                modifier = Modifier.padding(top = 8.dp).size(230.dp),
+                modifier = Modifier.padding(top = 8.dp).size(250.dp),
             )
-            if (profile.firstName.isNotBlank()) {
-                ChildName(profile.firstName, mascotColor(profile), Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp))
-            }
             Spacer(Modifier.weight(1f))
             if (hasWork) {
                 Box(
@@ -139,31 +139,30 @@ fun HomeScreen(
                 Text("À plus tard !", color = Lulu.Muted, fontSize = 18.sp)
             }
             Spacer(Modifier.weight(1f))
-            Row(Modifier.fillMaxWidth().padding(start = 20.dp, bottom = 16.dp)) {
+            Row(
+                Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Mascot(mascotColor(profile), if (hasWork) Mood.Idle else Mood.Sleepy, Modifier.size(120.dp))
+                if (profile.firstName.isNotBlank()) {
+                    Spacer(Modifier.width(12.dp))
+                    ChildName(profile.firstName, Modifier.weight(1f).padding(bottom = 72.dp))
+                }
             }
         }
     }
 }
 
-/**
- * The child's first name, big, with a bar in their mascot's colour: children often
- * recognise their own name before they can read.
- */
+/** The child's first name next to their mascot: children often recognise their own name before they can read. */
 @Composable
-private fun ChildName(name: String, color: Color, modifier: Modifier = Modifier) {
-    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            name,
-            color = Lulu.Navy,
-            fontSize = 48.sp,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            softWrap = false,
-        )
-        Box(Modifier.size(width = 72.dp, height = 8.dp).clip(RoundedCornerShape(4.dp)).background(color))
-    }
+private fun ChildName(name: String, modifier: Modifier = Modifier) {
+    BasicText(
+        name,
+        modifier,
+        style = TextStyle(fontFamily = Fredoka, fontWeight = FontWeight.SemiBold, color = Lulu.Navy),
+        maxLines = 1,
+        autoSize = TextAutoSize.StepBased(minFontSize = 20.sp, maxFontSize = 46.sp),
+    )
 }
 
 /** "Qui joue ?": each child finds their own mascot by its colour. */
