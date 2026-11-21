@@ -101,14 +101,12 @@ class SessionViewModelTest {
         val many = List(30) { Step.SeeAndSay(ou) }
         val vm = SessionViewModel(c, profile, planned = many)
         settle()
-        assertEquals(3, vm.dots) // short sessions still show three dots
         shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMinutes(2))
         assertFalse(vm.finished) // the child finishes the card on screen
         vm.onVerdict(true)
         settle()
         assertTrue(vm.finished)
         assertEquals(1, vm.cardsDone)
-        assertEquals(vm.dots, vm.dotsDone)
     }
 
     @Test

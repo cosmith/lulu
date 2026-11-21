@@ -1,10 +1,7 @@
 package com.cosmith.lulu.ui.components
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -13,10 +10,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -87,22 +82,6 @@ fun RoundButton(
         contentAlignment = Alignment.Center,
     ) {
         LuluIcon(glyph, tint, Modifier.size(size * 0.5f))
-    }
-}
-
-@Composable
-fun ProgressDots(done: Int, total: Int, modifier: Modifier = Modifier) {
-    val dot = if (total > 10) 12.dp else 18.dp
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(dot * 0.6f), verticalAlignment = Alignment.CenterVertically) {
-        repeat(total) { i ->
-            val color by animateColorAsState(if (i < done) Lulu.Terracotta else Lulu.DotOff, label = "dot")
-            val grow by animateDpAsState(
-                targetValue = if (i == done) dot * 1.25f else dot,
-                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                label = "dotSize",
-            )
-            Box(Modifier.size(grow).clip(CircleShape).background(color))
-        }
     }
 }
 

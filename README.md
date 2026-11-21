@@ -30,8 +30,7 @@ Done:
   Lulu picks each next card live: due cards first, then a new sound while fewer
   than 3 are being learned, then practice. A missed card is due a minute later
   and comes back by itself. When time is up the card on screen is finished, then
-  the session ends; time stops while the app is in the background. One progress
-  dot per minute.
+  the session ends; time stops while the app is in the background.
 - **Choices** grow from 2 to 3 to 4 as a card settles; decoys are sounds already
   met, with look-alikes (on/an, p/b, m/n…) once the card is solid.
 - **Profiles** picked by mascot colour, with the child's first name next to

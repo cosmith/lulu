@@ -51,10 +51,6 @@ class SessionViewModel(
     var finished by mutableStateOf(false)
         private set
 
-    /** One progress dot per minute of session. */
-    val dots = profile.settings.sessionMinutes.coerceIn(3, 10)
-    var dotsDone by mutableIntStateOf(0)
-        private set
     private val durationMs = profile.settings.sessionMinutes.coerceIn(LearningSettings.MINUTES) * 60_000L
 
     /** Time counts only while the app is on screen. */
@@ -125,7 +121,6 @@ class SessionViewModel(
     private fun enter(s: Step?) {
         step = s
         stepIndex++
-        dotsDone = minOf(dots, (elapsedMs() * dots / durationMs).toInt())
         wrongChoices = emptySet()
         rightChoice = null
         shakingChoice = null
@@ -269,7 +264,6 @@ class SessionViewModel(
     private fun finish() {
         if (finished) return
         finished = true
-        dotsDone = dots
         mood = Mood.Happy
         if (cardsDone > 0) {
             c.tones.fanfare()

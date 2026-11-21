@@ -58,7 +58,6 @@ import com.cosmith.lulu.ui.components.LuluIcon
 import com.cosmith.lulu.ui.components.Mascot
 import com.cosmith.lulu.ui.components.Mood
 import com.cosmith.lulu.ui.components.PebbleShape
-import com.cosmith.lulu.ui.components.ProgressDots
 import com.cosmith.lulu.ui.components.RoundButton
 import com.cosmith.lulu.ui.components.bouncyClick
 import com.cosmith.lulu.ui.components.rememberShake
@@ -118,8 +117,6 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, onExit:
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 RoundButton(Glyph.Back, onExit, tint = Lulu.Terracotta)
-                Spacer(Modifier.weight(1f))
-                ProgressDots(state.dotsDone, state.dots)
             }
 
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
