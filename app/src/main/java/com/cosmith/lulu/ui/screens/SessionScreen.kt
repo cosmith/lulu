@@ -1,0 +1,328 @@
+package com.cosmith.lulu.ui.screens
+
+import android.os.Build
+import android.view.HapticFeedbackConstants
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cosmith.lulu.AppContainer
+import com.cosmith.lulu.core.content.Sound
+import com.cosmith.lulu.core.session.Step
+import com.cosmith.lulu.core.store.Profile
+import com.cosmith.lulu.ui.components.Confetti
+import com.cosmith.lulu.ui.components.Glyph
+import com.cosmith.lulu.ui.components.Grapheme
+import com.cosmith.lulu.ui.components.Hill
+import com.cosmith.lulu.ui.components.LuluIcon
+import com.cosmith.lulu.ui.components.Mascot
+import com.cosmith.lulu.ui.components.Mood
+import com.cosmith.lulu.ui.components.PebbleShape
+import com.cosmith.lulu.ui.components.ProgressDots
+import com.cosmith.lulu.ui.components.RoundButton
+import com.cosmith.lulu.ui.components.bouncyClick
+import com.cosmith.lulu.ui.components.rememberShake
+import com.cosmith.lulu.ui.theme.Lulu
+import kotlin.math.min
+import kotlin.math.roundToInt
+
+@Composable
+fun SessionScreen(c: AppContainer, profile: Profile, runKey: Long, onExit: () -> Unit) {
+    val vm: SessionViewModel = viewModel(key = "session-$runKey") { SessionViewModel(c, profile) }
+    SessionContent(
+        state = vm,
+        mascotColor = Lulu.mascots[profile.avatar % Lulu.mascots.size],
+        onExit = onExit,
+    )
+}
+
+@Composable
+internal fun SessionContent(state: SessionViewModel, mascotColor: Color, onExit: () -> Unit) {
+    val view = LocalView.current
+    LaunchedEffect(state.confettiKey) {
+        if (state.confettiKey > 0) {
+            view.performHapticFeedback(
+                if (Build.VERSION.SDK_INT >= 30) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.KEYBOARD_TAP,
+            )
+        }
+    }
+    var center by remember { mutableStateOf(Offset.Zero) }
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Lulu.Cream)
+            .onSizeChanged { center = Offset(it.width / 2f, it.height * 0.42f) },
+    ) {
+        val step = state.step
+        if (step !is Step.ListenAndChoose) {
+            Hill(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(110.dp))
+        }
+
+        Column(Modifier.fillMaxSize().systemBarsPadding()) {
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                RoundButton(Glyph.Back, onExit, tint = Lulu.Terracotta)
+                Spacer(Modifier.weight(1f))
+                if (state.total > 0) ProgressDots(state.done, state.total)
+            }
+
+            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                when {
+                    state.finished -> Finished(state.total > 0, mascotColor, state.jumpKey, onExit)
+                    step is Step.Meet -> BigLetter(step.sound, state, onTap = state::onSpeaker)
+                    step is Step.SeeAndSay -> BigLetter(step.sound, state, onTap = state::onSpeaker)
+                    step is Step.ListenAndChoose -> Choices(step, state)
+                }
+            }
+
+            if (!state.finished) {
+                BottomBar(step, state, mascotColor)
+            }
+        }
+
+        Confetti(state.confettiKey, center, Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+private fun BottomBar(step: Step?, state: SessionViewModel, mascotColor: Color) {
+    Row(
+        Modifier.fillMaxWidth().height(150.dp).padding(start = 12.dp, end = 24.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        Mascot(mascotColor, state.mood, Modifier.size(130.dp), jumpKey = state.jumpKey)
+        Box(Modifier.weight(1f).height(110.dp), contentAlignment = Alignment.BottomCenter) {
+            when (step) {
+                is Step.SeeAndSay -> ParentVerdict(enabled = !state.busy, retrying = state.retrying, onVerdict = state::onVerdict)
+                is Step.Meet -> {
+                    val pop = remember(step) { Animatable(0f) }
+                    LaunchedEffect(pop) {
+                        kotlinx.coroutines.delay(700)
+                        pop.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 300f))
+                    }
+                    RoundButton(
+                        Glyph.Next, state::onMeetDone,
+                        modifier = Modifier.graphicsLayer { scaleX = pop.value; scaleY = pop.value },
+                        size = 84.dp, fill = Lulu.Mustard, tint = Lulu.Navy,
+                    )
+                }
+                else -> Unit
+            }
+        }
+        if (step is Step.SeeAndSay || step is Step.Meet) {
+            SpeakerButton(state.playing, onClick = state::onSpeaker)
+        } else {
+            Spacer(Modifier.width(96.dp))
+        }
+    }
+}
+
+/**
+ * The verdict for "voir et dire" comes from the parent sitting next to the child, until
+ * the on-device recognizer is in. Small and quiet on purpose: the letter is the star.
+ */
+@Composable
+private fun ParentVerdict(enabled: Boolean, retrying: Boolean, onVerdict: (Boolean) -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            if (retrying) "2ᵉ essai · son juste ?" else "Son juste ?",
+            color = Lulu.Navy.copy(alpha = 0.8f),
+            fontSize = 15.sp,
+        )
+        Spacer(Modifier.height(6.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            RoundButton(Glyph.Cross, { onVerdict(false) }, size = 50.dp, fill = Color.White.copy(alpha = 0.85f), tint = Lulu.Terracotta, enabled = enabled)
+            RoundButton(Glyph.Check, { onVerdict(true) }, size = 50.dp, fill = Color.White.copy(alpha = 0.85f), tint = Lulu.Sage, enabled = enabled)
+        }
+    }
+}
+
+@Composable
+private fun SpeakerButton(playing: Boolean, onClick: () -> Unit) {
+    val pulse by animateFloatAsState(
+        targetValue = if (playing) 1.08f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "speaker",
+    )
+    Box(
+        Modifier
+            .size(96.dp)
+            .graphicsLayer { scaleX = pulse; scaleY = pulse }
+            .bouncyClick(onClick = onClick)
+            .clip(PebbleShape(11))
+            .background(Lulu.Navy.copy(alpha = 0.92f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        LuluIcon(Glyph.Speaker, Lulu.Cream, Modifier.size(48.dp))
+    }
+}
+
+/** The grapheme alone on screen: pops in, wiggles when its sound plays, shakes softly on a miss. */
+@Composable
+private fun BigLetter(sound: Sound, state: SessionViewModel, onTap: () -> Unit) {
+    val appear = remember(sound.id, state.done) { Animatable(0.4f) }
+    LaunchedEffect(appear) { appear.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 380f)) }
+    val wiggle = remember { Animatable(0f) }
+    LaunchedEffect(state.soundKey) {
+        if (state.soundKey == 0) return@LaunchedEffect
+        wiggle.animateTo(1f, tween(120))
+        wiggle.animateTo(0f, spring(dampingRatio = 0.3f, stiffness = 250f))
+    }
+    val shake = rememberShake(state.shakeKey)
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 12.dp)
+            .offset { IntOffset((shake.value * density).roundToInt(), 0) }
+            .graphicsLayer {
+                val s = appear.value * (1f + 0.09f * wiggle.value)
+                scaleX = s
+                scaleY = s
+                rotationZ = -3f * wiggle.value
+            }
+            .bouncyClick(pressedScale = 0.92f, onClick = onTap),
+        contentAlignment = Alignment.Center,
+    ) {
+        Grapheme(sound.capitals, Lulu.ink(sound.family), Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+private fun Choices(step: Step.ListenAndChoose, state: SessionViewModel) {
+    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+        BigSpeaker(state.playing, state.soundKey, onClick = state::onSpeaker)
+        BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+            val n = step.choices.size
+            val rows = if (n <= 2) 1 else 2
+            val side = min(maxWidth.value * 0.47f, maxHeight.value / rows * 0.92f).dp
+            val firstRow = step.choices.take(2)
+            val secondRow = step.choices.drop(2)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy((-side.value * 0.06f).dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(side * 0.02f)) {
+                    firstRow.forEachIndexed { i, s -> Pebble(s, step, state, i, side) }
+                }
+                if (secondRow.isNotEmpty()) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(side * 0.02f)) {
+                        secondRow.forEachIndexed { i, s -> Pebble(s, step, state, i + 2, side) }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BigSpeaker(playing: Boolean, soundKey: Int, onClick: () -> Unit) {
+    val wiggle = remember { Animatable(0f) }
+    LaunchedEffect(soundKey) {
+        if (soundKey == 0) return@LaunchedEffect
+        wiggle.animateTo(1f, tween(120))
+        wiggle.animateTo(0f, spring(dampingRatio = 0.3f, stiffness = 250f))
+    }
+    val alpha by animateFloatAsState(if (playing) 1f else 0.9f, label = "speakerAlpha")
+    Box(
+        Modifier
+            .padding(top = 8.dp, bottom = 8.dp)
+            .size(150.dp)
+            .graphicsLayer {
+                val s = 1f + 0.12f * wiggle.value
+                scaleX = s
+                scaleY = s
+                this.alpha = alpha
+            }
+            .bouncyClick(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        LuluIcon(Glyph.Speaker, Lulu.Terracotta, Modifier.size(130.dp))
+    }
+}
+
+@Composable
+private fun Pebble(sound: Sound, step: Step.ListenAndChoose, state: SessionViewModel, index: Int, side: Dp) {
+    val wrong = sound.id in state.wrongChoices
+    val right = state.rightChoice == sound.id
+    val dimmed = wrong || (state.rightChoice != null && !right)
+    val alpha by animateFloatAsState(if (dimmed) 0.32f else 1f, tween(250), label = "pebbleAlpha")
+    val grow by animateFloatAsState(
+        targetValue = if (right) 1.12f else 1f,
+        animationSpec = spring(dampingRatio = 0.35f, stiffness = 300f),
+        label = "pebbleGrow",
+    )
+    val shake = rememberShake(if (state.shakingChoice == sound.id) state.shakeKey else 0)
+    val appear = remember(step) { Animatable(0f) }
+    LaunchedEffect(appear) {
+        kotlinx.coroutines.delay(80L * index)
+        appear.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = 300f))
+    }
+    val fill = Lulu.pebbles[(index + step.sound.id.length) % Lulu.pebbles.size]
+    Box(
+        Modifier
+            .size(side)
+            .offset { IntOffset((shake.value * density).roundToInt(), 0) }
+            .graphicsLayer {
+                val s = appear.value * grow
+                scaleX = s
+                scaleY = s
+                this.alpha = alpha
+            }
+            .bouncyClick(enabled = !state.busy && !wrong) { state.onChoice(sound) }
+            .clip(PebbleShape(sound.id.hashCode() + index))
+            .background(fill),
+        contentAlignment = Alignment.Center,
+    ) {
+        Grapheme(sound.capitals, Lulu.Ink, Modifier.fillMaxSize().padding(side * 0.16f), fill = 0.95f)
+    }
+}
+
+@Composable
+private fun Finished(didSomething: Boolean, mascotColor: Color, jumpKey: Int, onExit: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Mascot(
+            mascotColor,
+            if (didSomething) Mood.Happy else Mood.Sleepy,
+            Modifier.size(240.dp),
+            jumpKey = jumpKey,
+        )
+        Spacer(Modifier.height(32.dp))
+        RoundButton(Glyph.Home, onExit, size = 96.dp, fill = Lulu.Terracotta, tint = Lulu.Cream)
+    }
+}
