@@ -20,10 +20,12 @@ Done:
 - **Two cards per sound**, scheduled separately. A new sound is first met
   (shown and said), then picked out by ear; « voir et dire » opens after the
   first success by ear.
-- **Ratings as in the spec.** Voir et dire: right first time → Bien, right
-  after hearing the sound → Difficile, wrong twice → À revoir. Écouter et
-  choisir: right first tap → Bien, otherwise → À revoir. A card rated À revoir
-  comes back once later in the same session.
+- **One answer per card, as in Anki.** Voir et dire: right → Bien, right after
+  asking to hear the sound → Difficile, wrong → À revoir (Lulu says the right
+  sound, then moves on). Écouter et choisir: right → Bien, wrong → À revoir (the
+  right pebble lights up while the sound plays again, then moves on). A card
+  rated À revoir is due again a few minutes later, so it comes back later in
+  the session.
 - **Sessions last a set time** (5 minutes by default, the parent's only setting).
   Lulu picks each next card live: due cards first, then a new sound while fewer
   than 3 are being learned, then practice. A missed card is due a minute later

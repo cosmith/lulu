@@ -125,52 +125,21 @@ class SessionPlanner(private val profile: Profile, private val random: Random = 
     }
 }
 
-/** What the screen does after a verdict. */
-sealed interface Outcome {
-    /** Second chance: Lulu plays the sound, then the child tries again. */
-    data object TryAgain : Outcome
-
-    /** The card is done and gets this FSRS rating. [revealAnswer] asks the screen to show the right choice. */
-    data class Done(val rating: Rating, val revealAnswer: Boolean = false) : Outcome
-}
-
 /**
- * "Voir et dire": first try right → Bien; right after hearing the sound → Difficile;
- * wrong twice → À revoir. Asking to hear the sound before answering counts as a hint.
+ * One answer per card, as in Anki: the card gets its rating and the session moves on.
+ * A card rated "À revoir" is due again a few minutes later (FSRS learning steps), so
+ * it comes back later in the session instead of right away.
  */
-class SeeAndSayFlow {
-    var attempts = 0
-        private set
-    private var heardSound = false
-
-    fun onSoundPlayed() {
-        heardSound = true
+object Ratings {
+    /** "Voir et dire": right → Bien; right after asking to hear the sound → Difficile; wrong → À revoir. */
+    fun seeAndSay(correct: Boolean, heardSoundFirst: Boolean): Rating = when {
+        !correct -> Rating.Again
+        heardSoundFirst -> Rating.Hard
+        else -> Rating.Good
     }
 
-    fun onVerdict(correct: Boolean): Outcome {
-        attempts++
-        return when {
-            correct && attempts == 1 && !heardSound -> Outcome.Done(Rating.Good)
-            correct -> Outcome.Done(Rating.Hard)
-            attempts == 1 -> Outcome.TryAgain
-            else -> Outcome.Done(Rating.Again)
-        }
-    }
-}
-
-/** "Écouter et choisir": right on the first tap → Bien; anything else → À revoir, with one more try. */
-class ListenAndChooseFlow {
-    var attempts = 0
-        private set
-
-    fun onChoice(correct: Boolean): Outcome {
-        attempts++
-        return when {
-            correct && attempts == 1 -> Outcome.Done(Rating.Good)
-            attempts == 1 -> Outcome.TryAgain
-            else -> Outcome.Done(Rating.Again, revealAnswer = !correct)
-        }
-    }
+    /** "Écouter et choisir": right → Bien; wrong → À revoir. */
+    fun listenAndChoose(correct: Boolean): Rating = if (correct) Rating.Good else Rating.Again
 }
 
 /**

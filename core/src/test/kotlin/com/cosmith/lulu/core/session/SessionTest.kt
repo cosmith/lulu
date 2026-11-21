@@ -182,33 +182,13 @@ class SessionTest {
     }
 
     @Test
-    fun seeAndSayRatings() {
-        assertEquals(Outcome.Done(Rating.Good), SeeAndSayFlow().onVerdict(true))
-        SeeAndSayFlow().apply {
-            assertEquals(Outcome.TryAgain, onVerdict(false))
-            assertEquals(Outcome.Done(Rating.Hard), onVerdict(true))
-        }
-        SeeAndSayFlow().apply {
-            assertEquals(Outcome.TryAgain, onVerdict(false))
-            assertEquals(Outcome.Done(Rating.Again), onVerdict(false))
-        }
-        SeeAndSayFlow().apply {
-            onSoundPlayed()
-            assertEquals(Outcome.Done(Rating.Hard), onVerdict(true))
-        }
-    }
-
-    @Test
-    fun listenAndChooseRatings() {
-        assertEquals(Outcome.Done(Rating.Good), ListenAndChooseFlow().onChoice(true))
-        ListenAndChooseFlow().apply {
-            assertEquals(Outcome.TryAgain, onChoice(false))
-            assertEquals(Outcome.Done(Rating.Again), onChoice(true))
-        }
-        ListenAndChooseFlow().apply {
-            onChoice(false)
-            assertEquals(Outcome.Done(Rating.Again, revealAnswer = true), onChoice(false))
-        }
+    fun oneAnswerPerCard() {
+        assertEquals(Rating.Good, Ratings.seeAndSay(correct = true, heardSoundFirst = false))
+        assertEquals(Rating.Hard, Ratings.seeAndSay(correct = true, heardSoundFirst = true))
+        assertEquals(Rating.Again, Ratings.seeAndSay(correct = false, heardSoundFirst = false))
+        assertEquals(Rating.Again, Ratings.seeAndSay(correct = false, heardSoundFirst = true))
+        assertEquals(Rating.Good, Ratings.listenAndChoose(true))
+        assertEquals(Rating.Again, Ratings.listenAndChoose(false))
     }
 
     @Test

@@ -149,7 +149,7 @@ private fun BottomBar(step: Step?, state: SessionViewModel, mascotColor: Color) 
         Mascot(mascotColor, state.mood, Modifier.size(130.dp), jumpKey = state.jumpKey)
         Box(Modifier.weight(1f).height(110.dp), contentAlignment = Alignment.BottomCenter) {
             when (step) {
-                is Step.SeeAndSay -> ParentVerdict(enabled = !state.busy, retrying = state.retrying, onVerdict = state::onVerdict)
+                is Step.SeeAndSay -> ParentVerdict(enabled = !state.busy, onVerdict = state::onVerdict)
                 is Step.Meet -> {
                     val pop = remember(step) { Animatable(0f) }
                     LaunchedEffect(pop) {
@@ -178,10 +178,10 @@ private fun BottomBar(step: Step?, state: SessionViewModel, mascotColor: Color) 
  * the on-device recognizer is in. Small and quiet on purpose: the letter is the star.
  */
 @Composable
-private fun ParentVerdict(enabled: Boolean, retrying: Boolean, onVerdict: (Boolean) -> Unit) {
+private fun ParentVerdict(enabled: Boolean, onVerdict: (Boolean) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            if (retrying) "2ᵉ essai · son juste ?" else "Son juste ?",
+            "Son juste ?",
             color = Lulu.Navy.copy(alpha = 0.8f),
             fontSize = 15.sp,
         )

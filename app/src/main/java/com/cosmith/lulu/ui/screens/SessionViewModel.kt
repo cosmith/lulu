@@ -10,9 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.cosmith.lulu.AppContainer
 import com.cosmith.lulu.core.content.Sound
 import com.cosmith.lulu.core.fsrs.Rating
-import com.cosmith.lulu.core.session.ListenAndChooseFlow
-import com.cosmith.lulu.core.session.Outcome
-import com.cosmith.lulu.core.session.SeeAndSayFlow
+import com.cosmith.lulu.core.session.Ratings
 import com.cosmith.lulu.core.session.SessionPlanner
 import com.cosmith.lulu.core.session.SessionRunner
 import com.cosmith.lulu.core.session.Step
@@ -82,22 +80,18 @@ class SessionViewModel(
     var busy by mutableStateOf(false)
         private set
 
-    /** "Écouter et choisir": choices already tried, and the right one once found or shown. */
+    /** "Écouter et choisir": the pebble tapped by mistake, and the right one once found or shown. */
     var wrongChoices by mutableStateOf(emptySet<String>())
         private set
     var rightChoice by mutableStateOf<String?>(null)
         private set
-    /** Which pebble shakes: the last wrong choice. */
     var shakingChoice by mutableStateOf<String?>(null)
         private set
 
-    /** "Voir et dire": second attempt in progress. */
-    var retrying by mutableStateOf(false)
-        private set
-
     private var streak = 0
-    private var seeAndSay = SeeAndSayFlow()
-    private var listen = ListenAndChooseFlow()
+
+    /** "Voir et dire": the child asked to hear the sound before answering. */
+    private var heardSoundFirst = false
     private var soundJob: Job? = null
 
     /** Intro playback and feedback of the current step; cancelled when the step changes. */
@@ -135,7 +129,7 @@ class SessionViewModel(
         wrongChoices = emptySet()
         rightChoice = null
         shakingChoice = null
-        retrying = false
+        heardSoundFirst = false
         busy = false
         when (s) {
             null -> finish()
@@ -150,12 +144,8 @@ class SessionViewModel(
                     playSound(s.sound)
                 }
             }
-            is Step.SeeAndSay -> {
-                seeAndSay = SeeAndSayFlow()
-                mood = Mood.Listening
-            }
+            is Step.SeeAndSay -> mood = Mood.Listening
             is Step.ListenAndChoose -> {
-                listen = ListenAndChooseFlow()
                 mood = Mood.Listening
                 launchStep {
                     delay(450)
@@ -169,81 +159,58 @@ class SessionViewModel(
     fun onSpeaker() {
         val s = step ?: return
         if (busy) return
-        if (s is Step.SeeAndSay) seeAndSay.onSoundPlayed()
+        if (s is Step.SeeAndSay) heardSoundFirst = true
         viewModelScope.launch { playSound(s.sound) }
     }
 
-    /** The parent's ✓ / ✗ on "voir et dire", until the recognizer takes over. */
+    /**
+     * The parent's ✓ / ✗ on "voir et dire", until the recognizer takes over. One answer
+     * per card: on a miss, Lulu says the right sound while the letter moves with it,
+     * then the next card comes.
+     */
     fun onVerdict(correct: Boolean) {
         val s = step as? Step.SeeAndSay ?: return
         if (busy) return
         busy = true
-        when (val outcome = seeAndSay.onVerdict(correct)) {
-            Outcome.TryAgain -> launchStep {
+        val rating = Ratings.seeAndSay(correct, heardSoundFirst)
+        launchStep {
+            if (correct) {
+                successFeedback()
+                delay(950)
+            } else {
                 missFeedback()
-                delay(450)
+                delay(400)
                 playSound(s.sound)
-                retrying = true
-                mood = Mood.Listening
-                busy = false
+                delay(500)
             }
-            is Outcome.Done -> launchStep {
-                if (outcome.rating == Rating.Again) {
-                    missFeedback()
-                    delay(400)
-                    playSound(s.sound)
-                    delay(400)
-                } else {
-                    successFeedback()
-                    delay(950)
-                }
-                finishCard(s.key, outcome.rating, Judge.Parent)
-            }
+            finishCard(s.key, rating, Judge.Parent)
         }
     }
 
+    /**
+     * One tap per card. On a miss the tapped pebble shakes and fades, the right one
+     * lights up while Lulu plays the sound again, then the next card comes.
+     */
     fun onChoice(choice: Sound) {
         val s = step as? Step.ListenAndChoose ?: return
-        if (busy || choice.id in wrongChoices) return
+        if (busy) return
         busy = true
         val correct = choice.id == s.sound.id
-        when (val outcome = listen.onChoice(correct)) {
-            Outcome.TryAgain -> launchStep {
-                wrongChoices = wrongChoices + choice.id
+        launchStep {
+            if (correct) {
+                rightChoice = choice.id
+                successFeedback()
+                delay(950)
+            } else {
+                wrongChoices = setOf(choice.id)
                 shakingChoice = choice.id
                 missFeedback()
-                delay(450)
+                delay(350)
+                rightChoice = s.sound.id
                 playSound(s.sound)
-                mood = Mood.Listening
-                busy = false
+                delay(700)
             }
-            is Outcome.Done -> launchStep {
-                when {
-                    outcome.rating == Rating.Good -> {
-                        rightChoice = choice.id
-                        successFeedback()
-                        delay(950)
-                    }
-                    correct -> {
-                        // Found on the second try: a smaller celebration, but still one.
-                        rightChoice = choice.id
-                        c.tones.success(0)
-                        jumpKey++
-                        mood = Mood.Happy
-                        delay(900)
-                    }
-                    else -> {
-                        wrongChoices = wrongChoices + choice.id
-                        shakingChoice = choice.id
-                        missFeedback()
-                        delay(350)
-                        rightChoice = s.sound.id
-                        playSound(s.sound)
-                        delay(700)
-                    }
-                }
-                finishCard(s.key, outcome.rating, Judge.Tap)
-            }
+            finishCard(s.key, Ratings.listenAndChoose(correct), Judge.Tap)
         }
     }
 

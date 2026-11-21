@@ -31,7 +31,7 @@ class SessionViewModelTest {
     private fun settle() = shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(12))
 
     @Test
-    fun ratingsAreSavedAndFailedCardsComeBack() {
+    fun oneAnswerPerCardAndFailedCardsComeBack() {
         val profile = Profile("vm-test", "", 0, Instant.now())
         val ou = Curriculum["ou"]
         val a = Curriculum["a"]
@@ -46,15 +46,12 @@ class SessionViewModelTest {
         val vm = SessionViewModel(c, profile, planned = listOf(Step.ListenAndChoose(ou, listOf(a, ou)), Step.SeeAndSay(ou)))
         settle()
 
-        vm.onChoice(a) // wrong: second chance
-        settle()
-        assertEquals(setOf("a"), vm.wrongChoices)
-        assertFalse(vm.busy)
-        assertTrue(vm.step is Step.ListenAndChoose)
-
-        vm.onChoice(ou) // right on the second try: "À revoir", and the card comes back later
+        vm.onChoice(a) // wrong: "À revoir", the right answer is shown, and the next card comes
+        assertTrue(vm.busy)
+        vm.onChoice(ou) // ignored while the feedback plays
         settle()
         assertTrue(vm.step is Step.SeeAndSay)
+        assertFalse(vm.busy)
 
         vm.onVerdict(true) // the parent says the sound was right
         settle()
