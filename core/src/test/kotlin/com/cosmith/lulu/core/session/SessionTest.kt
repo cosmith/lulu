@@ -183,6 +183,13 @@ class SessionTest {
     }
 
     @Test
+    fun noTtsTextIsALoneAccentedLetter() {
+        // Engines spell a lone accented letter out ("e accent aigu") instead of saying its sound.
+        val spelled = Curriculum.sounds.filter { it.ttsText.length == 1 && it.ttsText.first() !in 'a'..'z' }
+        assertTrue(spelled.isEmpty(), spelled.map { it.ttsText }.toString())
+    }
+
+    @Test
     fun initialOfFirstNameMovesUp() {
         assertEquals("l", Curriculum.initialSoundOf("Lucie")?.id)
         assertEquals("ch", Curriculum.initialSoundOf("Charlotte")?.id)

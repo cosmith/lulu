@@ -53,7 +53,8 @@ object Curriculum {
     val sounds: List<Sound> = listOf(
         // 1. Voyelles
         Sound("a", "a", "a", SoundFamily.Vowel, 1, "a"),
-        Sound("e_acute", "é", "e", SoundFamily.Vowel, 1, "é"),
+        // A lone "é" is spelled out by TTS engines ("e accent aigu"); the word "et" says /e/.
+        Sound("e_acute", "é", "e", SoundFamily.Vowel, 1, "et"),
         Sound("i", "i", "i", SoundFamily.Vowel, 1, "i"),
         Sound("o", "o", "o", SoundFamily.Vowel, 1, "o", lookalikes = listOf("ou")),
         Sound("u", "u", "y", SoundFamily.Vowel, 1, "u", lookalikes = listOf("ou")),
