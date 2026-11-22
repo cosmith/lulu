@@ -1,11 +1,14 @@
 package com.cosmith.lulu.core.store
 
 import com.cosmith.lulu.core.content.Curriculum
+import com.cosmith.lulu.core.fsrs.CardState
+import com.cosmith.lulu.core.session.SessionPlanner
 import com.cosmith.lulu.core.fsrs.Rating
 import java.nio.file.Files
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ProfileStoreTest {
@@ -51,5 +54,30 @@ class ProfileStoreTest {
         // No mascot seed yet: the personality comes from the id, so it stays the same.
         assertEquals(null, profile.mascotSeed)
         assertEquals("p-1".hashCode().toLong(), profile.mascot)
+    }
+
+    @Test
+    fun progressSavedByThePreviousVersionStillLoadsAndPlays() {
+        val dir = Files.createTempDirectory("lulu-store-v2").toFile()
+        val t = 1_795_300_000_000L
+        // As written before syllables and words: cards keyed by "soundId", no "itemsOn".
+        dir.resolve("progress-p-1.json").writeText(
+            """{"introduced":["a","e_acute"],"introducedOn":{"a":$t,"e_acute":$t},"lowercaseOn":{},
+            "cards":{"a:ListenAndChoose":{"key":{"soundId":"a","kind":"ListenAndChoose"},
+            "memory":{"due":${t + 172_800_000},"state":"Review","step":null,"stability":2.3065,"difficulty":2.1,"lastReview":$t},
+            "reviews":1,"lapses":0}},
+            "reviews":[{"key":{"soundId":"a","kind":"ListenAndChoose"},"at":$t,"rating":"Good","judge":"Tap","corrected":false}]}""",
+        )
+        val progress = ProfileStore(dir).progress("p-1")
+        val key = CardKey("a", CardKind.ListenAndChoose)
+        assertEquals(CardState.Review, progress.card(key)?.memory?.state)
+        assertEquals(key, progress.reviews.single().key)
+        assertTrue(progress.itemsOn.isEmpty())
+        // And saving it again keeps the same field name.
+        ProfileStore(dir).saveProgress("p-1", progress)
+        assertTrue(dir.resolve("progress-p-1.json").readText().contains("\"soundId\":\"a\""))
+        // A session can start from it.
+        val step = SessionPlanner(Profile("p-1", "", 0, Instant.ofEpochMilli(t))).next(progress, Instant.ofEpochMilli(t + 86_400_000))
+        assertNotNull(step)
     }
 }

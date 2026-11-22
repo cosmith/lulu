@@ -2,6 +2,8 @@ package com.cosmith.lulu
 
 import android.os.Looper
 import com.cosmith.lulu.core.content.Curriculum
+import com.cosmith.lulu.core.content.Syllables
+import com.cosmith.lulu.core.content.Words
 import com.cosmith.lulu.core.fsrs.Rating
 import com.cosmith.lulu.core.session.Step
 import com.cosmith.lulu.core.store.CardKey
@@ -127,5 +129,42 @@ class SessionViewModelTest {
         settle()
         assertFalse(vm.finished)
         assertTrue(vm.step is Step.SeeAndSay)
+    }
+
+    @Test
+    fun aWordIsReadThenItsPictureShows() {
+        val profile = Profile("vm-word", "", 0, Instant.now())
+        val loup = Words.find("word:loup")!!
+        val vm = SessionViewModel(c, profile, planned = listOf(Step.SeeAndSay(loup), Step.SeeAndSay(loup)))
+        settle()
+        assertEquals(null, vm.picture) // never before reading
+        vm.onVerdict(true)
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(300))
+        assertEquals("🐺", vm.picture)
+        settle()
+        Thread.sleep(300)
+        val saved = c.store.progress(profile.id)
+        assertTrue(Words.find("word:loup")!!.id in saved.itemsOn)
+        assertEquals(Rating.Good, saved.reviews.single().rating)
+        // Reading it opens "écouter et choisir" for the word.
+        assertTrue(saved.card(CardKey(loup.id, CardKind.ListenAndChoose)) != null)
+    }
+
+    @Test
+    fun aSyllableIsMetSoundBySound() {
+        val profile = Profile("vm-syl", "", 0, Instant.now())
+        val fou = Syllables.find("syl:f-ou")!!
+        val vm = SessionViewModel(c, profile, planned = listOf(Step.Meet(fou), Step.ListenAndChoose(fou, listOf(fou, Syllables.find("syl:ou-f")!!))))
+        assertFalse(vm.blended) // the sounds start apart
+        settle()
+        assertTrue(vm.blended) // and end together
+        vm.onMeetDone()
+        settle()
+        vm.onChoice(fou)
+        settle()
+        Thread.sleep(300)
+        val saved = c.store.progress(profile.id)
+        assertTrue(fou.id in saved.itemsOn)
+        assertTrue(saved.card(CardKey(fou.id, CardKind.SeeAndSay)) != null)
     }
 }

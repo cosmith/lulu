@@ -3,11 +3,15 @@
 package com.cosmith.lulu.core.store
 
 import com.cosmith.lulu.core.content.Curriculum
+import com.cosmith.lulu.core.content.Item
+import com.cosmith.lulu.core.content.Word
+import com.cosmith.lulu.core.content.Words
 import com.cosmith.lulu.core.content.Sound
 import com.cosmith.lulu.core.fsrs.CardState
 import com.cosmith.lulu.core.fsrs.FsrsScheduler
 import com.cosmith.lulu.core.fsrs.Memory
 import com.cosmith.lulu.core.fsrs.Rating
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import java.time.Instant
@@ -39,9 +43,17 @@ enum class CardKind(val lowercase: Boolean) {
     }
 }
 
+/**
+ * One card: an item (a sound, a syllable or a word) and a way of asking about it.
+ * Syllables and words use only [CardKind.SeeAndSay] and [CardKind.ListenAndChoose].
+ */
 @Serializable
-data class CardKey(val soundId: String, val kind: CardKind) {
-    val id: String get() = "$soundId:${kind.name}"
+data class CardKey(
+    // Stored as "soundId": progress saved when only sounds existed keeps loading.
+    @SerialName("soundId") val itemId: String,
+    val kind: CardKind,
+) {
+    val id: String get() = "$itemId:${kind.name}"
 }
 
 /** Who decided whether the child was right. */
@@ -113,6 +125,8 @@ data class Progress(
     val introducedOn: Map<String, Instant> = emptyMap(),
     /** When the lower case of each sound was met. */
     val lowercaseOn: Map<String, Instant> = emptyMap(),
+    /** When each syllable and word was met. */
+    val itemsOn: Map<String, Instant> = emptyMap(),
     val cards: Map<String, CardProgress> = emptyMap(),
     val reviews: List<ReviewEntry> = emptyList(),
 ) {
@@ -121,11 +135,17 @@ data class Progress(
     fun introducedSounds(): List<Sound> = introduced.mapNotNull { Curriculum.find(it) }
 
     fun introducedAt(soundId: String): Instant? =
-        introducedOn[soundId] ?: reviews.firstOrNull { it.key.soundId == soundId }?.at
+        introducedOn[soundId] ?: reviews.firstOrNull { it.key.itemId == soundId }?.at
 
-    /** A sound is being learned until both of its capital cards exist and have reached the Review state. */
+    /**
+     * A card has graduated once it has left its first learning steps. A card missed later
+     * goes to Relearning but stays graduated: the child knew it and is reviewing it.
+     */
+    fun graduated(key: CardKey): Boolean = card(key)?.memory?.state.let { it != null && it != CardState.Learning }
+
+    /** A sound is being learned until both of its capital cards exist and have graduated. */
     fun soundsInLearning(): List<String> = introduced.filter { id ->
-        CardKind.capitals.any { kind -> card(CardKey(id, kind))?.memory?.state != CardState.Review }
+        CardKind.capitals.any { kind -> !graduated(CardKey(id, kind)) }
     }
 
     /** Both capital cards are in Review and will hold for at least [days]: time for the lower case. */
@@ -133,6 +153,18 @@ data class Progress(
         val m = card(CardKey(soundId, kind))?.memory
         m != null && m.state == CardState.Review && (m.stability ?: 0.0) >= days
     }
+
+    /** The child knows a sound once both of its capital cards have graduated. */
+    fun knows(soundId: String): Boolean {
+        Curriculum.prerequisites[soundId]?.let { needs -> return needs.all { knows(it) } }
+        return soundId in introduced && CardKind.capitals.all { graduated(CardKey(soundId, it)) }
+    }
+
+    /** Both cards of a syllable or word exist and have graduated. */
+    fun known(itemId: String): Boolean = CardKind.capitals.all { graduated(CardKey(itemId, it)) }
+
+    /** Syllables or words (by id prefix) met but not yet known. */
+    fun itemsInLearning(prefix: String): Int = itemsOn.keys.count { it.startsWith(prefix) && !known(it) }
 
     /** Sounds whose lower case the child has met, in that order. */
     fun lowercaseSounds(): List<Sound> = lowercaseOn.entries.sortedBy { it.value }.mapNotNull { Curriculum.find(it.key) }
@@ -147,6 +179,20 @@ data class Progress(
         return copy(
             lowercaseOn = lowercaseOn + (sound.id to at),
             cards = cards + new.associate { it.id to CardProgress(it, Memory(due = at)) },
+        )
+    }
+
+    /**
+     * Meets a syllable or a word. A syllable starts like a sound, picked out by ear;
+     * a word starts with reading it, so that the child decodes it before hearing it.
+     */
+    fun meet(item: Item, at: Instant): Progress {
+        if (item is Sound) return introduce(item, at)
+        if (item.id in itemsOn) return this
+        val key = CardKey(item.id, if (item is Word) CardKind.SeeAndSay else CardKind.ListenAndChoose)
+        return copy(
+            itemsOn = itemsOn + (item.id to at),
+            cards = cards + (key.id to CardProgress(key, Memory(due = at))),
         )
     }
 
@@ -172,10 +218,13 @@ data class Progress(
             cards = cards + (key.id to updated),
             reviews = reviews + ReviewEntry(key, at, rating, judge),
         )
-        // "Voir et dire" opens once the child has picked the sound out by ear, in capitals and in lower case.
+        // The second card opens after the first success: "voir et dire" after picking a sound
+        // or syllable out by ear (capitals and lower case), "écouter et choisir" after reading a word.
+        val isWord = key.itemId.startsWith(Words.PREFIX)
         val opens = when (key.kind) {
-            CardKind.ListenAndChoose -> CardKey(key.soundId, CardKind.SeeAndSay)
-            CardKind.ListenAndChooseLower -> CardKey(key.soundId, CardKind.SeeAndSayLower)
+            CardKind.ListenAndChoose -> if (isWord) null else CardKey(key.itemId, CardKind.SeeAndSay)
+            CardKind.SeeAndSay -> if (isWord) CardKey(key.itemId, CardKind.ListenAndChoose) else null
+            CardKind.ListenAndChooseLower -> CardKey(key.itemId, CardKind.SeeAndSayLower)
             else -> null
         }
         if (opens != null && rating != Rating.Again && next.card(opens) == null) {

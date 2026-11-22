@@ -7,6 +7,8 @@ import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollToNode
 import com.cosmith.lulu.core.content.Curriculum
+import com.cosmith.lulu.core.content.Syllables
+import com.cosmith.lulu.core.content.Words
 import com.cosmith.lulu.core.fsrs.Rating
 import com.cosmith.lulu.core.session.Step
 import com.cosmith.lulu.core.store.CardKey
@@ -119,6 +121,42 @@ class ScreenshotTest {
         val vm = session(listOf(Step.ListenAndChoose(ou, listOf(Curriculum["on"], ou, Curriculum["an"]), lowercase = true)))
         rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sky, MascotLook.from(3), onExit = {}) } }
         shot("15-ecouter-minuscules")
+    }
+
+    @Test
+    fun meetSyllable() {
+        val fou = Syllables.find("syl:f-ou")!!
+        val vm = session(listOf(Step.Meet(fou), Step.SeeAndSay(fou)))
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Mustard, MascotLook.from(8), onExit = {}) } }
+        rule.mainClock.advanceTimeBy(500)
+        shot("16-syllabe-fusion")
+    }
+
+    @Test
+    fun readSyllable() {
+        val poul = Syllables.find("syl:p-ou-l")!!
+        val vm = session(listOf(Step.SeeAndSay(poul)))
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sky, MascotLook.from(2), onExit = {}) } }
+        shot("17-syllabe-lire")
+    }
+
+    @Test
+    fun readWord() {
+        val loup = Words.find("word:loup")!!
+        val vm = session(listOf(Step.SeeAndSay(loup), Step.SeeAndSay(loup)))
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Terracotta, MascotLook.from(4), onExit = {}) } }
+        shot("18-mot-lire")
+        vm.onVerdict(true)
+        rule.mainClock.advanceTimeBy(600)
+        shot("19-mot-lu-image")
+    }
+
+    @Test
+    fun listenWord() {
+        val chat = Words.find("word:chat")!!
+        val vm = session(listOf(Step.ListenAndChoose(chat, listOf(Words.find("word:chou")!!, chat, Words.find("word:rat")!!), lowercase = true)))
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sage, MascotLook.from(6), onExit = {}) } }
+        shot("20-mot-ecouter")
     }
 
     @Test

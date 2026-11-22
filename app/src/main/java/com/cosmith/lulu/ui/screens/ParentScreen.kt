@@ -52,6 +52,10 @@ import com.cosmith.lulu.AppContainer
 import com.cosmith.lulu.audio.SoundRecorder
 import com.cosmith.lulu.audio.SoundSource
 import com.cosmith.lulu.core.content.Curriculum
+import com.cosmith.lulu.core.content.Item
+import com.cosmith.lulu.core.content.Syllables
+import com.cosmith.lulu.core.content.Word
+import com.cosmith.lulu.core.content.Words
 import com.cosmith.lulu.core.content.Sound
 import com.cosmith.lulu.core.fsrs.CardState
 import com.cosmith.lulu.core.fsrs.Rating
@@ -67,6 +71,7 @@ import com.cosmith.lulu.ui.components.Mascot
 import com.cosmith.lulu.ui.components.Mood
 import com.cosmith.lulu.ui.components.RoundButton
 import com.cosmith.lulu.ui.components.bouncyClick
+import com.cosmith.lulu.ui.components.itemText
 import com.cosmith.lulu.ui.theme.Lulu
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -177,11 +182,15 @@ private fun LazyListScope.progressSection(profile: Profile, progress: Progress, 
     item { SectionTitle("Progrès" + if (profile.firstName.isNotBlank()) " de ${profile.firstName}" else "") }
     val sounds = progress.introducedSounds()
     item {
-        val solid = sounds.count { s -> CardKind.entries.all { k -> status(progress.card(CardKey(s.id, k))) == Status.Solid } }
+        val solid = sounds.count { s -> CardKind.capitals.all { k -> status(progress.card(CardKey(s.id, k))) == Status.Solid } }
         val nextNew = Curriculum.orderFor(profile.firstName).firstOrNull { it.id !in progress.introduced }
+        val syllables = progress.itemsOn.keys.filter { it.startsWith(Syllables.PREFIX) }
+        val words = progress.itemsOn.keys.filter { it.startsWith(Words.PREFIX) }
         Text(
             buildString {
                 append("${sounds.size} sons rencontrés sur ${Curriculum.sounds.size}, dont $solid solides. ")
+                append("${syllables.size} syllabes (${syllables.count(progress::known)} sues) et ")
+                append("${words.size} mots lus (${words.count(progress::known)} sus). ")
                 append("${progress.reviews.size} réponses en tout.")
                 if (nextNew != null) append(" Prochain son : « ${nextNew.grapheme} ».")
             },
@@ -223,16 +232,16 @@ private fun LazyListScope.answersSection(progress: Progress, now: Instant, onCor
     val recent = progress.reviews.withIndex().reversed().take(15)
     if (recent.isEmpty()) item { Text("Pas encore de réponse.", color = Lulu.Muted) }
     items(recent, key = { "review-" + it.index }) { (index, r) ->
-        val sound = Curriculum.find(r.key.soundId) ?: return@items
+        val item = Curriculum.item(r.key.itemId) ?: return@items
         Row(
             Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color.White.copy(alpha = 0.6f)).padding(horizontal = 12.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            GraphemeChip(sound, lowercase = r.key.kind.lowercase && r.key.kind != CardKind.MatchCase)
+            GraphemeChip(item, lowercase = r.key.kind.lowercase && r.key.kind != CardKind.MatchCase)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    kindLabel(r.key.kind) + " · " + ratingLabel(r.rating) +
+                    kindLabel(item, r.key.kind) + " · " + ratingLabel(r.rating) +
                         if (r.corrected) " (corrigé)" else "",
                     color = if (r.rating == Rating.Again) Lulu.Brick else Lulu.Ink,
                     fontSize = 15.sp,
@@ -313,6 +322,7 @@ private fun RecordingRow(c: AppContainer, sound: Sound) {
                 recording -> "Enregistrement…"
                 source == SoundSource.Recording -> "Votre voix"
                 source == SoundSource.Bundled -> "Fourni avec l'appli"
+                source == SoundSource.Borrowed -> "Votre voix de « ${sound.voice?.let(Curriculum::find)?.grapheme} »"
                 else -> "Voix de synthèse"
             },
             Modifier.weight(1f),
@@ -352,17 +362,17 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-private fun GraphemeChip(sound: Sound, lowercase: Boolean = false) {
+private fun GraphemeChip(item: Item, lowercase: Boolean = false) {
     Box(
-        Modifier.size(width = 56.dp, height = 44.dp).clip(RoundedCornerShape(14.dp)).background(Lulu.Sand),
+        Modifier.widthIn(min = 56.dp).height(44.dp).clip(RoundedCornerShape(14.dp)).background(Lulu.Sand).padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(sound.written(lowercase), color = Lulu.ink(sound.family), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+        Text(itemText(item, lowercase), fontSize = if (item is Word) 18.sp else 22.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 
-private fun kindLabel(kind: CardKind) = when (kind) {
-    CardKind.SeeAndSay -> "Dire"
+private fun kindLabel(item: Item, kind: CardKind) = when (kind) {
+    CardKind.SeeAndSay -> if (item is Sound) "Dire" else "Lire"
     CardKind.ListenAndChoose -> "Écouter"
     CardKind.MatchCase -> "Majuscule → minuscule"
     CardKind.ListenAndChooseLower -> "Écouter (minuscules)"

@@ -30,7 +30,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -39,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cosmith.lulu.core.content.Item
 import com.cosmith.lulu.ui.theme.Fredoka
 import com.cosmith.lulu.ui.theme.Lulu
 import kotlin.math.PI
@@ -103,6 +108,12 @@ fun Hill(modifier: Modifier = Modifier, color: Color = Lulu.Sage.copy(alpha = 0.
 /** A grapheme as big as the space allows. */
 @Composable
 fun Grapheme(text: String, color: Color, modifier: Modifier = Modifier, fill: Float = 0.86f) {
+    Grapheme(AnnotatedString(text), modifier, fill, color)
+}
+
+/** Text as big as the space allows, with colours per part (sounds, grey silent letters). */
+@Composable
+fun Grapheme(text: AnnotatedString, modifier: Modifier = Modifier, fill: Float = 0.86f, color: Color = Color.Unspecified) {
     val measurer = rememberTextMeasurer()
     BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
         val base = TextStyle(fontFamily = Fredoka, fontWeight = FontWeight.SemiBold, fontSize = 100.sp, lineHeight = 100.sp)
@@ -118,6 +129,23 @@ fun Grapheme(text: String, color: Color, modifier: Modifier = Modifier, fill: Fl
             softWrap = false,
             style = base.copy(fontSize = 100.sp * scale, lineHeight = 100.sp * scale),
         )
+    }
+}
+
+/**
+ * How an item is written on screen: each sound in the colour of its family (CH navy,
+ * OU brick), silent letters in light grey as in French first readers. [plain] gives
+ * every sound one colour instead, for text on a coloured pebble.
+ */
+fun itemText(item: Item, lowercase: Boolean, plain: Color? = null): AnnotatedString = buildAnnotatedString {
+    for (part in item.parts) {
+        val sound = part.sound
+        val color = when {
+            sound == null -> plain?.copy(alpha = 0.4f) ?: Lulu.Muted.copy(alpha = 0.5f)
+            plain != null -> plain
+            else -> Lulu.ink(sound.family)
+        }
+        withStyle(SpanStyle(color = color)) { append(part.written(lowercase)) }
     }
 }
 

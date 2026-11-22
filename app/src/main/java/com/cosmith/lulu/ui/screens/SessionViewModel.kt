@@ -8,7 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cosmith.lulu.AppContainer
+import com.cosmith.lulu.core.content.Item
 import com.cosmith.lulu.core.content.Sound
+import com.cosmith.lulu.core.content.Syllable
+import com.cosmith.lulu.core.content.Word
 import com.cosmith.lulu.core.fsrs.Rating
 import com.cosmith.lulu.core.session.Ratings
 import com.cosmith.lulu.core.session.SessionPlanner
@@ -85,6 +88,16 @@ class SessionViewModel(
     var shakingChoice by mutableStateOf<String?>(null)
         private set
 
+    /** Meeting a syllable: the sound being said on its own, then true once the sounds have merged. */
+    var blendPart by mutableStateOf<Int?>(null)
+        private set
+    var blended by mutableStateOf(true)
+        private set
+
+    /** A word's picture, shown only once the child has read the word. */
+    var picture by mutableStateOf<String?>(null)
+        private set
+
     private var streak = 0
 
     /** "Voir et dire": the child asked to hear the sound before answering. */
@@ -127,25 +140,49 @@ class SessionViewModel(
         shakingChoice = null
         heardSoundFirst = false
         busy = false
+        picture = null
+        blendPart = null
+        blended = true
         when (s) {
             null -> finish()
             is Step.Meet -> {
                 mood = Mood.Happy
-                progress = if (s.lowercase) progress.meetLowercase(s.sound, c.now()) else progress.introduce(s.sound, c.now())
+                val item = s.item
+                progress = if (item is Sound && s.lowercase) progress.meetLowercase(item, c.now()) else progress.meet(item, c.now())
                 save()
+                blended = item !is Syllable
                 launchStep {
                     delay(450)
-                    playSound(s.sound)
+                    if (item is Syllable) {
+                        // Each sound on its own, then together: « L… A… LA ».
+                        for ((i, part) in item.sounds.withIndex()) {
+                            blendPart = i
+                            playSound(part)
+                            delay(250)
+                        }
+                        blendPart = null
+                        blended = true
+                        delay(300)
+                    }
+                    playSound(item)
                     delay(500)
-                    playSound(s.sound)
+                    playSound(item)
                 }
             }
-            is Step.SeeAndSay, is Step.MatchCase -> mood = Mood.Listening
+            is Step.SeeAndSay -> {
+                // A word is met by reading it: its first card is created now.
+                if (progress.card(s.key) == null) {
+                    progress = progress.meet(s.item, c.now())
+                    save()
+                }
+                mood = Mood.Listening
+            }
+            is Step.MatchCase -> mood = Mood.Listening
             is Step.ListenAndChoose -> {
                 mood = Mood.Listening
                 launchStep {
                     delay(450)
-                    playSound(s.sound)
+                    playSound(s.item)
                 }
             }
         }
@@ -156,7 +193,7 @@ class SessionViewModel(
         val s = step ?: return
         if (busy) return
         if (s is Step.SeeAndSay) heardSoundFirst = true
-        viewModelScope.launch { playSound(s.sound) }
+        viewModelScope.launch { playSound(s.item) }
     }
 
     /**
@@ -169,15 +206,24 @@ class SessionViewModel(
         if (busy) return
         busy = true
         val rating = Ratings.seeAndSay(correct, heardSoundFirst)
+        val word = s.item as? Word
         launchStep {
             if (correct) {
                 successFeedback()
-                delay(950)
+                if (word != null) {
+                    // Read it: now the picture, and Lulu says the word.
+                    picture = word.picture
+                    playSound(word)
+                    delay(700)
+                } else {
+                    delay(950)
+                }
             } else {
                 missFeedback()
                 delay(400)
-                playSound(s.sound)
-                delay(500)
+                picture = word?.picture
+                playSound(s.item)
+                delay(word?.let { 900 } ?: 500)
             }
             finishCard(s.key, rating, Judge.Parent)
         }
@@ -187,24 +233,32 @@ class SessionViewModel(
      * One tap per card. On a miss the tapped pebble shakes and fades, the right one
      * lights up while Lulu plays the sound again, then the next card comes.
      */
-    fun onChoice(choice: Sound) {
+    fun onChoice(choice: Item) {
         val s = step as? Step.Card ?: return
         if (s is Step.SeeAndSay) return
         if (busy) return
         busy = true
-        val correct = choice.id == s.sound.id
+        val correct = choice.id == s.item.id
+        val word = s.item as? Word
         launchStep {
             if (correct) {
                 rightChoice = choice.id
                 successFeedback()
-                delay(950)
+                if (word != null) {
+                    picture = word.picture
+                    playSound(word)
+                    delay(600)
+                } else {
+                    delay(950)
+                }
             } else {
                 wrongChoices = setOf(choice.id)
                 shakingChoice = choice.id
                 missFeedback()
                 delay(350)
-                rightChoice = s.sound.id
-                playSound(s.sound)
+                rightChoice = s.item.id
+                picture = word?.picture
+                playSound(s.item)
                 delay(700)
             }
             finishCard(s.key, Ratings.choice(correct), Judge.Tap)
@@ -248,7 +302,7 @@ class SessionViewModel(
         mood = Mood.Encourage
     }
 
-    private suspend fun playSound(sound: Sound) {
+    private suspend fun playSound(sound: Item) {
         soundJob?.cancel()
         val job = viewModelScope.launch {
             playing = true

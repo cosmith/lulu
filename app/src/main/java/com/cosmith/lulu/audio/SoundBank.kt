@@ -8,6 +8,7 @@ import android.os.Build
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import com.cosmith.lulu.core.content.Item
 import com.cosmith.lulu.core.content.Sound
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -23,6 +24,9 @@ enum class SoundSource {
 
     /** Shipped with the app (none yet: who records them is an open question). */
     Bundled,
+
+    /** The parent's recording of the sound it is said like ("au" plays "o"). */
+    Borrowed,
 
     /** French text-to-speech. Fine for vowels, approximate for consonants. */
     Synthesis,
@@ -58,22 +62,34 @@ class SoundBank(private val context: Context) {
 
     fun recordingFile(sound: Sound) = File(recordings, "${sound.id}.m4a")
 
+    private fun hasRecording(id: String) = File(recordings, "$id.m4a").let { it.exists() && it.length() > 0 }
+
     fun source(sound: Sound): SoundSource = when {
-        recordingFile(sound).let { it.exists() && it.length() > 0 } -> SoundSource.Recording
+        hasRecording(sound.id) -> SoundSource.Recording
         "${sound.id}.ogg" in bundled -> SoundSource.Bundled
+        sound.voice?.let(::hasRecording) == true -> SoundSource.Borrowed
         else -> SoundSource.Synthesis
     }
 
-    /** Plays the sound and returns when it is over (or after a few seconds at most). */
-    suspend fun play(sound: Sound) {
+    /**
+     * Plays an item and returns when it is over (or after a few seconds at most). A sound
+     * plays its recording, or the recording of the sound it is said like ("au" like "o"),
+     * or text-to-speech; syllables and words, which nobody records, use text-to-speech.
+     */
+    suspend fun play(item: Item) {
         stop()
         withTimeoutOrNull(MAX_PLAY_MS) {
-            when (source(sound)) {
-                SoundSource.Recording -> playMedia { setDataSource(recordingFile(sound).path) }
+            if (item !is Sound) {
+                speak(item.spoken)
+                return@withTimeoutOrNull
+            }
+            when (source(item)) {
+                SoundSource.Recording -> playMedia { setDataSource(recordingFile(item).path) }
                 SoundSource.Bundled -> playMedia {
-                    context.assets.openFd("sounds/${sound.id}.ogg").use { setDataSource(it.fileDescriptor, it.startOffset, it.length) }
+                    context.assets.openFd("sounds/${item.id}.ogg").use { setDataSource(it.fileDescriptor, it.startOffset, it.length) }
                 }
-                SoundSource.Synthesis -> speak(sound.ttsText)
+                SoundSource.Borrowed -> playMedia { setDataSource(File(recordings, "${item.voice}.m4a").path) }
+                SoundSource.Synthesis -> speak(item.ttsText)
             }
         }
     }

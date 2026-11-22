@@ -1,6 +1,12 @@
 package com.cosmith.lulu.core.session
 
 import com.cosmith.lulu.core.content.Curriculum
+import com.cosmith.lulu.core.store.CardProgress
+import com.cosmith.lulu.core.fsrs.Memory
+import com.cosmith.lulu.core.content.Words
+import com.cosmith.lulu.core.content.SyllableShape
+import com.cosmith.lulu.core.content.Syllables
+import com.cosmith.lulu.core.content.Sound
 import com.cosmith.lulu.core.fsrs.CardState
 import com.cosmith.lulu.core.fsrs.Rating
 import com.cosmith.lulu.core.store.CardKey
@@ -44,8 +50,9 @@ class SessionTest {
             val step = planner.next(p, t, timeLeft = Duration.ofSeconds(10L * (maxSteps - steps.size))) ?: break
             steps += step
             p = when (step) {
-                is Step.Meet -> if (step.lowercase) p.meetLowercase(step.sound, t) else p.introduce(step.sound, t)
-                is Step.SeeAndSay -> p.record(step.key, answer(step), t, Judge.Parent, scheduler)
+                is Step.Meet -> (step.item as? Sound)?.takeIf { step.lowercase }?.let { p.meetLowercase(it, t) } ?: p.meet(step.item, t)
+                is Step.SeeAndSay -> (if (p.card(step.key) == null) p.meet(step.item, t) else p)
+                    .record(step.key, answer(step), t, Judge.Parent, scheduler)
                 is Step.Card -> p.record(step.key, answer(step), t, Judge.Tap, scheduler)
             }
             t = t.plusSeconds(10)
@@ -58,7 +65,7 @@ class SessionTest {
         is Step.SeeAndSay -> if (lowercase) "see-lower " else "see "
         is Step.ListenAndChoose -> if (lowercase) "listen-lower " else "listen "
         is Step.MatchCase -> "match "
-    } + sound.id
+    } + item.id
 
     /** Plays one 5-minute session a day for [days] days, from [from]. */
     private fun playDays(days: Int, from: Progress = Progress()): List<Played> {
@@ -87,6 +94,68 @@ class SessionTest {
         // Lower-case cards are asked in the sessions.
         assertTrue(week.flatMap { it.steps }.any { it is Step.MatchCase })
         assertTrue(week.flatMap { it.steps }.any { it is Step.ListenAndChoose && it.lowercase })
+    }
+
+    @Test
+    fun syllablesAndWordsUseOnlySoundsAlreadyMet() {
+        val p = playDays(24).last().progress
+        val syllables = p.itemsOn.keys.mapNotNull { Syllables.find(it) }
+        val words = p.itemsOn.keys.mapNotNull { Words.find(it) }
+        assertTrue(syllables.size >= 8, "${syllables.size} syllables")
+        assertTrue(words.isNotEmpty(), "no words after 24 days")
+        for (item in syllables + words) {
+            val metAt = p.itemsOn.getValue(item.id)
+            for (sound in item.sounds) {
+                val base = Curriculum.prerequisites[sound.id] ?: listOf(sound.id)
+                for (id in base) assertTrue(p.introducedAt(id)!!.isBefore(metAt), "${item.id} before $id")
+            }
+        }
+        // Words only once six consonant-vowel syllables were known: they come well after the first syllable.
+        val firstWord = words.minOf { p.itemsOn.getValue(it.id) }
+        val cvBefore = syllables.count { it.shape == SyllableShape.CV && p.itemsOn.getValue(it.id).isBefore(firstWord) }
+        assertTrue(cvBefore >= SessionPlanner.WORDS_AFTER_CV, "$cvBefore CV syllables before the first word")
+    }
+
+    @Test
+    fun syllableChoicesOfferTheInversePair() {
+        var p = Progress()
+        for (id in listOf("a", "i", "o", "ou", "f", "l", "r")) {
+            p = p.introduce(Curriculum[id], t0)
+            for (kind in listOf(CardKind.ListenAndChoose, CardKind.SeeAndSay)) {
+                val key = CardKey(id, kind)
+                if (p.card(key) == null) p = p.copy(cards = p.cards + (key.id to CardProgress(key, Memory(due = t0))))
+                p = p.record(key, Rating.Easy, t0, Judge.Tap, scheduler)
+            }
+        }
+        val fou = Syllables.find("syl:f-ou")!!
+        p = p.meet(fou, t0).record(CardKey(fou.id, CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
+        p = p.record(CardKey(fou.id, CardKind.ListenAndChoose), Rating.Good, t0.plusSeconds(700), Judge.Tap, scheduler)
+        val planner = SessionPlanner(profile, Random(1), ZoneOffset.UTC)
+        var listen: Step.ListenAndChoose? = null
+        repeat(40) {
+            val step = planner.next(p, t0.plus(Duration.ofDays(3)))
+            if (step is Step.ListenAndChoose && step.item.id == fou.id) listen = step
+        }
+        assertNotNull(listen)
+        assertTrue(listen!!.choices.any { it.id == "syl:ou-f" }, listen!!.choices.map { it.id }.toString())
+    }
+
+    @Test
+    fun listeningChoicesNeverSoundTheSame() {
+        val known = listOf("o", "au", "eau", "ou", "eu", "oi", "a").map { Curriculum[it] }
+        var p = Progress()
+        for (s in known) p = p.introduce(s, t0)
+        val key = CardKey("au", CardKind.ListenAndChoose)
+        var t = t0
+        repeat(5) {
+            p = p.record(key, Rating.Good, t, Judge.Tap, scheduler)
+            t = p.card(key)!!.memory.due
+        }
+        repeat(20) { seed ->
+            val choices = SessionPlanner(profile, Random(seed)).choicesFor(Curriculum["au"], p.card(key), known)
+            val o = choices.filter { it.ipa == "o" }
+            assertEquals(listOf("au"), o.map { it.id }, choices.map { it.id }.toString())
+        }
     }
 
     @Test
@@ -143,7 +212,7 @@ class SessionTest {
         val meets = steps.withIndex().filter { it.value is Step.Meet }
         assertTrue(meets.isNotEmpty())
         for ((i, meet) in meets) {
-            val firstQuestion = steps.withIndex().first { (j, s) -> j > i && s !is Step.Meet && s.sound.id == meet.sound.id }.index
+            val firstQuestion = steps.withIndex().first { (j, s) -> j > i && s !is Step.Meet && s.item.id == meet.item.id }.index
             val cardsBetween = steps.subList(i + 1, firstQuestion).count { it !is Step.Meet }
             assertTrue(cardsBetween >= SessionPlanner.NEW_CARD_GAP, steps.map { it.label() }.toString())
         }
@@ -167,7 +236,7 @@ class SessionTest {
             for (i in 1 until steps.size) {
                 // A sound just met is picked out by ear right after: that pair is on purpose.
                 if (steps[i - 1] is Step.Meet) continue
-                assertTrue(steps[i].sound.id != steps[i - 1].sound.id, "same sound twice in a row: ${steps.map { it.label() }}")
+                assertTrue(steps[i].item.id != steps[i - 1].item.id, "same sound twice in a row: ${steps.map { it.label() }}")
             }
         }
     }
@@ -264,9 +333,10 @@ class SessionTest {
         }
         val played = play(p, t)
         assertEquals(30, played.steps.size)
-        // No sound left to meet in capitals; the lower case of solid sounds comes, two a day.
+        // No sound left to meet in capitals; lower case and syllables come instead.
         val meets = played.steps.filterIsInstance<Step.Meet>()
-        assertTrue(meets.all { it.lowercase } && meets.size <= SessionPlanner.LOWERCASE_PER_DAY, meets.toString())
+        assertTrue(meets.none { it.item is Sound && !it.lowercase }, meets.toString())
+        assertTrue(meets.count { it.lowercase && it.item is Sound } <= SessionPlanner.LOWERCASE_PER_DAY, meets.toString())
     }
 
     @Test
@@ -306,7 +376,7 @@ class SessionTest {
         runner.next(Rating.Again)
         assertEquals(5, runner.total)
         runner.next(Rating.Good); runner.next(Rating.Good)
-        assertEquals("a", runner.current!!.sound.id)
+        assertEquals("a", runner.current!!.item.id)
         runner.next(Rating.Again) // second failure: not requeued again
         assertEquals(5, runner.total)
         runner.next(Rating.Good)
@@ -345,7 +415,11 @@ class SessionTest {
     fun initialOfFirstNameMovesUp() {
         assertEquals("l", Curriculum.initialSoundOf("Lucie")?.id)
         assertEquals("ch", Curriculum.initialSoundOf("Charlotte")?.id)
-        assertNull(Curriculum.initialSoundOf("Chloé"))
+        assertEquals("c", Curriculum.initialSoundOf("Chloé")?.id) // a hard c, from level 5
+        assertNull(Curriculum.initialSoundOf("Céline")) // a soft c has no card of its own
+        assertEquals("z", Curriculum.initialSoundOf("Zoé")?.id)
+        assertEquals("au", Curriculum.initialSoundOf("Aurélie")?.id)
+        assertEquals("a", Curriculum.initialSoundOf("Aïcha")?.id)
         assertEquals("an", Curriculum.initialSoundOf("Antoine")?.id)
         assertEquals("a", Curriculum.initialSoundOf("Anna")?.id)
         assertEquals("i", Curriculum.initialSoundOf("Inès")?.id)

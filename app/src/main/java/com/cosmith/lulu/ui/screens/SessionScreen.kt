@@ -38,7 +38,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -48,7 +52,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cosmith.lulu.AppContainer
+import com.cosmith.lulu.core.content.Item
 import com.cosmith.lulu.core.content.Sound
+import com.cosmith.lulu.core.content.Syllable
 import com.cosmith.lulu.core.session.Step
 import com.cosmith.lulu.core.store.Profile
 import com.cosmith.lulu.ui.components.Confetti
@@ -62,7 +68,9 @@ import com.cosmith.lulu.ui.components.Mood
 import com.cosmith.lulu.ui.components.PebbleShape
 import com.cosmith.lulu.ui.components.RoundButton
 import com.cosmith.lulu.ui.components.bouncyClick
+import com.cosmith.lulu.ui.components.itemText
 import com.cosmith.lulu.ui.components.rememberShake
+import com.cosmith.lulu.ui.theme.Fredoka
 import com.cosmith.lulu.ui.theme.Lulu
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -125,13 +133,16 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, look: M
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                 when {
                     state.finished -> Finished(state.cardsDone > 0, mascotColor, look, state.jumpKey, onExit)
-                    step is Step.Meet -> BigLetter(step.sound, step.lowercase, state, onTap = state::onSpeaker, withCapital = step.lowercase)
-                    step is Step.SeeAndSay -> BigLetter(step.sound, step.lowercase, state, onTap = state::onSpeaker)
-                    step is Step.ListenAndChoose -> Choices(step.sound, step.choices, step.lowercase, state) {
-                        BigSpeaker(state.playing, state.soundKey, onClick = state::onSpeaker)
+                    step is Step.Meet && step.item is Syllable -> Blending(step.item as Syllable, step.lowercase, state)
+                    step is Step.Meet -> BigItem(step.item, step.lowercase, state, onTap = state::onSpeaker, withCapital = step.lowercase)
+                    step is Step.SeeAndSay -> BigItem(step.item, step.lowercase, state, onTap = state::onSpeaker)
+                    step is Step.ListenAndChoose -> Choices(step.item, step.choices, step.lowercase, state) {
+                        val picture = state.picture
+                        if (picture != null) Picture(picture, Modifier.padding(vertical = 8.dp).size(150.dp))
+                        else BigSpeaker(state.playing, state.soundKey, onClick = state::onSpeaker)
                     }
-                    step is Step.MatchCase -> Choices(step.sound, step.choices, lowercase = true, state) {
-                        CapitalToMatch(step.sound, state)
+                    step is Step.MatchCase -> Choices(step.item, step.choices, lowercase = true, state) {
+                        CapitalToMatch(step.item, state)
                     }
                 }
             }
@@ -154,7 +165,11 @@ private fun BottomBar(step: Step?, state: SessionViewModel, mascotColor: Color, 
         Mascot(mascotColor, state.mood, Modifier.size(130.dp), look = look, jumpKey = state.jumpKey)
         Box(Modifier.weight(1f).height(110.dp), contentAlignment = Alignment.BottomCenter) {
             when (step) {
-                is Step.SeeAndSay -> ParentVerdict(enabled = !state.busy, onVerdict = state::onVerdict)
+                is Step.SeeAndSay -> ParentVerdict(
+                    label = if (step.item is Sound) "Son juste ?" else "Bien lu ?",
+                    enabled = !state.busy,
+                    onVerdict = state::onVerdict,
+                )
                 is Step.Meet -> {
                     val pop = remember(step) { Animatable(0f) }
                     LaunchedEffect(pop) {
@@ -183,10 +198,10 @@ private fun BottomBar(step: Step?, state: SessionViewModel, mascotColor: Color, 
  * the on-device recognizer is in. Small and quiet on purpose: the letter is the star.
  */
 @Composable
-private fun ParentVerdict(enabled: Boolean, onVerdict: (Boolean) -> Unit) {
+private fun ParentVerdict(label: String, enabled: Boolean, onVerdict: (Boolean) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            "Son juste ?",
+            label,
             color = Lulu.Navy.copy(alpha = 0.8f),
             fontSize = 15.sp,
         )
@@ -219,12 +234,13 @@ private fun SpeakerButton(playing: Boolean, onClick: () -> Unit) {
 }
 
 /**
- * The grapheme alone on screen: pops in, wiggles when its sound plays, shakes softly on a miss.
- * [withCapital] shows the capital, smaller and paler, next to a lower-case letter met for the first time.
+ * The item alone on screen: pops in, wiggles when its sound plays, shakes softly on a
+ * miss. [withCapital] shows the capital, smaller and paler, next to a lower-case letter
+ * met for the first time. Once a word is read, its picture appears above it.
  */
 @Composable
-private fun BigLetter(sound: Sound, lowercase: Boolean, state: SessionViewModel, onTap: () -> Unit, withCapital: Boolean = false) {
-    val appear = remember(sound.id, state.stepIndex) { Animatable(0.4f) }
+private fun BigItem(item: Item, lowercase: Boolean, state: SessionViewModel, onTap: () -> Unit, withCapital: Boolean = false) {
+    val appear = remember(item.id, state.stepIndex) { Animatable(0.4f) }
     LaunchedEffect(appear) { appear.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 380f)) }
     val wiggle = remember { Animatable(0f) }
     LaunchedEffect(state.soundKey) {
@@ -233,28 +249,84 @@ private fun BigLetter(sound: Sound, lowercase: Boolean, state: SessionViewModel,
         wiggle.animateTo(0f, spring(dampingRatio = 0.3f, stiffness = 250f))
     }
     val shake = rememberShake(state.shakeKey)
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 12.dp)
-            .offset { IntOffset((shake.value * density).roundToInt(), 0) }
-            .graphicsLayer {
-                val s = appear.value * (1f + 0.09f * wiggle.value)
-                scaleX = s
-                scaleY = s
-                rotationZ = -3f * wiggle.value
+    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+        val picture = state.picture
+        if (picture != null) Picture(picture, Modifier.weight(1f).fillMaxWidth())
+        Box(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .offset { IntOffset((shake.value * density).roundToInt(), 0) }
+                .graphicsLayer {
+                    val s = appear.value * (1f + 0.09f * wiggle.value)
+                    scaleX = s
+                    scaleY = s
+                    rotationZ = -3f * wiggle.value
+                }
+                .bouncyClick(pressedScale = 0.92f, onClick = onTap),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (withCapital && item is Sound) {
+                val ink = Lulu.ink(item.family)
+                Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+                    Grapheme(item.capitals, ink.copy(alpha = 0.4f), Modifier.weight(0.8f).fillMaxHeight(0.6f))
+                    Grapheme(item.lowercase, ink, Modifier.weight(1.2f).fillMaxHeight())
+                }
+            } else {
+                Grapheme(itemText(item, lowercase), Modifier.fillMaxSize())
             }
-            .bouncyClick(pressedScale = 0.92f, onClick = onTap),
+        }
+    }
+}
+
+/** A word's picture, popping in once the word has been read. */
+@Composable
+private fun Picture(picture: String, modifier: Modifier = Modifier) {
+    val pop = remember(picture) { Animatable(0f) }
+    LaunchedEffect(pop) { pop.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 320f)) }
+    Box(modifier.graphicsLayer { scaleX = pop.value; scaleY = pop.value }, contentAlignment = Alignment.Center) {
+        Grapheme(picture, Color.Black, Modifier.fillMaxSize(), fill = 0.8f)
+    }
+}
+
+/**
+ * Meeting a syllable: its sounds stand apart and light up one by one as Lulu says
+ * them, then slide together while Lulu says the syllable (« L… A… LA »).
+ */
+@Composable
+private fun Blending(syllable: Syllable, lowercase: Boolean, state: SessionViewModel) {
+    val gap by animateFloatAsState(
+        targetValue = if (state.blended) 0f else 1f,
+        animationSpec = spring(dampingRatio = 0.55f, stiffness = 180f),
+        label = "gap",
+    )
+    val measurer = rememberTextMeasurer()
+    BoxWithConstraints(
+        Modifier.fillMaxSize().padding(horizontal = 12.dp).bouncyClick(pressedScale = 0.95f, onClick = state::onSpeaker),
         contentAlignment = Alignment.Center,
     ) {
-        val ink = Lulu.ink(sound.family)
-        if (withCapital) {
-            Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-                Grapheme(sound.capitals, ink.copy(alpha = 0.4f), Modifier.weight(0.8f).fillMaxHeight(0.6f))
-                Grapheme(sound.lowercase, ink, Modifier.weight(1.2f).fillMaxHeight())
+        val style = TextStyle(fontFamily = Fredoka, fontWeight = FontWeight.SemiBold, fontSize = 100.sp, lineHeight = 100.sp)
+        val whole = remember(syllable, lowercase) { measurer.measure(syllable.written(lowercase), style).size }
+        val density = LocalDensity.current
+        val wPx = with(density) { maxWidth.toPx() }
+        val hPx = with(density) { maxHeight.toPx() }
+        // Sized so that the sounds still fit while apart.
+        val scale = min(wPx * 0.62f / whole.width, hPx * 0.7f / whole.height)
+        val size = 100.sp * scale
+        Row(horizontalArrangement = Arrangement.spacedBy((36 * gap).dp), verticalAlignment = Alignment.CenterVertically) {
+            syllable.sounds.forEachIndexed { i, sound ->
+                val lit = state.blendPart == i
+                val grow by animateFloatAsState(if (lit) 1.18f else 1f, spring(dampingRatio = 0.4f), label = "lit")
+                val faded = !state.blended && state.blendPart != null && !lit
+                Text(
+                    sound.written(lowercase),
+                    color = Lulu.ink(sound.family).copy(alpha = if (faded) 0.35f else 1f),
+                    softWrap = false,
+                    style = style.copy(fontSize = size, lineHeight = size),
+                    modifier = Modifier.graphicsLayer { scaleX = grow; scaleY = grow },
+                )
             }
-        } else {
-            Grapheme(sound.written(lowercase), ink, Modifier.fillMaxSize())
         }
     }
 }
@@ -286,7 +358,7 @@ private fun CapitalToMatch(sound: Sound, state: SessionViewModel) {
 
 /** Pebbles to tap, under a [header]: the speaker, or the capital to match. */
 @Composable
-private fun Choices(target: Sound, choices: List<Sound>, lowercase: Boolean, state: SessionViewModel, header: @Composable () -> Unit) {
+private fun Choices(target: Item, choices: List<Item>, lowercase: Boolean, state: SessionViewModel, header: @Composable () -> Unit) {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         header()
         BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
@@ -336,7 +408,7 @@ private fun BigSpeaker(playing: Boolean, soundKey: Int, onClick: () -> Unit) {
 }
 
 @Composable
-private fun Pebble(sound: Sound, target: Sound, choices: List<Sound>, lowercase: Boolean, state: SessionViewModel, index: Int, side: Dp) {
+private fun Pebble(sound: Item, target: Item, choices: List<Item>, lowercase: Boolean, state: SessionViewModel, index: Int, side: Dp) {
     val wrong = sound.id in state.wrongChoices
     val right = state.rightChoice == sound.id
     val dimmed = wrong || (state.rightChoice != null && !right)
@@ -368,7 +440,7 @@ private fun Pebble(sound: Sound, target: Sound, choices: List<Sound>, lowercase:
             .background(fill),
         contentAlignment = Alignment.Center,
     ) {
-        Grapheme(sound.written(lowercase), Lulu.Ink, Modifier.fillMaxSize().padding(side * 0.16f), fill = 0.95f)
+        Grapheme(itemText(sound, lowercase, plain = Lulu.Ink), Modifier.fillMaxSize().padding(side * 0.16f), fill = 0.95f)
     }
 }
 

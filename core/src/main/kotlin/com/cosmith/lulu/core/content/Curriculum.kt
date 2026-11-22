@@ -5,17 +5,48 @@ import java.util.Locale
 
 /** Families of sounds. Each one gets its own colour in the app. */
 enum class SoundFamily {
-    /** Level 1: a, é, i, o, u, eu, ou. */
+    /** Oral vowels: a, é, i, o, u, eu, ou (level 1), then e, è, oi, au, eau, ai. */
     Vowel,
 
-    /** Level 2: consonants you can hold: f, ch, j, v, s, l, r. */
+    /** Consonants you can hold: f, ch, j, v, s, l, r (level 2), then z. */
     Continuant,
 
-    /** Level 3: on, an, in, un. */
+    /** Nasal vowels: on, an, in, un (level 3), then en, ain. */
     NasalVowel,
 
-    /** Level 4: short consonants and nasal consonants: p, b, t, d, qu, m, n, gn. */
-    StopOrNasal,
+    /** Short consonants and nasal consonants: p, b, t, d, qu, m, n, gn (level 4), then c, g. */
+    StopOrNasal;
+
+    val isVowel: Boolean get() = this == Vowel || this == NasalVowel
+}
+
+/**
+ * Something a child reads: a sound, a syllable or a word. Its id is stored in
+ * progress files: sounds use their own id ("ou"), syllables "syl:…", words "word:…".
+ */
+sealed interface Item {
+    val id: String
+
+    /** What is written, in order: sounds, and silent letters shown in grey. */
+    val parts: List<Part>
+
+    /** What text-to-speech says for the whole item. */
+    val spoken: String
+
+    fun written(lowercase: Boolean): String = parts.joinToString("") { it.written(lowercase) }
+
+    /** The sounds read aloud, without the silent letters. */
+    val sounds: List<Sound> get() = parts.mapNotNull { it.sound }
+}
+
+/** One part of an item: a sound, or letters that are not pronounced (the t of "lit"). */
+data class Part(val sound: Sound?, val silent: String? = null) {
+    init {
+        require((sound == null) != (silent == null)) { "a part is a sound or silent letters" }
+    }
+
+    fun written(lowercase: Boolean): String =
+        sound?.written(lowercase) ?: silent!!.let { if (lowercase) it else it.uppercase(Locale.FRENCH) }
 }
 
 /**
@@ -31,9 +62,13 @@ enum class SoundFamily {
  * decoys once the child knows the sound well.
  * @param lowerLookalikes ids of sounds whose lower-case letters look like this one's
  * (b and d, n and u…), used as decoys for solid lower-case cards.
+ * @param voice the sound whose recording to play when this one has none of its own
+ * ("au" and "eau" sound like "o"): the parent records each sound only once.
+ * @param alone false for the contextual sounds (soft c and g), which only appear in
+ * syllables and words, never on a card of their own.
  */
 data class Sound(
-    val id: String,
+    override val id: String,
     val grapheme: String,
     val ipa: String,
     val family: SoundFamily,
@@ -41,21 +76,28 @@ data class Sound(
     val ttsText: String,
     val lookalikes: List<String> = emptyList(),
     val lowerLookalikes: List<String> = emptyList(),
-) {
+    val voice: String? = null,
+    val alone: Boolean = true,
+) : Item {
+    override val parts: List<Part> get() = listOf(Part(this))
+    override val spoken: String get() = ttsText
+
     /** Sounds are shown in capitals first. */
     val capitals: String get() = grapheme.uppercase(Locale.FRENCH)
 
     /** The lower-case letters, which come once the capitals are solid. */
     val lowercase: String get() = grapheme
 
-    fun written(lowercase: Boolean) = if (lowercase) this.lowercase else capitals
+    override fun written(lowercase: Boolean) = if (lowercase) this.lowercase else capitals
 }
 
 /**
- * Levels 1 to 4 of the progression in the spec, which follows the CSEN note of
+ * The sounds of the progression in the spec. Levels 1 to 4 follow the CSEN note of
  * September 2025: the most regular and most frequent correspondences first, and
- * two-letter sounds like "ou" and "ch" early. Syllables (level 6) and words
- * (level 7) come in a later milestone.
+ * two-letter sounds like "ou" and "ch" early. Level 5 follows the rest of the
+ * Sprenger-Charolles and Dehaene progression (Éduscol, 2017): e, z, hard c and g,
+ * oi, au and eau, è, ai, en, ain; soft c and g come through syllables and words.
+ * Syllables (level 6) and words (level 7) are in [Syllables] and [Words].
  */
 object Curriculum {
     val sounds: List<Sound> = listOf(
@@ -90,13 +132,46 @@ object Curriculum {
         Sound("m", "m", "m", SoundFamily.StopOrNasal, 4, "meu", lookalikes = listOf("n"), lowerLookalikes = listOf("n")),
         Sound("n", "n", "n", SoundFamily.StopOrNasal, 4, "neu", lookalikes = listOf("m", "gn"), lowerLookalikes = listOf("u", "m", "r")),
         Sound("gn", "gn", "ɲ", SoundFamily.StopOrNasal, 4, "gneu", lookalikes = listOf("n"), lowerLookalikes = listOf("qu")),
+        // 5. Suite de la progression (Sprenger-Charolles et Dehaene)
+        Sound("e", "e", "ə", SoundFamily.Vowel, 5, "e", lookalikes = listOf("eu", "e_acute")),
+        Sound("z", "z", "z", SoundFamily.Continuant, 5, "zeu", lookalikes = listOf("s", "j")),
+        Sound("c", "c", "k", SoundFamily.StopOrNasal, 5, "queue", lookalikes = listOf("qu", "g"), voice = "qu"),
+        Sound("g", "g", "g", SoundFamily.StopOrNasal, 5, "gueu", lookalikes = listOf("c", "qu"), lowerLookalikes = listOf("qu")),
+        Sound("oi", "oi", "wa", SoundFamily.Vowel, 5, "oie", lookalikes = listOf("ou", "o")),
+        Sound("au", "au", "o", SoundFamily.Vowel, 5, "au", lookalikes = listOf("eau", "ou", "o"), voice = "o"),
+        Sound("eau", "eau", "o", SoundFamily.Vowel, 5, "eau", lookalikes = listOf("au", "eu"), voice = "o"),
+        // "est" says /ɛ/; a lone "è" would be spelled out like "é".
+        Sound("e_grave", "è", "ɛ", SoundFamily.Vowel, 5, "est", lookalikes = listOf("e_acute", "e", "ai")),
+        Sound("ai", "ai", "ɛ", SoundFamily.Vowel, 5, "est", lookalikes = listOf("e_grave", "oi"), voice = "e_grave"),
+        Sound("en", "en", "ɑ̃", SoundFamily.NasalVowel, 5, "en", lookalikes = listOf("an", "on", "un"), lowerLookalikes = listOf("an", "on"), voice = "an"),
+        Sound("ain", "ain", "ɛ̃", SoundFamily.NasalVowel, 5, "hein", lookalikes = listOf("in", "an", "ai"), voice = "in"),
     )
 
-    private val byId = sounds.associateBy { it.id }
+    /**
+     * c and g before e, é, è, i: soft, like s and j. They have no card of their own;
+     * the child meets them in syllables (CE, GI) and words (citron, girafe) once hard
+     * c and g, and s and j, are known.
+     */
+    val contextual: List<Sound> = listOf(
+        Sound("c_soft", "c", "s", SoundFamily.Continuant, 5, "ceux", voice = "s", alone = false),
+        Sound("g_soft", "g", "ʒ", SoundFamily.Continuant, 5, "jeu", voice = "j", alone = false),
+    )
+
+    /** What a contextual sound needs the child to know first. */
+    val prerequisites: Map<String, List<String>> = mapOf("c_soft" to listOf("c", "s"), "g_soft" to listOf("g", "j"))
+
+    private val byId = (sounds + contextual).associateBy { it.id }
 
     operator fun get(id: String): Sound = byId.getValue(id)
 
     fun find(id: String): Sound? = byId[id]
+
+    /** Any item by its id: a sound, a syllable or a word. */
+    fun item(id: String): Item? = when {
+        id.startsWith(Syllables.PREFIX) -> Syllables.find(id)
+        id.startsWith(Words.PREFIX) -> Words.find(id)
+        else -> find(id)
+    }
 
     /**
      * The order in which a child meets the sounds. The sound of the first letter of
@@ -123,6 +198,8 @@ object Curriculum {
         val plain = stripAccents(name)
         val twoLetters = plain.take(2)
         val third = plain.getOrNull(2)
+        // "Aïcha": the diaeresis splits the letters.
+        if (name.getOrNull(1) in setOf('ï', 'ë', 'ü')) return sounds.firstOrNull { it.grapheme == plain.take(1) && it.id != "e" }
         val digraph = sounds.firstOrNull { it.grapheme.length == 2 && it.grapheme == twoLetters }
         val digraphHolds = when (digraph?.family) {
             null -> false
@@ -132,7 +209,10 @@ object Curriculum {
         if (digraph != null && digraphHolds) return digraph
         // é keeps its accent; other accented first letters (È, Ê) have no card of their own.
         if (name.first() == 'é') return get("e_acute")
-        return sounds.firstOrNull { it.grapheme.length == 1 && it.grapheme == name.take(1) }
+        // "Céline", "Gilles": a soft c or g, which has no card of its own.
+        if (plain.length > 1 && plain.first() in "cg" && plain[1] in "eiy") return null
+        // A plain "e" at the start of a name is rarely the sound of « le » (Emma, Eva).
+        return sounds.firstOrNull { it.grapheme.length == 1 && it.grapheme == name.take(1) && it.id != "e" }
     }
 
     private fun stripAccents(s: String): String =
