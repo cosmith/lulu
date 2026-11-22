@@ -9,7 +9,9 @@ import com.cosmith.lulu.core.store.CardKind
 import com.cosmith.lulu.core.store.CardProgress
 import com.cosmith.lulu.core.store.Profile
 import com.cosmith.lulu.core.store.Progress
+import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
 import kotlin.random.Random
 
 /** One screen of a session. */
@@ -33,35 +35,46 @@ sealed interface Step {
  * clock. The parent only sets how long a session lasts; everything else is decided here:
  *
  * 1. cards that are due, the most overdue first;
- * 2. a new sound, met then picked out by ear, while the child is learning fewer than
- *    [MAX_SOUNDS_IN_LEARNING] sounds: about one per 2½ minutes of session at most;
- * 3. practice on sounds still being learned, even a little before they are due.
+ * 2. a new sound, met then picked out by ear, but only after a warm-up of
+ *    [WARM_UP] cards, at most [NEW_SOUNDS_PER_DAY] per day whatever the number of
+ *    sessions (two on the very first day, so "écouter et choisir" has a real decoy),
+ *    while fewer than [MAX_SOUNDS_IN_LEARNING] sounds are being learned, and not
+ *    when the child just missed several cards;
+ * 3. practice on sounds still being learned, even a little before they are due;
+ * 4. early review of cards due within [EARLY_REVIEW_DAYS] days, once each.
  *
  * The same sound never comes twice in a row when something else can come, and a card
  * is shown at most [MAX_SHOWS_PER_CARD] times per session. A missed card is due again
- * a minute later (its first learning step), so it comes back by itself.
+ * a few minutes later (FSRS learning steps), so it comes back by itself.
  * [next] returns null when there is nothing useful left: the session ends early.
  */
-class SessionPlanner(private val profile: Profile, private val random: Random = Random.Default) {
+class SessionPlanner(
+    private val profile: Profile,
+    private val random: Random = Random.Default,
+    private val zone: ZoneId = ZoneId.systemDefault(),
+) {
     private val order = Curriculum.orderFor(profile.firstName)
     private val shown = mutableMapOf<String, Int>()
+    private var cardsShown = 0
     private var lastSound: String? = null
-    private var newSounds = 0
     private var justMet: Sound? = null
-    private val maxNewSounds = maxOf(1, (profile.settings.sessionMinutes + 1) / 3)
+    private var startedAt: Instant? = null
 
     fun next(progress: Progress, now: Instant): Step? {
+        if (startedAt == null) startedAt = now
         val step = choose(progress, now) ?: return null
         lastSound = step.sound.id
         when (step) {
-            is Step.Meet -> {
-                newSounds++
-                justMet = step.sound
-            }
-            is Step.SeeAndSay -> shown.merge(step.key.id, 1, Int::plus)
-            is Step.ListenAndChoose -> shown.merge(step.key.id, 1, Int::plus)
+            is Step.Meet -> justMet = step.sound
+            is Step.SeeAndSay -> count(step.key)
+            is Step.ListenAndChoose -> count(step.key)
         }
         return step
+    }
+
+    private fun count(key: CardKey) {
+        shown.merge(key.id, 1, Int::plus)
+        cardsShown++
     }
 
     private fun choose(progress: Progress, now: Instant): Step? {
@@ -75,17 +88,34 @@ class SessionPlanner(private val profile: Profile, private val random: Random = 
         val due = open.filter { !it.memory.due.isAfter(now) }.sortedBy { it.memory.due }
         val practice = open.filter { it.memory.state != CardState.Review && it.memory.due.isAfter(now) }
             .sortedBy { it.memory.due }
-        val newSound = order.firstOrNull { it.id !in progress.introduced }?.takeIf {
-            newSounds < maxNewSounds && progress.soundsInLearning().size < MAX_SOUNDS_IN_LEARNING
-        }
+        val earlyLimit = now.plus(Duration.ofDays(EARLY_REVIEW_DAYS))
+        val early = open.filter {
+            it.memory.state == CardState.Review && it.memory.due.isAfter(now) &&
+                it.memory.due.isBefore(earlyLimit) && it.key.id !in shown
+        }.sortedBy { it.memory.due }
+        val newSound = newSoundAllowed(progress, now)
 
-        val card = due.firstOrNull { it.key.soundId != lastSound }
-            ?: return when {
-                newSound != null -> Step.Meet(newSound)
-                else -> (practice.firstOrNull { it.key.soundId != lastSound } ?: due.firstOrNull() ?: practice.firstOrNull())
-                    ?.let { stepFor(it, progress) }
-            }
-        return stepFor(card, progress)
+        fun List<CardProgress>.other() = firstOrNull { it.key.soundId != lastSound }
+
+        due.other()?.let { return stepFor(it, progress) }
+        if (newSound != null && cardsShown >= WARM_UP) return Step.Meet(newSound)
+        (practice.other() ?: early.other())?.let { return stepFor(it, progress) }
+        // Nothing else to warm up with (the very first session): meet the sound now.
+        if (newSound != null) return Step.Meet(newSound)
+        return (due.firstOrNull() ?: practice.firstOrNull() ?: early.firstOrNull())?.let { stepFor(it, progress) }
+    }
+
+    private fun newSoundAllowed(progress: Progress, now: Instant): Sound? {
+        val next = order.firstOrNull { it.id !in progress.introduced } ?: return null
+        val startOfDay = now.atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()
+        val today = progress.introduced.count { id -> progress.introducedAt(id)?.isBefore(startOfDay) == false }
+        val everBefore = progress.introduced.size - today
+        val perDay = if (everBefore == 0) FIRST_DAY_NEW_SOUNDS else NEW_SOUNDS_PER_DAY
+        if (today >= perDay) return null
+        if (progress.soundsInLearning().size >= MAX_SOUNDS_IN_LEARNING) return null
+        val recent = progress.reviews.filter { r -> startedAt?.let { !r.at.isBefore(it) } == true }.takeLast(4)
+        if (recent.count { it.rating == Rating.Again } >= 2) return null
+        return next
     }
 
     private fun stepFor(card: CardProgress, progress: Progress): Step {
@@ -122,6 +152,10 @@ class SessionPlanner(private val profile: Profile, private val random: Random = 
         const val SOLID_DAYS = 7.0
         const val MAX_SOUNDS_IN_LEARNING = 3
         const val MAX_SHOWS_PER_CARD = 3
+        const val NEW_SOUNDS_PER_DAY = 1
+        const val FIRST_DAY_NEW_SOUNDS = 2
+        const val WARM_UP = 3
+        const val EARLY_REVIEW_DAYS = 2L
     }
 }
 

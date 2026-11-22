@@ -11,6 +11,7 @@ import com.cosmith.lulu.core.store.Progress
 import com.cosmith.lulu.core.store.luluScheduler
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneOffset
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,7 +36,7 @@ class SessionTest {
         maxSteps: Int = 200,
         answer: (Step) -> Rating = { Rating.Good },
     ): Played {
-        val planner = SessionPlanner(profile, Random(seed))
+        val planner = SessionPlanner(profile, Random(seed), ZoneOffset.UTC)
         var p = progress
         var t = start
         val steps = mutableListOf<Step>()
@@ -83,7 +84,9 @@ class SessionTest {
         }
         for (seed in 0 until 30) {
             val rnd = Random(seed)
-            val played = play(p, t0.plus(Duration.ofHours(3)), seed = seed, maxSteps = 12) {
+            // The first screens, while several sounds still have cards to show. At the very
+            // end of a session the last cards left may all be of one sound, and then it repeats.
+            val played = play(p, t0.plus(Duration.ofHours(3)), seed = seed, maxSteps = 9) {
                 if (rnd.nextInt(4) == 0) Rating.Again else Rating.Good
             }
             val steps = played.steps
@@ -132,6 +135,37 @@ class SessionTest {
     }
 
     @Test
+    fun oneNewSoundPerDayAfterTheFirst() {
+        val day1 = play(Progress(), t0)
+        assertEquals(2, day1.progress.introduced.size)
+        // Two sessions on day 2, morning and evening: one new sound in all.
+        val morning = play(day1.progress, Instant.parse("2026-11-22T08:00:00Z"))
+        val evening = play(morning.progress, Instant.parse("2026-11-22T18:00:00Z"))
+        assertEquals(3, evening.progress.introduced.size)
+        assertEquals(1, morning.steps.count { it is Step.Meet } + evening.steps.count { it is Step.Meet })
+        // And another one the day after.
+        val day3 = play(evening.progress, Instant.parse("2026-11-23T08:00:00Z"))
+        assertEquals(4, day3.progress.introduced.size)
+    }
+
+    @Test
+    fun newSoundComesAfterAWarmUp() {
+        val day1 = play(Progress(), t0)
+        val day2 = play(day1.progress, Instant.parse("2026-11-22T08:00:00Z"))
+        val meet = day2.steps.indexOfFirst { it is Step.Meet }
+        assertTrue(meet >= SessionPlanner.WARM_UP, day2.steps.map { it.label() }.toString())
+        // Before the new sound, yesterday's cards were reviewed (early: they are due tomorrow).
+        assertTrue(day2.steps.take(meet).all { it !is Step.Meet })
+    }
+
+    @Test
+    fun noNewSoundWhenTheChildJustMissedSeveralCards() {
+        val day1 = play(Progress(), t0)
+        val day2 = play(day1.progress, Instant.parse("2026-11-22T08:00:00Z")) { Rating.Again }
+        assertTrue(day2.steps.none { it is Step.Meet }, day2.steps.map { it.label() }.toString())
+    }
+
+    @Test
     fun missedCardComesBackAfterAMinute() {
         var p = Progress()
         for (id in listOf("a", "e_acute", "i")) {
@@ -145,7 +179,7 @@ class SessionTest {
         p = p.record(CardKey("e_acute", CardKind.SeeAndSay), Rating.Good, t0, Judge.Parent, scheduler)
         p = p.record(CardKey("i", CardKind.SeeAndSay), Rating.Good, t0, Judge.Parent, scheduler)
         // A minute later the missed card is the only one due, so it comes first.
-        assertEquals(key, (SessionPlanner(profile).next(p, t0.plusSeconds(61)) as Step.ListenAndChoose).key)
+        assertEquals(key, (SessionPlanner(profile, zone = ZoneOffset.UTC).next(p, t0.plusSeconds(61)) as Step.ListenAndChoose).key)
     }
 
     @Test
@@ -159,7 +193,7 @@ class SessionTest {
         }
         for (card in p.cards.values.toList()) p = p.record(card.key, Rating.Good, t, Judge.Tap, scheduler)
         assertTrue(p.cards.values.all { it.memory.state == CardState.Review })
-        assertNull(SessionPlanner(profile).next(p, t.plusSeconds(60)))
+        assertNull(SessionPlanner(profile, zone = ZoneOffset.UTC).next(p, t.plusSeconds(60)))
     }
 
     @Test

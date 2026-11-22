@@ -92,12 +92,17 @@ data class ReviewEntry(
 data class Progress(
     /** Sound ids, in the order the child met them. */
     val introduced: List<String> = emptyList(),
+    /** When each sound was met. Progress saved before this field existed falls back on the first review. */
+    val introducedOn: Map<String, Instant> = emptyMap(),
     val cards: Map<String, CardProgress> = emptyMap(),
     val reviews: List<ReviewEntry> = emptyList(),
 ) {
     fun card(key: CardKey): CardProgress? = cards[key.id]
 
     fun introducedSounds(): List<Sound> = introduced.mapNotNull { Curriculum.find(it) }
+
+    fun introducedAt(soundId: String): Instant? =
+        introducedOn[soundId] ?: reviews.firstOrNull { it.key.soundId == soundId }?.at
 
     /** A sound is being learned until both of its cards exist and have reached the Review state. */
     fun soundsInLearning(): List<String> = introduced.filter { id ->
@@ -110,6 +115,7 @@ data class Progress(
         val key = CardKey(sound.id, CardKind.ListenAndChoose)
         return copy(
             introduced = introduced + sound.id,
+            introducedOn = introducedOn + (sound.id to at),
             cards = cards + (key.id to CardProgress(key, Memory(due = at))),
         )
     }
