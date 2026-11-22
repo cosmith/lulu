@@ -26,15 +26,16 @@ Done:
   right pebble lights up while the sound plays again, then moves on). A card
   rated À revoir is due again a few minutes later, so it comes back later in
   the session.
-- **Sessions last a set time** (5 minutes by default, the parent's only setting).
-  Lulu picks each next card live: due cards first; a new sound only after a
-  warm-up of 3 cards, at most one a day (two on the very first day), while fewer
-  than 3 are being learned and not right after several misses; then practice on
-  sounds being learned and early review of cards due within 2 days. A missed
-  card is due again a few minutes later and comes back by itself. When time is
-  up the card on screen is finished, then the session ends; time stops while
-  the app is in the background. In the first days a session may end earlier,
-  for lack of cards.
+- **Sessions last a set time** (5 minutes by default, the parent's only setting)
+  and are filled to the end. Lulu picks each next card live: due cards first;
+  a new sound after a warm-up of 3 cards, at least 4 cards after the previous
+  one, at most 3 a day, while fewer than 3 are being learned, not right after
+  several misses and not in the last minute; then practice on sounds being
+  learned, early review, and finally whatever was seen longest ago. A card never
+  seen waits for 3 other cards, so a sound just met is not asked right away. A
+  missed card is due again a few minutes later and comes back by itself. When
+  time is up the card on screen is finished, then the session ends; time stops
+  while the app is in the background.
 - **Choices** grow from 2 to 3 to 4 as a card settles; decoys are sounds already
   met, with look-alikes (on/an, p/b, m/n…) once the card is solid.
 - **Each child has their own mascot**: colour chosen by the parent, personality

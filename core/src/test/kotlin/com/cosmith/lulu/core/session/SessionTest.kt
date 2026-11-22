@@ -26,14 +26,14 @@ class SessionTest {
     private val profile = Profile("p1", "", avatar = 0, createdAt = t0)
     private val scheduler = luluScheduler()
 
-    /** Plays a session like the app does: meets introduce, answers are recorded, 10 s per screen. */
+    /** Plays a session like the app does: meets introduce, answers are recorded, 10 s per screen, 5 minutes. */
     private class Played(val steps: List<Step>, val progress: Progress, val end: Instant)
 
     private fun play(
         progress: Progress,
         start: Instant,
         seed: Int = 1,
-        maxSteps: Int = 200,
+        maxSteps: Int = 30,
         answer: (Step) -> Rating = { Rating.Good },
     ): Played {
         val planner = SessionPlanner(profile, Random(seed), ZoneOffset.UTC)
@@ -41,7 +41,7 @@ class SessionTest {
         var t = start
         val steps = mutableListOf<Step>()
         while (steps.size < maxSteps) {
-            val step = planner.next(p, t) ?: break
+            val step = planner.next(p, t, timeLeft = Duration.ofSeconds(10L * (maxSteps - steps.size))) ?: break
             steps += step
             p = when (step) {
                 is Step.Meet -> p.introduce(step.sound, t)
@@ -56,23 +56,45 @@ class SessionTest {
     private fun Step.label() = (if (this is Step.Meet) "meet " else if (this is Step.SeeAndSay) "see " else "listen ") + sound.id
 
     @Test
-    fun firstSessionMeetsTwoSoundsAndInterleavesThem() {
+    fun firstSessionMeetsThreeSounds() {
         val played = play(Progress(), t0)
-        assertEquals(
-            listOf("meet a", "listen a", "meet e_acute", "listen e_acute", "see a", "see e_acute"),
-            played.steps.take(6).map { it.label() },
-        )
-        val firstListen = assertIs<Step.ListenAndChoose>(played.steps[1])
+        assertEquals(listOf("meet a", "meet e_acute"), played.steps.take(2).map { it.label() })
+        assertEquals(listOf("a", "e_acute", "i"), played.progress.introduced)
+        val firstListen = played.steps.filterIsInstance<Step.ListenAndChoose>().first()
         assertEquals(2, firstListen.choices.size)
-        assertEquals(2, played.steps.count { it is Step.Meet })
     }
 
     @Test
-    fun sessionEndsWhenNothingUsefulIsLeft() {
-        val played = play(Progress(), t0)
-        assertTrue(played.steps.size < 200, "session never ends")
-        val perCard = played.steps.filterNot { it is Step.Meet }.groupingBy { it.label() }.eachCount()
-        assertTrue(perCard.values.all { it <= SessionPlanner.MAX_SHOWS_PER_CARD }, perCard.toString())
+    fun sessionLastsItsFullTime() {
+        // Day 1 and day 5: there is always something to show for 5 minutes.
+        var played = play(Progress(), t0)
+        assertEquals(30, played.steps.size)
+        for (day in 1..4) played = play(played.progress, t0.plus(Duration.ofDays(day.toLong())))
+        assertEquals(30, played.steps.size)
+    }
+
+    @Test
+    fun noNewSoundInTheLastMinute() {
+        val day1 = play(Progress(), t0)
+        for (day in 2..6) {
+            val played = play(day1.progress, t0.plus(Duration.ofDays(day.toLong())), seed = day)
+            // 10 s per screen: the last 6 screens are the last minute.
+            assertTrue(played.steps.takeLast(6).none { it is Step.Meet }, played.steps.map { it.label() }.toString())
+        }
+    }
+
+    @Test
+    fun aSoundJustMetIsNotAskedRightAway() {
+        val day1 = play(Progress(), t0)
+        val day2 = play(day1.progress, Instant.parse("2026-11-22T08:00:00Z"))
+        val steps = day2.steps
+        val meets = steps.withIndex().filter { it.value is Step.Meet }
+        assertTrue(meets.isNotEmpty())
+        for ((i, meet) in meets) {
+            val firstQuestion = steps.withIndex().first { (j, s) -> j > i && s !is Step.Meet && s.sound.id == meet.sound.id }.index
+            val cardsBetween = steps.subList(i + 1, firstQuestion).count { it !is Step.Meet }
+            assertTrue(cardsBetween >= SessionPlanner.NEW_CARD_GAP, steps.map { it.label() }.toString())
+        }
     }
 
     @Test
@@ -135,17 +157,14 @@ class SessionTest {
     }
 
     @Test
-    fun oneNewSoundPerDayAfterTheFirst() {
+    fun atMostThreeNewSoundsPerDay() {
         val day1 = play(Progress(), t0)
-        assertEquals(2, day1.progress.introduced.size)
-        // Two sessions on day 2, morning and evening: one new sound in all.
+        assertEquals(3, day1.progress.introduced.size)
+        // Two sessions on day 2, morning and evening: three new sounds at most in all.
         val morning = play(day1.progress, Instant.parse("2026-11-22T08:00:00Z"))
         val evening = play(morning.progress, Instant.parse("2026-11-22T18:00:00Z"))
-        assertEquals(3, evening.progress.introduced.size)
-        assertEquals(1, morning.steps.count { it is Step.Meet } + evening.steps.count { it is Step.Meet })
-        // And another one the day after.
-        val day3 = play(evening.progress, Instant.parse("2026-11-23T08:00:00Z"))
-        assertEquals(4, day3.progress.introduced.size)
+        val day2New = evening.progress.introduced.size - 3
+        assertTrue(day2New in 1..SessionPlanner.NEW_SOUNDS_PER_DAY, evening.progress.introduced.toString())
     }
 
     @Test
@@ -183,17 +202,17 @@ class SessionTest {
     }
 
     @Test
-    fun nothingToDoWhenEverythingIsSolidAndNotDue() {
+    fun everythingKnownStillGivesAFullSession() {
         var p = Progress()
         var t = t0
-        for (s in Curriculum.sounds) p = p.introduce(s, t)
+        for (sound in Curriculum.sounds) p = p.introduce(sound, t)
         repeat(8) {
             for (card in p.cards.values.toList()) p = p.record(card.key, Rating.Good, t, Judge.Tap, scheduler)
             t = t.plus(Duration.ofDays(1))
         }
-        for (card in p.cards.values.toList()) p = p.record(card.key, Rating.Good, t, Judge.Tap, scheduler)
-        assertTrue(p.cards.values.all { it.memory.state == CardState.Review })
-        assertNull(SessionPlanner(profile, zone = ZoneOffset.UTC).next(p, t.plusSeconds(60)))
+        val played = play(p, t)
+        assertEquals(30, played.steps.size)
+        assertTrue(played.steps.none { it is Step.Meet })
     }
 
     @Test

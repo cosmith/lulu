@@ -32,21 +32,25 @@ sealed interface Step {
 
 /**
  * Chooses the cards of one session, one at a time, from the child's progress and the
- * clock. The parent only sets how long a session lasts; everything else is decided here:
+ * clock, until the session's time is up. The parent only sets how long a session
+ * lasts; everything else is decided here:
  *
  * 1. cards that are due, the most overdue first;
- * 2. a new sound, met then picked out by ear, but only after a warm-up of
- *    [WARM_UP] cards, at most [NEW_SOUNDS_PER_DAY] per day whatever the number of
- *    sessions (two on the very first day, so "écouter et choisir" has a real decoy),
- *    while fewer than [MAX_SOUNDS_IN_LEARNING] sounds are being learned, and not
- *    when the child just missed several cards;
- * 3. practice on sounds still being learned, even a little before they are due;
- * 4. early review of cards due within [EARLY_REVIEW_DAYS] days, once each.
+ * 2. a new sound, shown and said by Lulu: after a warm-up of [WARM_UP] cards, at
+ *    least [NEW_SOUND_SPACING] cards after the previous one, at most
+ *    [NEW_SOUNDS_PER_DAY] a day whatever the number of sessions, while fewer than
+ *    [MAX_SOUNDS_IN_LEARNING] sounds are being learned, not when the child just
+ *    missed several cards, and not in the last [NO_NEW_SOUND_AT_THE_END] of the session;
+ * 3. practice on sounds still being learned, the one seen longest ago first;
+ * 4. early review of cards that are not due yet, once each;
+ * 5. when all of that is used up, whatever was seen longest ago, so the session
+ *    lasts its full time.
  *
- * The same sound never comes twice in a row when something else can come, and a card
- * is shown at most [MAX_SHOWS_PER_CARD] times per session. A missed card is due again
- * a few minutes later (FSRS learning steps), so it comes back by itself.
- * [next] returns null when there is nothing useful left: the session ends early.
+ * A card never seen waits for [NEW_CARD_GAP] other cards: a sound just met is not
+ * asked about right away, when it would only be an echo. The same sound never
+ * comes twice in a row when something else can come. A missed card is due again a
+ * few minutes later (FSRS learning steps), so it comes back by itself.
+ * [next] returns null only when there is no card at all and no new sound to meet.
  */
 class SessionPlanner(
     private val profile: Profile,
@@ -55,17 +59,26 @@ class SessionPlanner(
 ) {
     private val order = Curriculum.orderFor(profile.firstName)
     private val shown = mutableMapOf<String, Int>()
+    private val lastShown = mutableMapOf<String, Int>()
+    private val heldUntil = mutableMapOf<String, Int>()
     private var cardsShown = 0
+    private var lastMeetAt = Int.MIN_VALUE / 2
     private var lastSound: String? = null
-    private var justMet: Sound? = null
     private var startedAt: Instant? = null
+    private var timeLeft: Duration? = null
 
-    fun next(progress: Progress, now: Instant): Step? {
+    /** @param timeLeft how much of the session remains, when known. */
+    fun next(progress: Progress, now: Instant, timeLeft: Duration? = null): Step? {
         if (startedAt == null) startedAt = now
+        this.timeLeft = timeLeft
+        // Cards never seen wait a little before their first question.
+        for (card in progress.cards.values) {
+            if (card.reviews == 0 && card.key.id !in heldUntil) heldUntil[card.key.id] = cardsShown + NEW_CARD_GAP
+        }
         val step = choose(progress, now) ?: return null
         lastSound = step.sound.id
         when (step) {
-            is Step.Meet -> justMet = step.sound
+            is Step.Meet -> lastMeetAt = cardsShown
             is Step.SeeAndSay -> count(step.key)
             is Step.ListenAndChoose -> count(step.key)
         }
@@ -74,44 +87,44 @@ class SessionPlanner(
 
     private fun count(key: CardKey) {
         shown.merge(key.id, 1, Int::plus)
+        lastShown[key.id] = cardsShown
         cardsShown++
     }
 
     private fun choose(progress: Progress, now: Instant): Step? {
-        // A sound just met is picked out by ear right away.
-        justMet?.let { sound ->
-            justMet = null
-            val card = progress.card(CardKey(sound.id, CardKind.ListenAndChoose))
-            return Step.ListenAndChoose(sound, choicesFor(sound, card, progress.introducedSounds() + sound))
-        }
-        val open = progress.cards.values.filter { (shown[it.key.id] ?: 0) < MAX_SHOWS_PER_CARD }
+        val all = progress.cards.values
+        val held = all.filter { (heldUntil[it.key.id] ?: 0) > cardsShown }.map { it.key.id }.toSet()
+        val open = all.filter { it.key.id !in held && (shown[it.key.id] ?: 0) < MAX_SHOWS_PER_CARD }
+        val seenLongestAgo = compareBy<CardProgress>({ lastShown[it.key.id] ?: -1 }, { it.memory.due })
         val due = open.filter { !it.memory.due.isAfter(now) }.sortedBy { it.memory.due }
         val practice = open.filter { it.memory.state != CardState.Review && it.memory.due.isAfter(now) }
+            .sortedWith(seenLongestAgo)
+        val early = open.filter { it.memory.state == CardState.Review && it.memory.due.isAfter(now) && it.key.id !in shown }
             .sortedBy { it.memory.due }
-        val earlyLimit = now.plus(Duration.ofDays(EARLY_REVIEW_DAYS))
-        val early = open.filter {
-            it.memory.state == CardState.Review && it.memory.due.isAfter(now) &&
-                it.memory.due.isBefore(earlyLimit) && it.key.id !in shown
-        }.sortedBy { it.memory.due }
         val newSound = newSoundAllowed(progress, now)
 
         fun List<CardProgress>.other() = firstOrNull { it.key.soundId != lastSound }
 
         due.other()?.let { return stepFor(it, progress) }
-        if (newSound != null && cardsShown >= WARM_UP) return Step.Meet(newSound)
+        if (newSound != null && cardsShown >= WARM_UP && cardsShown - lastMeetAt >= NEW_SOUND_SPACING) {
+            return Step.Meet(newSound)
+        }
         (practice.other() ?: early.other())?.let { return stepFor(it, progress) }
-        // Nothing else to warm up with (the very first session): meet the sound now.
-        if (newSound != null) return Step.Meet(newSound)
-        return (due.firstOrNull() ?: practice.firstOrNull() ?: early.firstOrNull())?.let { stepFor(it, progress) }
+        // Nothing else to show yet (the very first screens): meet a sound, but not more
+        // than two in a row before asking about them.
+        if (newSound != null && held.size < 2) return Step.Meet(newSound)
+        // Cards still waiting after a first meeting come last.
+        val any = all.sortedWith(compareBy<CardProgress> { it.key.id in held }.then(seenLongestAgo))
+        return (any.other() ?: any.firstOrNull())?.let { stepFor(it, progress) }
     }
 
     private fun newSoundAllowed(progress: Progress, now: Instant): Sound? {
         val next = order.firstOrNull { it.id !in progress.introduced } ?: return null
+        // Too late in the session to meet a sound and then be asked about it.
+        if (timeLeft?.let { it < NO_NEW_SOUND_AT_THE_END } == true) return null
         val startOfDay = now.atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()
         val today = progress.introduced.count { id -> progress.introducedAt(id)?.isBefore(startOfDay) == false }
-        val everBefore = progress.introduced.size - today
-        val perDay = if (everBefore == 0) FIRST_DAY_NEW_SOUNDS else NEW_SOUNDS_PER_DAY
-        if (today >= perDay) return null
+        if (today >= NEW_SOUNDS_PER_DAY) return null
         if (progress.soundsInLearning().size >= MAX_SOUNDS_IN_LEARNING) return null
         val recent = progress.reviews.filter { r -> startedAt?.let { !r.at.isBefore(it) } == true }.takeLast(4)
         if (recent.count { it.rating == Rating.Again } >= 2) return null
@@ -152,10 +165,11 @@ class SessionPlanner(
         const val SOLID_DAYS = 7.0
         const val MAX_SOUNDS_IN_LEARNING = 3
         const val MAX_SHOWS_PER_CARD = 3
-        const val NEW_SOUNDS_PER_DAY = 1
-        const val FIRST_DAY_NEW_SOUNDS = 2
+        const val NEW_SOUNDS_PER_DAY = 3
+        const val NEW_SOUND_SPACING = 4
+        const val NEW_CARD_GAP = 3
         const val WARM_UP = 3
-        const val EARLY_REVIEW_DAYS = 2L
+        val NO_NEW_SOUND_AT_THE_END: Duration = Duration.ofMinutes(1)
     }
 }
 

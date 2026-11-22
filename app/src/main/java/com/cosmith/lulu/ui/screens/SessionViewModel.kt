@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Duration
 
 /**
  * Runs one session. Every rating is saved right away, so leaving in the middle
@@ -113,7 +114,7 @@ class SessionViewModel(
     private fun elapsedMs() = activeMs + (resumedAt?.let { SystemClock.elapsedRealtime() - it } ?: 0L)
 
     private fun pick(rating: Rating?): Step? {
-        val runner = fixed ?: return planner.next(progress, c.now())
+        val runner = fixed ?: return planner.next(progress, c.now(), Duration.ofMillis(durationMs - elapsedMs()))
         if (fixedStarted) runner.next(rating) else fixedStarted = true
         return runner.current
     }
