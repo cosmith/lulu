@@ -97,6 +97,31 @@ class ScreenshotTest {
     }
 
     @Test
+    fun meetLowercase() {
+        val ch = Curriculum["ch"]
+        val vm = session(listOf(Step.Meet(ch, lowercase = true), Step.MatchCase(ch, listOf(ch, Curriculum["a"]))))
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sage, MascotLook.from(5), onExit = {}) } }
+        rule.mainClock.advanceTimeBy(1500)
+        shot("13-minuscule-nouvelle")
+    }
+
+    @Test
+    fun matchCase() {
+        val b = Curriculum["b"]
+        val vm = session(listOf(Step.MatchCase(b, listOf(Curriculum["d"], b, Curriculum["p"], Curriculum["n"]))))
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Terracotta, MascotLook.from(11), onExit = {}) } }
+        shot("14-majuscule-minuscule")
+    }
+
+    @Test
+    fun listenAndChooseLowercase() {
+        val ou = Curriculum["ou"]
+        val vm = session(listOf(Step.ListenAndChoose(ou, listOf(Curriculum["on"], ou, Curriculum["an"]), lowercase = true)))
+        rule.setContent { LuluTheme { SessionContent(vm, Lulu.Sky, MascotLook.from(3), onExit = {}) } }
+        shot("15-ecouter-minuscules")
+    }
+
+    @Test
     fun finished() {
         val vm = session(emptyList())
         rule.setContent { LuluTheme { SessionContent(vm, Lulu.Terracotta, MascotLook.from(7), onExit = {}) } }

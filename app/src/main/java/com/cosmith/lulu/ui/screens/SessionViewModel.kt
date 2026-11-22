@@ -131,7 +131,7 @@ class SessionViewModel(
             null -> finish()
             is Step.Meet -> {
                 mood = Mood.Happy
-                progress = progress.introduce(s.sound, c.now())
+                progress = if (s.lowercase) progress.meetLowercase(s.sound, c.now()) else progress.introduce(s.sound, c.now())
                 save()
                 launchStep {
                     delay(450)
@@ -140,7 +140,7 @@ class SessionViewModel(
                     playSound(s.sound)
                 }
             }
-            is Step.SeeAndSay -> mood = Mood.Listening
+            is Step.SeeAndSay, is Step.MatchCase -> mood = Mood.Listening
             is Step.ListenAndChoose -> {
                 mood = Mood.Listening
                 launchStep {
@@ -188,7 +188,8 @@ class SessionViewModel(
      * lights up while Lulu plays the sound again, then the next card comes.
      */
     fun onChoice(choice: Sound) {
-        val s = step as? Step.ListenAndChoose ?: return
+        val s = step as? Step.Card ?: return
+        if (s is Step.SeeAndSay) return
         if (busy) return
         busy = true
         val correct = choice.id == s.sound.id
@@ -206,7 +207,7 @@ class SessionViewModel(
                 playSound(s.sound)
                 delay(700)
             }
-            finishCard(s.key, Ratings.listenAndChoose(correct), Judge.Tap)
+            finishCard(s.key, Ratings.choice(correct), Judge.Tap)
         }
     }
 

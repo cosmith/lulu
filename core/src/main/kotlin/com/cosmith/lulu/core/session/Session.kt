@@ -18,15 +18,28 @@ import kotlin.random.Random
 sealed interface Step {
     val sound: Sound
 
-    /** First meeting with a sound: Lulu shows it big and says it. Not graded. */
-    data class Meet(override val sound: Sound) : Step
+    /**
+     * First meeting with a sound: Lulu shows it big and says it. Not graded. With
+     * [lowercase], the meeting is with the lower-case letter of a sound already known.
+     */
+    data class Meet(override val sound: Sound, val lowercase: Boolean = false) : Step
 
-    data class SeeAndSay(override val sound: Sound) : Step {
-        val key get() = CardKey(sound.id, CardKind.SeeAndSay)
+    /** A step that is an FSRS card and gets a rating. */
+    sealed interface Card : Step {
+        val key: CardKey
     }
 
-    data class ListenAndChoose(override val sound: Sound, val choices: List<Sound>) : Step {
-        val key get() = CardKey(sound.id, CardKind.ListenAndChoose)
+    data class SeeAndSay(override val sound: Sound, val lowercase: Boolean = false) : Card {
+        override val key get() = CardKey(sound.id, if (lowercase) CardKind.SeeAndSayLower else CardKind.SeeAndSay)
+    }
+
+    data class ListenAndChoose(override val sound: Sound, val choices: List<Sound>, val lowercase: Boolean = false) : Card {
+        override val key get() = CardKey(sound.id, if (lowercase) CardKind.ListenAndChooseLower else CardKind.ListenAndChoose)
+    }
+
+    /** The capital is shown; the child taps its lower-case letter among [choices]. */
+    data class MatchCase(override val sound: Sound, val choices: List<Sound>) : Card {
+        override val key get() = CardKey(sound.id, CardKind.MatchCase)
     }
 }
 
@@ -40,7 +53,9 @@ sealed interface Step {
  *    least [NEW_SOUND_SPACING] cards after the previous one, at most
  *    [NEW_SOUNDS_PER_DAY] a day whatever the number of sessions, while fewer than
  *    [MAX_SOUNDS_IN_LEARNING] sounds are being learned, not when the child just
- *    missed several cards, and not in the last [NO_NEW_SOUND_AT_THE_END] of the session;
+ *    missed several cards, and not in the last [NO_NEW_SOUND_AT_THE_END] of the session.
+ *    When no new sound can come, the lower case of a sound whose capitals are solid
+ *    can, under the same conditions, at most [LOWERCASE_PER_DAY] a day;
  * 3. practice on sounds still being learned, the one seen longest ago first;
  * 4. early review of cards that are not due yet, once each;
  * 5. when all of that is used up, whatever was seen longest ago, so the session
@@ -79,8 +94,7 @@ class SessionPlanner(
         lastSound = step.sound.id
         when (step) {
             is Step.Meet -> lastMeetAt = cardsShown
-            is Step.SeeAndSay -> count(step.key)
-            is Step.ListenAndChoose -> count(step.key)
+            is Step.Card -> count(step.key)
         }
         return step
     }
@@ -101,18 +115,19 @@ class SessionPlanner(
             .sortedWith(seenLongestAgo)
         val early = open.filter { it.memory.state == CardState.Review && it.memory.due.isAfter(now) && it.key.id !in shown }
             .sortedBy { it.memory.due }
-        val newSound = newSoundAllowed(progress, now)
+        val newSound = newSoundAllowed(progress, now)?.let { Step.Meet(it) }
+            ?: lowercaseAllowed(progress, now)?.let { Step.Meet(it, lowercase = true) }
 
         fun List<CardProgress>.other() = firstOrNull { it.key.soundId != lastSound }
 
         due.other()?.let { return stepFor(it, progress) }
         if (newSound != null && cardsShown >= WARM_UP && cardsShown - lastMeetAt >= NEW_SOUND_SPACING) {
-            return Step.Meet(newSound)
+            return newSound
         }
         (practice.other() ?: early.other())?.let { return stepFor(it, progress) }
         // Nothing else to show yet (the very first screens): meet a sound, but not more
         // than two in a row before asking about them.
-        if (newSound != null && held.size < 2) return Step.Meet(newSound)
+        if (newSound != null && held.size < 2) return newSound
         // Cards still waiting after a first meeting come last.
         val any = all.sortedWith(compareBy<CardProgress> { it.key.id in held }.then(seenLongestAgo))
         return (any.other() ?: any.firstOrNull())?.let { stepFor(it, progress) }
@@ -120,30 +135,59 @@ class SessionPlanner(
 
     private fun newSoundAllowed(progress: Progress, now: Instant): Sound? {
         val next = order.firstOrNull { it.id !in progress.introduced } ?: return null
-        // Too late in the session to meet a sound and then be asked about it.
-        if (timeLeft?.let { it < NO_NEW_SOUND_AT_THE_END } == true) return null
-        val startOfDay = now.atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()
-        val today = progress.introduced.count { id -> progress.introducedAt(id)?.isBefore(startOfDay) == false }
+        if (!readyForSomethingNew(progress)) return null
+        val today = progress.introduced.count { id -> progress.introducedAt(id)?.isBefore(startOfDay(now)) == false }
         if (today >= NEW_SOUNDS_PER_DAY) return null
         if (progress.soundsInLearning().size >= MAX_SOUNDS_IN_LEARNING) return null
-        val recent = progress.reviews.filter { r -> startedAt?.let { !r.at.isBefore(it) } == true }.takeLast(4)
-        if (recent.count { it.rating == Rating.Again } >= 2) return null
         return next
     }
+
+    private fun lowercaseAllowed(progress: Progress, now: Instant): Sound? {
+        val next = progress.introducedSounds().firstOrNull {
+            it.id !in progress.lowercaseOn && progress.capitalsSolid(it.id, SOLID_DAYS)
+        } ?: return null
+        if (!readyForSomethingNew(progress)) return null
+        val today = progress.lowercaseOn.values.count { !it.isBefore(startOfDay(now)) }
+        if (today >= LOWERCASE_PER_DAY) return null
+        return next
+    }
+
+    /** Not too late in the session to be asked about it, and the child is not struggling. */
+    private fun readyForSomethingNew(progress: Progress): Boolean {
+        if (timeLeft?.let { it < NO_NEW_SOUND_AT_THE_END } == true) return false
+        val recent = progress.reviews.filter { r -> startedAt?.let { !r.at.isBefore(it) } == true }.takeLast(4)
+        return recent.count { it.rating == Rating.Again } < 2
+    }
+
+    private fun startOfDay(now: Instant): Instant = now.atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()
 
     private fun stepFor(card: CardProgress, progress: Progress): Step {
         val sound = Curriculum[card.key.soundId]
         return when (card.key.kind) {
             CardKind.SeeAndSay -> Step.SeeAndSay(sound)
+            CardKind.SeeAndSayLower -> Step.SeeAndSay(sound, lowercase = true)
             CardKind.ListenAndChoose -> Step.ListenAndChoose(sound, choicesFor(sound, card, progress.introducedSounds()))
+            CardKind.ListenAndChooseLower -> Step.ListenAndChoose(sound, lowerChoices(sound, card, progress), lowercase = true)
+            CardKind.MatchCase -> Step.MatchCase(sound, lowerChoices(sound, card, progress))
         }
     }
 
+    /** Lower-case decoys: letters whose lower case the child has met come first. */
+    private fun lowerChoices(sound: Sound, card: CardProgress, progress: Progress) =
+        choicesFor(sound, card, progress.introducedSounds(), lowercase = true, preferred = progress.lowercaseOn.keys)
+
     /**
      * Two choices while a card is new, three while it is settling, four once it is solid.
-     * Decoys are sounds the child has met; a solid card gets look-alikes first.
+     * Decoys are sounds the child has met, [preferred] ones first; a solid card gets
+     * look-alikes first (by sound for capitals, by shape too for lower case).
      */
-    fun choicesFor(target: Sound, card: CardProgress?, known: List<Sound>): List<Sound> {
+    fun choicesFor(
+        target: Sound,
+        card: CardProgress?,
+        known: List<Sound>,
+        lowercase: Boolean = false,
+        preferred: Set<String> = emptySet(),
+    ): List<Sound> {
         val stability = card?.memory?.stability ?: 0.0
         val solid = card != null && card.memory.state == CardState.Review && stability >= SOLID_DAYS
         val count = when {
@@ -152,11 +196,13 @@ class SessionPlanner(
             else -> 4
         }
         val others = known.filter { it.id != target.id }.distinctBy { it.id }
-        val lookalikes = if (solid) others.filter { it.id in target.lookalikes }.shuffled(random) else emptyList()
-        val rest = (others - lookalikes.toSet()).shuffled(random)
+        val alike = if (lowercase) target.lowerLookalikes + target.lookalikes else target.lookalikes
+        val lookalikes = if (solid) others.filter { it.id in alike }.shuffled(random) else emptyList()
+        val (first, then) = (others - lookalikes.toSet()).partition { it.id in preferred }
+        val rest = first.shuffled(random) + then.shuffled(random)
         // At the very start there may not be enough known sounds: borrow the next ones to come.
         val upcoming = order.filter { s -> s.id != target.id && others.none { it.id == s.id } }
-        val decoys = (lookalikes + rest + upcoming).take(count - 1)
+        val decoys = (lookalikes + rest + upcoming).distinctBy { it.id }.take(count - 1)
         return (decoys + target).shuffled(random)
     }
 
@@ -168,6 +214,7 @@ class SessionPlanner(
         const val NEW_SOUNDS_PER_DAY = 3
         const val NEW_SOUND_SPACING = 4
         const val NEW_CARD_GAP = 3
+        const val LOWERCASE_PER_DAY = 2
         const val WARM_UP = 3
         val NO_NEW_SOUND_AT_THE_END: Duration = Duration.ofMinutes(1)
     }
@@ -186,8 +233,8 @@ object Ratings {
         else -> Rating.Good
     }
 
-    /** "Écouter et choisir": right → Bien; wrong → À revoir. */
-    fun listenAndChoose(correct: Boolean): Rating = if (correct) Rating.Good else Rating.Again
+    /** A tap among choices ("écouter et choisir", capital to lower case): right → Bien; wrong → À revoir. */
+    fun choice(correct: Boolean): Rating = if (correct) Rating.Good else Rating.Again
 }
 
 /**
@@ -207,14 +254,13 @@ class SessionRunner(planned: List<Step>) {
 
     fun next(rating: Rating? = null) {
         val step = current ?: return
-        if (rating == Rating.Again && step !is Step.Meet) {
-            val id = when (step) {
-                is Step.SeeAndSay -> step.key.id
-                is Step.ListenAndChoose -> step.key.id
-                is Step.Meet -> error("unreachable")
-            }
-            if (requeued.add(id)) {
-                val again = if (step is Step.ListenAndChoose) step.copy(choices = step.choices.shuffled()) else step
+        if (rating == Rating.Again && step is Step.Card) {
+            if (requeued.add(step.key.id)) {
+                val again = when (step) {
+                    is Step.ListenAndChoose -> step.copy(choices = step.choices.shuffled())
+                    is Step.MatchCase -> step.copy(choices = step.choices.shuffled())
+                    is Step.SeeAndSay -> step
+                }
                 steps.add(minOf(index + 1 + REQUEUE_GAP, steps.size), again)
             }
         }

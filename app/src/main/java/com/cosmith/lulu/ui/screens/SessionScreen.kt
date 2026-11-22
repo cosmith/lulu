@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -109,7 +110,7 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, look: M
             .onSizeChanged { center = Offset(it.width / 2f, it.height * 0.42f) },
     ) {
         val step = state.step
-        if (step !is Step.ListenAndChoose) {
+        if (step !is Step.ListenAndChoose && step !is Step.MatchCase) {
             Hill(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(110.dp))
         }
 
@@ -124,9 +125,14 @@ internal fun SessionContent(state: SessionViewModel, mascotColor: Color, look: M
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                 when {
                     state.finished -> Finished(state.cardsDone > 0, mascotColor, look, state.jumpKey, onExit)
-                    step is Step.Meet -> BigLetter(step.sound, state, onTap = state::onSpeaker)
-                    step is Step.SeeAndSay -> BigLetter(step.sound, state, onTap = state::onSpeaker)
-                    step is Step.ListenAndChoose -> Choices(step, state)
+                    step is Step.Meet -> BigLetter(step.sound, step.lowercase, state, onTap = state::onSpeaker, withCapital = step.lowercase)
+                    step is Step.SeeAndSay -> BigLetter(step.sound, step.lowercase, state, onTap = state::onSpeaker)
+                    step is Step.ListenAndChoose -> Choices(step.sound, step.choices, step.lowercase, state) {
+                        BigSpeaker(state.playing, state.soundKey, onClick = state::onSpeaker)
+                    }
+                    step is Step.MatchCase -> Choices(step.sound, step.choices, lowercase = true, state) {
+                        CapitalToMatch(step.sound, state)
+                    }
                 }
             }
 
@@ -212,9 +218,12 @@ private fun SpeakerButton(playing: Boolean, onClick: () -> Unit) {
     }
 }
 
-/** The grapheme alone on screen: pops in, wiggles when its sound plays, shakes softly on a miss. */
+/**
+ * The grapheme alone on screen: pops in, wiggles when its sound plays, shakes softly on a miss.
+ * [withCapital] shows the capital, smaller and paler, next to a lower-case letter met for the first time.
+ */
 @Composable
-private fun BigLetter(sound: Sound, state: SessionViewModel, onTap: () -> Unit) {
+private fun BigLetter(sound: Sound, lowercase: Boolean, state: SessionViewModel, onTap: () -> Unit, withCapital: Boolean = false) {
     val appear = remember(sound.id, state.stepIndex) { Animatable(0.4f) }
     LaunchedEffect(appear) { appear.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 380f)) }
     val wiggle = remember { Animatable(0f) }
@@ -238,27 +247,61 @@ private fun BigLetter(sound: Sound, state: SessionViewModel, onTap: () -> Unit) 
             .bouncyClick(pressedScale = 0.92f, onClick = onTap),
         contentAlignment = Alignment.Center,
     ) {
+        val ink = Lulu.ink(sound.family)
+        if (withCapital) {
+            Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+                Grapheme(sound.capitals, ink.copy(alpha = 0.4f), Modifier.weight(0.8f).fillMaxHeight(0.6f))
+                Grapheme(sound.lowercase, ink, Modifier.weight(1.2f).fillMaxHeight())
+            }
+        } else {
+            Grapheme(sound.written(lowercase), ink, Modifier.fillMaxSize())
+        }
+    }
+}
+
+/** The capital to match with its lower-case letter. Tapping it plays the sound. */
+@Composable
+private fun CapitalToMatch(sound: Sound, state: SessionViewModel) {
+    val wiggle = remember { Animatable(0f) }
+    LaunchedEffect(state.soundKey) {
+        if (state.soundKey == 0) return@LaunchedEffect
+        wiggle.animateTo(1f, tween(120))
+        wiggle.animateTo(0f, spring(dampingRatio = 0.3f, stiffness = 250f))
+    }
+    Box(
+        Modifier
+            .padding(top = 4.dp, bottom = 8.dp)
+            .size(width = 220.dp, height = 160.dp)
+            .graphicsLayer {
+                val s = 1f + 0.1f * wiggle.value
+                scaleX = s
+                scaleY = s
+            }
+            .bouncyClick(onClick = state::onSpeaker),
+        contentAlignment = Alignment.Center,
+    ) {
         Grapheme(sound.capitals, Lulu.ink(sound.family), Modifier.fillMaxSize())
     }
 }
 
+/** Pebbles to tap, under a [header]: the speaker, or the capital to match. */
 @Composable
-private fun Choices(step: Step.ListenAndChoose, state: SessionViewModel) {
+private fun Choices(target: Sound, choices: List<Sound>, lowercase: Boolean, state: SessionViewModel, header: @Composable () -> Unit) {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        BigSpeaker(state.playing, state.soundKey, onClick = state::onSpeaker)
+        header()
         BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
-            val n = step.choices.size
+            val n = choices.size
             val rows = if (n <= 2) 1 else 2
             val side = min(maxWidth.value * 0.47f, maxHeight.value / rows * 0.92f).dp
-            val firstRow = step.choices.take(2)
-            val secondRow = step.choices.drop(2)
+            val firstRow = choices.take(2)
+            val secondRow = choices.drop(2)
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy((-side.value * 0.06f).dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(side * 0.02f)) {
-                    firstRow.forEachIndexed { i, s -> Pebble(s, step, state, i, side) }
+                    firstRow.forEachIndexed { i, s -> Pebble(s, target, choices, lowercase, state, i, side) }
                 }
                 if (secondRow.isNotEmpty()) {
                     Row(horizontalArrangement = Arrangement.spacedBy(side * 0.02f)) {
-                        secondRow.forEachIndexed { i, s -> Pebble(s, step, state, i + 2, side) }
+                        secondRow.forEachIndexed { i, s -> Pebble(s, target, choices, lowercase, state, i + 2, side) }
                     }
                 }
             }
@@ -293,7 +336,7 @@ private fun BigSpeaker(playing: Boolean, soundKey: Int, onClick: () -> Unit) {
 }
 
 @Composable
-private fun Pebble(sound: Sound, step: Step.ListenAndChoose, state: SessionViewModel, index: Int, side: Dp) {
+private fun Pebble(sound: Sound, target: Sound, choices: List<Sound>, lowercase: Boolean, state: SessionViewModel, index: Int, side: Dp) {
     val wrong = sound.id in state.wrongChoices
     val right = state.rightChoice == sound.id
     val dimmed = wrong || (state.rightChoice != null && !right)
@@ -304,12 +347,12 @@ private fun Pebble(sound: Sound, step: Step.ListenAndChoose, state: SessionViewM
         label = "pebbleGrow",
     )
     val shake = rememberShake(if (state.shakingChoice == sound.id) state.shakeKey else 0)
-    val appear = remember(step) { Animatable(0f) }
+    val appear = remember(target, choices, state.stepIndex) { Animatable(0f) }
     LaunchedEffect(appear) {
         kotlinx.coroutines.delay(80L * index)
         appear.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = 300f))
     }
-    val fill = Lulu.pebbles[(index + step.sound.id.length) % Lulu.pebbles.size]
+    val fill = Lulu.pebbles[(index + target.id.length) % Lulu.pebbles.size]
     Box(
         Modifier
             .size(side)
@@ -325,7 +368,7 @@ private fun Pebble(sound: Sound, step: Step.ListenAndChoose, state: SessionViewM
             .background(fill),
         contentAlignment = Alignment.Center,
     ) {
-        Grapheme(sound.capitals, Lulu.Ink, Modifier.fillMaxSize().padding(side * 0.16f), fill = 0.95f)
+        Grapheme(sound.written(lowercase), Lulu.Ink, Modifier.fillMaxSize().padding(side * 0.16f), fill = 0.95f)
     }
 }
 

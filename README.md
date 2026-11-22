@@ -36,6 +36,12 @@ Done:
   missed card is due again a few minutes later and comes back by itself. When
   time is up the card on screen is finished, then the session ends; time stops
   while the app is in the background.
+- **Lower case comes next.** Once both capital cards of a sound are solid, Lulu
+  shows its lower case next to the capital, then asks to match the capital with
+  its lower-case letter and to pick the lower-case letter out by ear; lower-case
+  « voir et dire » opens after the first success by ear. At most two sounds a day
+  move to lower case, and solid lower-case cards get look-alike letters as
+  decoys (b, d, p; n, u; m, n…).
 - **Choices** grow from 2 to 3 to 4 as a card settles; decoys are sounds already
   met, with look-alikes (on/an, p/b, m/n…) once the card is solid.
 - **Each child has their own mascot**: colour chosen by the parent, personality
@@ -59,7 +65,7 @@ Not yet:
 - **Reference voice.** Sounds play the parent's recording when there is one,
   else French text-to-speech, which is fine for vowels but only approximate for
   consonants. Record them in the parent area until real recordings exist.
-- Lower-case letters, syllables (level 6), words (level 7), level 5 sounds.
+- Syllables (level 6), words (level 7), level 5 sounds.
 
 ## Layout
 

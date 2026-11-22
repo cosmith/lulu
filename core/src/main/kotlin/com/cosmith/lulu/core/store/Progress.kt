@@ -13,13 +13,30 @@ import kotlinx.serialization.UseSerializers
 import java.time.Instant
 import kotlin.random.Random
 
-/** The two ways Lulu asks about a sound. Each one is its own FSRS card, like the two sides of an Anki note. */
-enum class CardKind {
+/**
+ * The ways Lulu asks about a sound. Each one is its own FSRS card, like the sides of
+ * an Anki note. Capitals come first; the lower-case cards open once the capitals are solid.
+ */
+enum class CardKind(val lowercase: Boolean) {
     /** "Voir et dire": a grapheme is shown, the child says its sound. */
-    SeeAndSay,
+    SeeAndSay(false),
 
     /** "Écouter et choisir": Lulu plays a sound, the child taps the matching grapheme. */
-    ListenAndChoose,
+    ListenAndChoose(false),
+
+    /** The capital is shown, the child taps its lower-case letter. */
+    MatchCase(true),
+
+    /** "Écouter et choisir" with lower-case letters. */
+    ListenAndChooseLower(true),
+
+    /** "Voir et dire" with the lower-case letter. */
+    SeeAndSayLower(true);
+
+    companion object {
+        val capitals = entries.filter { !it.lowercase }
+        val lowercase = entries.filter { it.lowercase }
+    }
 }
 
 @Serializable
@@ -94,6 +111,8 @@ data class Progress(
     val introduced: List<String> = emptyList(),
     /** When each sound was met. Progress saved before this field existed falls back on the first review. */
     val introducedOn: Map<String, Instant> = emptyMap(),
+    /** When the lower case of each sound was met. */
+    val lowercaseOn: Map<String, Instant> = emptyMap(),
     val cards: Map<String, CardProgress> = emptyMap(),
     val reviews: List<ReviewEntry> = emptyList(),
 ) {
@@ -104,9 +123,31 @@ data class Progress(
     fun introducedAt(soundId: String): Instant? =
         introducedOn[soundId] ?: reviews.firstOrNull { it.key.soundId == soundId }?.at
 
-    /** A sound is being learned until both of its cards exist and have reached the Review state. */
+    /** A sound is being learned until both of its capital cards exist and have reached the Review state. */
     fun soundsInLearning(): List<String> = introduced.filter { id ->
-        CardKind.entries.any { kind -> card(CardKey(id, kind))?.memory?.state != CardState.Review }
+        CardKind.capitals.any { kind -> card(CardKey(id, kind))?.memory?.state != CardState.Review }
+    }
+
+    /** Both capital cards are in Review and will hold for at least [days]: time for the lower case. */
+    fun capitalsSolid(soundId: String, days: Double): Boolean = CardKind.capitals.all { kind ->
+        val m = card(CardKey(soundId, kind))?.memory
+        m != null && m.state == CardState.Review && (m.stability ?: 0.0) >= days
+    }
+
+    /** Sounds whose lower case the child has met, in that order. */
+    fun lowercaseSounds(): List<Sound> = lowercaseOn.entries.sortedBy { it.value }.mapNotNull { Curriculum.find(it.key) }
+
+    /**
+     * Meets the lower case of a known sound: it starts with matching the capital to its
+     * lower-case letter, and picking the lower-case letter out by ear.
+     */
+    fun meetLowercase(sound: Sound, at: Instant): Progress {
+        if (sound.id in lowercaseOn) return this
+        val new = listOf(CardKind.MatchCase, CardKind.ListenAndChooseLower).map { CardKey(sound.id, it) }
+        return copy(
+            lowercaseOn = lowercaseOn + (sound.id to at),
+            cards = cards + new.associate { it.id to CardProgress(it, Memory(due = at)) },
+        )
     }
 
     /** Meets a new sound: it starts with its "écouter et choisir" card, the easier one. */
@@ -131,10 +172,14 @@ data class Progress(
             cards = cards + (key.id to updated),
             reviews = reviews + ReviewEntry(key, at, rating, judge),
         )
-        // "Voir et dire" opens once the child has picked the sound out by ear.
-        val seeAndSay = CardKey(key.soundId, CardKind.SeeAndSay)
-        if (key.kind == CardKind.ListenAndChoose && rating != Rating.Again && next.card(seeAndSay) == null) {
-            next = next.copy(cards = next.cards + (seeAndSay.id to CardProgress(seeAndSay, Memory(due = at))))
+        // "Voir et dire" opens once the child has picked the sound out by ear, in capitals and in lower case.
+        val opens = when (key.kind) {
+            CardKind.ListenAndChoose -> CardKey(key.soundId, CardKind.SeeAndSay)
+            CardKind.ListenAndChooseLower -> CardKey(key.soundId, CardKind.SeeAndSayLower)
+            else -> null
+        }
+        if (opens != null && rating != Rating.Again && next.card(opens) == null) {
+            next = next.copy(cards = next.cards + (opens.id to CardProgress(opens, Memory(due = at))))
         }
         return next
     }

@@ -201,6 +201,12 @@ private fun LazyListScope.progressSection(profile: Profile, progress: Progress, 
             Column(Modifier.weight(1f)) {
                 CardLine("Écouter", progress.card(CardKey(sound.id, CardKind.ListenAndChoose)), now)
                 CardLine("Dire", progress.card(CardKey(sound.id, CardKind.SeeAndSay)), now)
+                // Lower case: how far along its least advanced card is.
+                val lower = CardKind.lowercase.mapNotNull { progress.card(CardKey(sound.id, it)) }
+                if (lower.isNotEmpty()) {
+                    val weakest = lower.minBy { status(it).ordinal }
+                    CardLine("Minuscules « ${sound.lowercase} »", weakest, now)
+                }
             }
         }
     }
@@ -222,11 +228,11 @@ private fun LazyListScope.answersSection(progress: Progress, now: Instant, onCor
             Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color.White.copy(alpha = 0.6f)).padding(horizontal = 12.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            GraphemeChip(sound)
+            GraphemeChip(sound, lowercase = r.key.kind.lowercase && r.key.kind != CardKind.MatchCase)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    (if (r.key.kind == CardKind.SeeAndSay) "Dire" else "Écouter") + " · " + ratingLabel(r.rating) +
+                    kindLabel(r.key.kind) + " · " + ratingLabel(r.rating) +
                         if (r.corrected) " (corrigé)" else "",
                     color = if (r.rating == Rating.Again) Lulu.Brick else Lulu.Ink,
                     fontSize = 15.sp,
@@ -346,13 +352,21 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-private fun GraphemeChip(sound: Sound) {
+private fun GraphemeChip(sound: Sound, lowercase: Boolean = false) {
     Box(
         Modifier.size(width = 56.dp, height = 44.dp).clip(RoundedCornerShape(14.dp)).background(Lulu.Sand),
         contentAlignment = Alignment.Center,
     ) {
-        Text(sound.capitals, color = Lulu.ink(sound.family), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+        Text(sound.written(lowercase), color = Lulu.ink(sound.family), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
     }
+}
+
+private fun kindLabel(kind: CardKind) = when (kind) {
+    CardKind.SeeAndSay -> "Dire"
+    CardKind.ListenAndChoose -> "Écouter"
+    CardKind.MatchCase -> "Majuscule → minuscule"
+    CardKind.ListenAndChooseLower -> "Écouter (minuscules)"
+    CardKind.SeeAndSayLower -> "Dire (minuscules)"
 }
 
 @Composable

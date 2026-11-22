@@ -44,16 +44,68 @@ class SessionTest {
             val step = planner.next(p, t, timeLeft = Duration.ofSeconds(10L * (maxSteps - steps.size))) ?: break
             steps += step
             p = when (step) {
-                is Step.Meet -> p.introduce(step.sound, t)
+                is Step.Meet -> if (step.lowercase) p.meetLowercase(step.sound, t) else p.introduce(step.sound, t)
                 is Step.SeeAndSay -> p.record(step.key, answer(step), t, Judge.Parent, scheduler)
-                is Step.ListenAndChoose -> p.record(step.key, answer(step), t, Judge.Tap, scheduler)
+                is Step.Card -> p.record(step.key, answer(step), t, Judge.Tap, scheduler)
             }
             t = t.plusSeconds(10)
         }
         return Played(steps, p, t)
     }
 
-    private fun Step.label() = (if (this is Step.Meet) "meet " else if (this is Step.SeeAndSay) "see " else "listen ") + sound.id
+    private fun Step.label() = when (this) {
+        is Step.Meet -> if (lowercase) "meet-lower " else "meet "
+        is Step.SeeAndSay -> if (lowercase) "see-lower " else "see "
+        is Step.ListenAndChoose -> if (lowercase) "listen-lower " else "listen "
+        is Step.MatchCase -> "match "
+    } + sound.id
+
+    /** Plays one 5-minute session a day for [days] days, from [from]. */
+    private fun playDays(days: Int, from: Progress = Progress()): List<Played> {
+        var p = from
+        return (0 until days).map { day ->
+            play(p, t0.plus(Duration.ofDays(day.toLong())), seed = day).also { p = it.progress }
+        }
+    }
+
+    @Test
+    fun lowerCaseComesOnceTheCapitalsAreSolid() {
+        val week = playDays(12)
+        val firstLower = week.indexOfFirst { day -> day.steps.any { it is Step.Meet && it.lowercase } }
+        assertTrue(firstLower >= 3, "lower case on day ${firstLower + 1}")
+        val p = week.last().progress
+        assertTrue(p.lowercaseOn.isNotEmpty())
+        for (id in p.lowercaseOn.keys) {
+            assertNotNull(p.card(CardKey(id, CardKind.MatchCase)))
+            assertNotNull(p.card(CardKey(id, CardKind.ListenAndChooseLower)))
+        }
+        // Lower-case "voir et dire" opens after the first success by ear, like the capitals.
+        assertTrue(p.lowercaseOn.keys.any { p.card(CardKey(it, CardKind.SeeAndSayLower)) != null })
+        // Every sound met in lower case had solid capitals then; at most two a day.
+        val perDay = p.lowercaseOn.values.groupingBy { it.atZone(ZoneOffset.UTC).toLocalDate() }.eachCount()
+        assertTrue(perDay.values.all { it <= SessionPlanner.LOWERCASE_PER_DAY }, perDay.toString())
+        // Lower-case cards are asked in the sessions.
+        assertTrue(week.flatMap { it.steps }.any { it is Step.MatchCase })
+        assertTrue(week.flatMap { it.steps }.any { it is Step.ListenAndChoose && it.lowercase })
+    }
+
+    @Test
+    fun solidLowerCaseCardsGetLookalikeLetters() {
+        var p = Progress()
+        for (id in listOf("a", "i", "u", "p", "b", "d", "t", "n")) p = p.introduce(Curriculum[id], t0)
+        val key = CardKey("b", CardKind.MatchCase)
+        p = p.meetLowercase(Curriculum["b"], t0)
+        var t = t0
+        repeat(5) {
+            p = p.record(key, Rating.Good, t, Judge.Tap, scheduler)
+            t = p.card(key)!!.memory.due
+        }
+        val choices = SessionPlanner(profile, Random(2)).choicesFor(
+            Curriculum["b"], p.card(key), p.introducedSounds(), lowercase = true,
+        )
+        assertEquals(4, choices.size)
+        assertTrue(choices.map { it.id }.containsAll(listOf("b", "d", "p")), choices.map { it.id }.toString())
+    }
 
     @Test
     fun firstSessionMeetsThreeSounds() {
@@ -212,7 +264,9 @@ class SessionTest {
         }
         val played = play(p, t)
         assertEquals(30, played.steps.size)
-        assertTrue(played.steps.none { it is Step.Meet })
+        // No sound left to meet in capitals; the lower case of solid sounds comes, two a day.
+        val meets = played.steps.filterIsInstance<Step.Meet>()
+        assertTrue(meets.all { it.lowercase } && meets.size <= SessionPlanner.LOWERCASE_PER_DAY, meets.toString())
     }
 
     @Test
@@ -240,8 +294,8 @@ class SessionTest {
         assertEquals(Rating.Hard, Ratings.seeAndSay(correct = true, heardSoundFirst = true))
         assertEquals(Rating.Again, Ratings.seeAndSay(correct = false, heardSoundFirst = false))
         assertEquals(Rating.Again, Ratings.seeAndSay(correct = false, heardSoundFirst = true))
-        assertEquals(Rating.Good, Ratings.listenAndChoose(true))
-        assertEquals(Rating.Again, Ratings.listenAndChoose(false))
+        assertEquals(Rating.Good, Ratings.choice(true))
+        assertEquals(Rating.Again, Ratings.choice(false))
     }
 
     @Test
