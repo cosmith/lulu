@@ -233,5 +233,7 @@ class ScreenshotTest {
         shot("10-espace-parent")
         rule.onAllNodes(hasScrollAction()).onFirst().performScrollToNode(hasText("Durée"))
         shot("11-espace-parent-seance")
+        rule.onAllNodes(hasScrollAction()).onFirst().performScrollToNode(hasText("Partager"))
+        shot("21-espace-parent-donnees")
     }
 }

@@ -80,4 +80,31 @@ class ProfileStoreTest {
         val step = SessionPlanner(Profile("p-1", "", 0, Instant.ofEpochMilli(t))).next(progress, Instant.ofEpochMilli(t + 86_400_000))
         assertNotNull(step)
     }
+
+    @Test
+    fun exportHoldsEveryProfileAndAllTheirAnswers() {
+        val dir = Files.createTempDirectory("lulu-export").toFile()
+        val t0 = Instant.parse("2026-11-21T17:00:00Z")
+        val store = ProfileStore(dir)
+        val lucie = Profile("p-1", "Lucie", avatar = 2, createdAt = t0, mascotSeed = 42)
+        val tom = Profile("p-2", "Tom", avatar = 1, createdAt = t0)
+        store.saveProfile(lucie)
+        store.saveProfile(tom)
+        val key = CardKey("a", CardKind.ListenAndChoose)
+        val progress = Progress()
+            .introduce(Curriculum["a"], t0)
+            .record(key, Rating.Good, t0.plusSeconds(10), Judge.Tap, luluScheduler())
+            .record(key, Rating.Again, t0.plusSeconds(700), Judge.Tap, luluScheduler())
+        store.saveProgress("p-1", progress)
+
+        val text = DataExport.encode(store.exportAll(t0.plusSeconds(3600), "0.6.0", "Europe/Paris", listOf("ou", "a")))
+        val back = DataExport.decode(text)
+        assertEquals(listOf(lucie, tom), back.profiles)
+        assertEquals(progress, back.progress["p-1"])
+        assertEquals(Progress(), back.progress["p-2"])
+        assertEquals(listOf("a", "ou"), back.recordings)
+        assertEquals("Europe/Paris", back.timeZone)
+        assertEquals(DataExport.FORMAT, back.format)
+        assertTrue(text.contains("\"rating\": \"Again\""))
+    }
 }

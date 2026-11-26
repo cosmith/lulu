@@ -114,6 +114,8 @@ Behind a small lock a 3-year-old cannot open (a multiplication), the parent can:
 - correct a past answer: the card is replayed from its review history as if it
   had been rated the other way;
 - set the session length;
+- export all the data (profiles, cards, every answer with its time) as one JSON
+  file, to share or keep; voice recordings are not included;
 - record their own voice for each reference sound;
 - add, edit or remove children.
 

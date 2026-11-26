@@ -64,6 +64,10 @@ class SoundBank(private val context: Context) {
 
     private fun hasRecording(id: String) = File(recordings, "$id.m4a").let { it.exists() && it.length() > 0 }
 
+    /** Ids of the sounds the parent has recorded. */
+    fun recordedIds(): List<String> =
+        recordings.listFiles { f -> f.name.endsWith(".m4a") && f.length() > 0 }?.map { it.name.removeSuffix(".m4a") }.orEmpty()
+
     fun source(sound: Sound): SoundSource = when {
         hasRecording(sound.id) -> SoundSource.Recording
         "${sound.id}.ogg" in bundled -> SoundSource.Bundled

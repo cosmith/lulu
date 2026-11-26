@@ -26,6 +26,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -51,6 +54,7 @@ import androidx.core.content.ContextCompat
 import com.cosmith.lulu.AppContainer
 import com.cosmith.lulu.audio.SoundRecorder
 import com.cosmith.lulu.audio.SoundSource
+import com.cosmith.lulu.data.Export
 import com.cosmith.lulu.core.content.Curriculum
 import com.cosmith.lulu.core.content.Item
 import com.cosmith.lulu.core.content.Syllables
@@ -157,9 +161,11 @@ fun ParentScreen(
         item {
             TextButton(onClick = onAddProfile) { Text("+ Ajouter un enfant", color = Lulu.Terracotta, fontSize = 17.sp) }
         }
+        item { DataExportCard(c) }
         item {
             Text(
-                "Tout reste sur ce téléphone : pas de compte, pas de serveur. Lulu n'a pas accès à internet.",
+                "Tout reste sur ce téléphone, sauf ce que vous exportez vous-même : pas de compte, pas de serveur. " +
+                    "Lulu n'a pas accès à internet.",
                 color = Lulu.Muted, fontSize = 13.sp, modifier = Modifier.padding(vertical = 16.dp),
             )
         }
@@ -353,6 +359,48 @@ private fun RecordingRow(c: AppContainer, sound: Sound) {
             Spacer(Modifier.width(8.dp))
             RoundButton(Glyph.Trash, { c.sounds.deleteRecording(sound); source = c.sounds.source(sound) }, size = 40.dp, tint = Lulu.Brick)
         }
+    }
+}
+
+/** Exports everything Lulu knows, to share with someone or keep. */
+@Composable
+private fun DataExportCard(c: AppContainer) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var status by remember { mutableStateOf<String?>(null) }
+    val saveTo = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        if (uri != null) {
+            scope.launch {
+                status = if (runCatching { Export.save(c, context, uri) }.isSuccess) "Fichier enregistré." else "L'enregistrement a échoué."
+            }
+        }
+    }
+    Column {
+        SectionTitle("Données")
+        Text(
+            "Un fichier avec tout ce que Lulu sait de chaque enfant : prénom, réglages, cartes, et chaque réponse avec " +
+                "son heure. Les enregistrements de voix n'y sont pas.",
+            color = Lulu.Muted, fontSize = 14.sp,
+        )
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Button(
+                onClick = {
+                    status = null
+                    scope.launch { if (runCatching { Export.share(c, context) }.isFailure) status = "Le partage a échoué." }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Lulu.Terracotta),
+                shape = RoundedCornerShape(20.dp),
+            ) { Text("Partager") }
+            OutlinedButton(
+                onClick = {
+                    status = null
+                    saveTo.launch(Export.fileName(c))
+                },
+                shape = RoundedCornerShape(20.dp),
+            ) { Text("Enregistrer", color = Lulu.Navy) }
+        }
+        status?.let { Text(it, color = Lulu.Navy, fontSize = 14.sp, modifier = Modifier.padding(top = 6.dp)) }
     }
 }
 
