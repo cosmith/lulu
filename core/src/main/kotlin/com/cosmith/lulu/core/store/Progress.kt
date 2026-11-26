@@ -208,7 +208,8 @@ data class Progress(
     }
 
     fun record(key: CardKey, rating: Rating, at: Instant, judge: Judge, scheduler: FsrsScheduler): Progress {
-        val current = requireNotNull(card(key)) { "unknown card ${key.id}" }
+        // A card that does not exist yet starts fresh rather than failing in the middle of a session.
+        val current = card(key) ?: CardProgress(key, Memory(due = at))
         val updated = current.copy(
             memory = scheduler.review(current.memory, rating, at, fuzzFor(key, at)),
             reviews = current.reviews + 1,
@@ -218,8 +219,10 @@ data class Progress(
             cards = cards + (key.id to updated),
             reviews = reviews + ReviewEntry(key, at, rating, judge),
         )
-        // The second card opens after the first success: "voir et dire" after picking a sound
-        // or syllable out by ear (capitals and lower case), "écouter et choisir" after reading a word.
+        // The second card opens once the first has left its learning steps (two successes):
+        // "voir et dire" once the child picks a sound or syllable out by ear reliably
+        // (capitals and lower case), "écouter et choisir" once a word is read reliably.
+        // Recognising comes before saying.
         val isWord = key.itemId.startsWith(Words.PREFIX)
         val opens = when (key.kind) {
             CardKind.ListenAndChoose -> if (isWord) null else CardKey(key.itemId, CardKind.SeeAndSay)
@@ -227,7 +230,7 @@ data class Progress(
             CardKind.ListenAndChooseLower -> CardKey(key.itemId, CardKind.SeeAndSayLower)
             else -> null
         }
-        if (opens != null && rating != Rating.Again && next.card(opens) == null) {
+        if (opens != null && updated.memory.state != CardState.Learning && next.card(opens) == null) {
             next = next.copy(cards = next.cards + (opens.id to CardProgress(opens, Memory(due = at))))
         }
         return next
@@ -269,7 +272,11 @@ data class Progress(
 
 /**
  * The scheduler Lulu uses: FSRS-6 default parameters and steps (1 and 10 minutes,
- * 10 minutes to relearn). A failed card is due again within the hour, so it comes
- * back in the next session.
+ * 10 minutes to relearn), aiming at 95 % recall rather than Anki's 90 %. The default
+ * parameters come from adults; the first weeks of a 3-year-old recalled less than
+ * they predicted (79 % against 87 %), so cards come back sooner. A failed card is
+ * due again within the hour, so it comes back in the next session.
  */
-fun luluScheduler(): FsrsScheduler = FsrsScheduler()
+fun luluScheduler(): FsrsScheduler = FsrsScheduler(desiredRetention = DESIRED_RETENTION)
+
+const val DESIRED_RETENTION = 0.95

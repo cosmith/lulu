@@ -42,7 +42,10 @@ class SessionViewModelTest {
         val start = Instant.now().minus(Duration.ofDays(2))
         c.store.saveProgress(
             profile.id,
-            Progress().introduce(ou, start).record(listenKey, Rating.Good, start, Judge.Tap, c.scheduler),
+            // Picked out by ear twice: "voir et dire" is open.
+            Progress().introduce(ou, start)
+                .record(listenKey, Rating.Good, start, Judge.Tap, c.scheduler)
+                .record(listenKey, Rating.Good, start, Judge.Tap, c.scheduler),
         )
 
         val vm = SessionViewModel(c, profile, planned = listOf(Step.ListenAndChoose(ou, listOf(a, ou)), Step.SeeAndSay(ou)))
@@ -66,10 +69,10 @@ class SessionViewModelTest {
         Thread.sleep(300) // saves run on a background thread
         val saved = c.store.progress(profile.id)
         assertEquals(
-            listOf(Rating.Good, Rating.Again, Rating.Good, Rating.Good),
+            listOf(Rating.Good, Rating.Good, Rating.Again, Rating.Good, Rating.Good),
             saved.reviews.map { it.rating },
         )
-        assertEquals(listOf(listenKey, listenKey, seeKey, listenKey), saved.reviews.map { it.key })
+        assertEquals(listOf(listenKey, listenKey, listenKey, seeKey, listenKey), saved.reviews.map { it.key })
     }
 
     @Test
@@ -87,7 +90,8 @@ class SessionViewModelTest {
         val saved = c.store.progress(profile.id)
         assertEquals(listOf("ch"), saved.introduced)
         // First success by ear opens "voir et dire" for this sound.
-        assertTrue(saved.card(CardKey("ch", CardKind.SeeAndSay)) != null)
+        // One success by ear is not enough to open "voir et dire": recognising comes first.
+        assertTrue(saved.card(CardKey("ch", CardKind.SeeAndSay)) == null)
     }
 
     @Test
@@ -98,6 +102,7 @@ class SessionViewModelTest {
         c.store.saveProgress(
             profile.id,
             Progress().introduce(ou, start)
+                .record(CardKey("ou", CardKind.ListenAndChoose), Rating.Good, start, Judge.Tap, c.scheduler)
                 .record(CardKey("ou", CardKind.ListenAndChoose), Rating.Good, start, Judge.Tap, c.scheduler),
         )
         val many = List(30) { Step.SeeAndSay(ou) }
@@ -119,6 +124,7 @@ class SessionViewModelTest {
         c.store.saveProgress(
             profile.id,
             Progress().introduce(ou, start)
+                .record(CardKey("ou", CardKind.ListenAndChoose), Rating.Good, start, Judge.Tap, c.scheduler)
                 .record(CardKey("ou", CardKind.ListenAndChoose), Rating.Good, start, Judge.Tap, c.scheduler),
         )
         val vm = SessionViewModel(c, profile, planned = List(30) { Step.SeeAndSay(ou) })
@@ -142,11 +148,14 @@ class SessionViewModelTest {
         shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(300))
         assertEquals("🐺", vm.picture)
         settle()
+        assertEquals(null, vm.picture) // the next card starts without it
+        vm.onVerdict(true)
+        settle()
         Thread.sleep(300)
         val saved = c.store.progress(profile.id)
         assertTrue(Words.find("word:loup")!!.id in saved.itemsOn)
-        assertEquals(Rating.Good, saved.reviews.single().rating)
-        // Reading it opens "écouter et choisir" for the word.
+        assertEquals(listOf(Rating.Good, Rating.Good), saved.reviews.map { it.rating })
+        // Read twice: "écouter et choisir" opens for the word.
         assertTrue(saved.card(CardKey(loup.id, CardKind.ListenAndChoose)) != null)
     }
 
@@ -165,6 +174,6 @@ class SessionViewModelTest {
         Thread.sleep(300)
         val saved = c.store.progress(profile.id)
         assertTrue(fou.id in saved.itemsOn)
-        assertTrue(saved.card(CardKey(fou.id, CardKind.SeeAndSay)) != null)
+        assertTrue(saved.card(CardKey(fou.id, CardKind.SeeAndSay)) == null) // after a second success
     }
 }

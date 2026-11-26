@@ -3,6 +3,7 @@ package com.cosmith.lulu.core.session
 import com.cosmith.lulu.core.content.Curriculum
 import com.cosmith.lulu.core.store.CardProgress
 import com.cosmith.lulu.core.fsrs.Memory
+import com.cosmith.lulu.core.content.Word
 import com.cosmith.lulu.core.content.Words
 import com.cosmith.lulu.core.content.SyllableShape
 import com.cosmith.lulu.core.content.Syllables
@@ -77,8 +78,8 @@ class SessionTest {
 
     @Test
     fun lowerCaseComesOnceTheCapitalsAreSolid() {
-        val week = playDays(12)
-        val firstLower = week.indexOfFirst { day -> day.steps.any { it is Step.Meet && it.lowercase } }
+        val week = playDays(25)
+        val firstLower = week.indexOfFirst { day -> day.steps.any { it is Step.Meet && it.lowercase && it.item is Sound } }
         assertTrue(firstLower >= 3, "lower case on day ${firstLower + 1}")
         val p = week.last().progress
         assertTrue(p.lowercaseOn.isNotEmpty())
@@ -177,10 +178,10 @@ class SessionTest {
     }
 
     @Test
-    fun firstSessionMeetsThreeSounds() {
+    fun firstSessionMeetsTwoSounds() {
         val played = play(Progress(), t0)
         assertEquals(listOf("meet a", "meet e_acute"), played.steps.take(2).map { it.label() })
-        assertEquals(listOf("a", "e_acute", "i"), played.progress.introduced)
+        assertEquals(listOf("a", "e_acute"), played.progress.introduced)
         val firstListen = played.steps.filterIsInstance<Step.ListenAndChoose>().first()
         assertEquals(2, firstListen.choices.size)
     }
@@ -242,7 +243,7 @@ class SessionTest {
     }
 
     @Test
-    fun seeAndSayOpensAfterFirstSuccessByEar() {
+    fun seeAndSayOpensOnceTheSoundIsPickedOutReliably() {
         val a = Curriculum["a"]
         var p = Progress().introduce(a, t0)
         val listen = CardKey("a", CardKind.ListenAndChoose)
@@ -250,9 +251,10 @@ class SessionTest {
         p = p.record(listen, Rating.Again, t0, Judge.Tap, scheduler)
         assertNull(p.card(see))
         p = p.record(listen, Rating.Good, t0.plusSeconds(60), Judge.Tap, scheduler)
+        assertNull(p.card(see)) // one success is not enough: recognising comes before saying
+        p = p.record(listen, Rating.Good, t0.plusSeconds(700), Judge.Tap, scheduler)
         assertNotNull(p.card(see))
-        assertEquals(2, p.reviews.size)
-        assertEquals(2, p.card(listen)!!.reviews)
+        assertEquals(3, p.card(listen)!!.reviews)
     }
 
     @Test
@@ -278,14 +280,28 @@ class SessionTest {
     }
 
     @Test
-    fun atMostThreeNewSoundsPerDay() {
+    fun newThingsAreCappedPerDay() {
         val day1 = play(Progress(), t0)
-        assertEquals(3, day1.progress.introduced.size)
-        // Two sessions on day 2, morning and evening: three new sounds at most in all.
+        assertEquals(SessionPlanner.NEW_SOUNDS_PER_DAY, day1.progress.introduced.size)
+        // Two sessions on day 2, morning and evening: the daily limits hold across sessions.
         val morning = play(day1.progress, Instant.parse("2026-11-22T08:00:00Z"))
         val evening = play(morning.progress, Instant.parse("2026-11-22T18:00:00Z"))
-        val day2New = evening.progress.introduced.size - 3
-        assertTrue(day2New in 1..SessionPlanner.NEW_SOUNDS_PER_DAY, evening.progress.introduced.toString())
+        val newSounds = evening.progress.introduced.size - day1.progress.introduced.size
+        val newThings = (morning.steps + evening.steps).count { it is Step.Meet || (it is Step.SeeAndSay && it.item is Word && it !in day1.steps) }
+        assertTrue(newSounds in 1..SessionPlanner.NEW_SOUNDS_PER_DAY, evening.progress.introduced.toString())
+        assertTrue(newThings <= SessionPlanner.NEW_THINGS_PER_DAY, "$newThings new things")
+    }
+
+    @Test
+    fun nothingNewWhileManyCardsWaitOrAfterManyMisses() {
+        // A week away: many cards are due, so the first session only reviews.
+        var p = playDays(6).last().progress
+        val back = play(p, t0.plus(Duration.ofDays(14)), maxSteps = 8)
+        assertTrue(back.steps.none { it is Step.Meet }, back.steps.map { it.label() }.toString())
+        // Many recent misses: nothing new either.
+        p = playDays(3).last().progress
+        val struggling = play(p, t0.plus(Duration.ofDays(3)).plusSeconds(3600)) { Rating.Again }
+        assertTrue(struggling.steps.none { it is Step.Meet })
     }
 
     @Test
@@ -310,7 +326,10 @@ class SessionTest {
         var p = Progress()
         for (id in listOf("a", "e_acute", "i")) {
             p = p.introduce(Curriculum[id], t0)
-            if (id != "a") p = p.record(CardKey(id, CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
+            if (id != "a") {
+                p = p.record(CardKey(id, CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
+                p = p.record(CardKey(id, CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
+            }
         }
         val key = CardKey("a", CardKind.ListenAndChoose)
         p = p.record(key, Rating.Again, t0, Judge.Tap, scheduler)
@@ -388,7 +407,7 @@ class SessionTest {
         val a = Curriculum["a"]
         val key = CardKey("a", CardKind.SeeAndSay)
         var p = Progress().introduce(a, t0)
-        p = p.record(CardKey("a", CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
+        repeat(2) { p = p.record(CardKey("a", CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler) }
         p = p.record(key, Rating.Again, t0.plusSeconds(30), Judge.Parent, scheduler)
         p = p.record(key, Rating.Good, t0.plusSeconds(120), Judge.Parent, scheduler)
         val wrong = p.reviews.indexOfFirst { it.key == key }
@@ -397,11 +416,18 @@ class SessionTest {
         assertTrue(corrected.reviews[wrong].corrected)
         // Same result as if the parent had said "right" both times.
         var direct = Progress().introduce(a, t0)
-        direct = direct.record(CardKey("a", CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler)
+        repeat(2) { direct = direct.record(CardKey("a", CardKind.ListenAndChoose), Rating.Good, t0, Judge.Tap, scheduler) }
         direct = direct.record(key, Rating.Good, t0.plusSeconds(30), Judge.Parent, scheduler)
         direct = direct.record(key, Rating.Good, t0.plusSeconds(120), Judge.Parent, scheduler)
         assertEquals(direct.card(key), corrected.card(key))
         assertFalse(p.card(key) == corrected.card(key))
+    }
+
+    @Test
+    fun answeringACardThatDoesNotExistYetCreatesIt() {
+        val key = CardKey("ou", CardKind.SeeAndSay)
+        val p = Progress().record(key, Rating.Good, t0, Judge.Parent, scheduler)
+        assertEquals(1, p.card(key)!!.reviews)
     }
 
     @Test

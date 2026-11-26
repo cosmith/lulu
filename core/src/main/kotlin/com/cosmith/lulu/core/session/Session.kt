@@ -65,9 +65,8 @@ private enum class Novelty { Sound, Syllable, Word, Lowercase }
  *
  * 1. something new, after a warm-up of [WARM_UP] cards and at least
  *    [NEW_SOUND_SPACING] cards after the previous new thing, at most [NEW_THINGS_PER_DAY]
- *    a day, never when the child just missed several cards nor in the last
- *    [NO_NEW_SOUND_AT_THE_END] of the session. It is the kind met the least today
- *    among those allowed:
+ *    a day, and only once what is there holds (few cards waiting, few recent misses;
+ *    see [readyForSomethingNew]). The kinds take turns among those allowed:
  *    - a sound, up to [NEW_SOUNDS_PER_DAY] a day while fewer than
  *      [MAX_SOUNDS_IN_LEARNING] are being learned;
  *    - a syllable made of known sounds, up to [SYLLABLES_PER_DAY] a day: CV first, then
@@ -135,7 +134,7 @@ class SessionPlanner(
             .sortedWith(seenLongestAgo)
         val early = open.filter { it.memory.state == CardState.Review && it.memory.due.isAfter(now) && it.key.id !in shown }
             .sortedBy { it.memory.due }
-        val newThing = somethingNew(progress, now)
+        val newThing = somethingNew(progress, now, dueNow = due.size)
 
         fun List<CardProgress>.other() = firstOrNull { it.key.itemId != lastItem }
 
@@ -154,22 +153,27 @@ class SessionPlanner(
         return (any.other() ?: any.firstOrNull())?.let { stepFor(it, progress) }
     }
 
-    /** The next new thing, of the kind met the least today (sounds first on a tie, lower case last). */
-    private fun somethingNew(progress: Progress, now: Instant): Step? {
-        if (!readyForSomethingNew(progress)) return null
+    /**
+     * The next new thing. The kinds take turns: among those allowed now, the one whose
+     * last new item is the oldest goes first, so sounds, syllables, words and lower case
+     * all move forward (sounds first on a tie).
+     */
+    private fun somethingNew(progress: Progress, now: Instant, dueNow: Int): Step? {
+        if (!readyForSomethingNew(progress, dueNow)) return null
         val today = startOfDay(now)
         fun Map<String, Instant>.countToday(prefix: String = "") = count { (id, at) -> id.startsWith(prefix) && !at.isBefore(today) }
+        fun Map<String, Instant>.last(prefix: String = "") = filterKeys { it.startsWith(prefix) }.values.maxOrNull() ?: Instant.MIN
         val newToday = progress.introducedOn.countToday() + progress.itemsOn.countToday() + progress.lowercaseOn.countToday()
         if (newToday >= NEW_THINGS_PER_DAY) return null
+        val lastSound = progress.introduced.mapNotNull { progress.introducedAt(it) }.maxOrNull() ?: Instant.MIN
         val options = listOfNotNull(
-            newSound(progress, today)?.let { Triple(Novelty.Sound, progress.introducedOn.countToday(), Step.Meet(it)) },
+            newSound(progress, today)?.let { Triple(Novelty.Sound, lastSound, Step.Meet(it)) },
             newSyllable(progress)?.takeIf { progress.itemsOn.countToday(Syllables.PREFIX) < SYLLABLES_PER_DAY }
-                ?.let { Triple(Novelty.Syllable, progress.itemsOn.countToday(Syllables.PREFIX), Step.Meet(it, lowercase(it, progress))) },
+                ?.let { Triple(Novelty.Syllable, progress.itemsOn.last(Syllables.PREFIX), Step.Meet(it, lowercase(it, progress))) },
             newWord(progress)?.takeIf { progress.itemsOn.countToday(Words.PREFIX) < WORDS_PER_DAY }
-                ?.let { Triple(Novelty.Word, progress.itemsOn.countToday(Words.PREFIX), Step.SeeAndSay(it, lowercase(it, progress))) },
-            // Lower case waits a little more than the rest: reading syllables and words comes first.
+                ?.let { Triple(Novelty.Word, progress.itemsOn.last(Words.PREFIX), Step.SeeAndSay(it, lowercase(it, progress))) },
             newLowercase(progress)?.takeIf { progress.lowercaseOn.countToday() < LOWERCASE_PER_DAY }
-                ?.let { Triple(Novelty.Lowercase, progress.lowercaseOn.countToday() + 1, Step.Meet(it, lowercase = true)) },
+                ?.let { Triple(Novelty.Lowercase, progress.lowercaseOn.last(), Step.Meet(it, lowercase = true)) },
         )
         return options.minWithOrNull(compareBy({ it.second }, { it.first.ordinal }))?.third
     }
@@ -240,11 +244,19 @@ class SessionPlanner(
         }.minWithOrNull(compareBy({ it.shape.ordinal }, { it.sounds.size }))
     }
 
-    /** Not too late in the session to be asked about it, and the child is not struggling. */
-    private fun readyForSomethingNew(progress: Progress): Boolean {
+    /**
+     * Something new only once what is already there holds: not while [MAX_DUE_FOR_NEW]
+     * cards or more wait to be reviewed, not when more than [MAX_RECENT_MISSES] of the
+     * last [RECENT_ANSWERS] answers (across sessions) were missed, not right after two
+     * misses in this session, and not too late in the session to be asked about it.
+     */
+    private fun readyForSomethingNew(progress: Progress, dueNow: Int): Boolean {
         if (timeLeft?.let { it < NO_NEW_SOUND_AT_THE_END } == true) return false
-        val recent = progress.reviews.filter { r -> startedAt?.let { !r.at.isBefore(it) } == true }.takeLast(4)
-        return recent.count { it.rating == Rating.Again } < 2
+        if (dueNow >= MAX_DUE_FOR_NEW) return false
+        val recent = progress.reviews.takeLast(RECENT_ANSWERS)
+        if (recent.count { it.rating == Rating.Again } > MAX_RECENT_MISSES) return false
+        val thisSession = progress.reviews.filter { r -> startedAt?.let { !r.at.isBefore(it) } == true }.takeLast(4)
+        return thisSession.count { it.rating == Rating.Again } < 2
     }
 
     private fun startOfDay(now: Instant): Instant = now.atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()
@@ -346,11 +358,14 @@ class SessionPlanner(
         const val MAX_SYLLABLES_IN_LEARNING = 4
         const val MAX_WORDS_IN_LEARNING = 2
         const val MAX_SHOWS_PER_CARD = 3
-        const val NEW_THINGS_PER_DAY = 6
-        const val NEW_SOUNDS_PER_DAY = 3
-        const val SYLLABLES_PER_DAY = 3
+        const val NEW_THINGS_PER_DAY = 3
+        const val NEW_SOUNDS_PER_DAY = 2
+        const val SYLLABLES_PER_DAY = 2
         const val WORDS_PER_DAY = 2
-        const val LOWERCASE_PER_DAY = 2
+        const val LOWERCASE_PER_DAY = 1
+        const val MAX_DUE_FOR_NEW = 8
+        const val RECENT_ANSWERS = 20
+        const val MAX_RECENT_MISSES = 4
         const val NEW_SOUND_SPACING = 4
         const val NEW_CARD_GAP = 3
         const val WARM_UP = 3

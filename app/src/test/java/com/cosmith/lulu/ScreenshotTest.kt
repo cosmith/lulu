@@ -216,7 +216,7 @@ class ScreenshotTest {
         var t = Instant.now().minus(Duration.ofDays(20))
         for (id in listOf("a", "e_acute", "l", "i")) {
             p = p.introduce(Curriculum[id], t)
-            p = p.record(CardKey(id, CardKind.ListenAndChoose), Rating.Good, t, Judge.Tap, c.scheduler)
+            repeat(2) { p = p.record(CardKey(id, CardKind.ListenAndChoose), Rating.Good, t, Judge.Tap, c.scheduler) }
             p = p.record(CardKey(id, CardKind.SeeAndSay), if (id == "i") Rating.Again else Rating.Good, t.plusSeconds(40), Judge.Parent, c.scheduler)
             t = t.plus(Duration.ofDays(3))
         }
