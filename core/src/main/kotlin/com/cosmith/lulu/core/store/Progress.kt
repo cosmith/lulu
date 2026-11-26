@@ -149,19 +149,42 @@ data class Progress(
     }
 
     /** Both capital cards are in Review and will hold for at least [days]: time for the lower case. */
-    fun capitalsSolid(soundId: String, days: Double): Boolean = CardKind.capitals.all { kind ->
-        val m = card(CardKey(soundId, kind))?.memory
-        m != null && m.state == CardState.Review && (m.stability ?: 0.0) >= days
+    fun capitalsSolid(soundId: String, days: Double): Boolean =
+        solid(CardKey(soundId, CardKind.SeeAndSay), days) && graduated(CardKey(soundId, CardKind.ListenAndChoose))
+
+    private fun solid(key: CardKey, days: Double): Boolean =
+        card(key)?.memory?.let { it.state == CardState.Review && (it.stability ?: 0.0) >= days } == true
+
+    /**
+     * "Écouter et choisir" and "majuscule → minuscule" are stepping stones towards reading
+     * aloud. Once the item's "voir et dire" card is solid, they are not asked any more,
+     * which keeps the daily reviews within a short session. If "voir et dire" is
+     * forgotten later, they come back as support.
+     */
+    fun retired(key: CardKey): Boolean {
+        val main = when (key.kind) {
+            CardKind.ListenAndChoose -> CardKind.SeeAndSay
+            CardKind.ListenAndChooseLower, CardKind.MatchCase -> CardKind.SeeAndSayLower
+            else -> return false
+        }
+        return solid(CardKey(key.itemId, main), SCAFFOLD_RETIRES_AFTER_DAYS)
     }
 
     /** The child knows a sound once both of its capital cards have graduated. */
     fun knows(soundId: String): Boolean {
         Curriculum.prerequisites[soundId]?.let { needs -> return needs.all { knows(it) } }
-        return soundId in introduced && CardKind.capitals.all { graduated(CardKey(soundId, it)) }
+        return soundId in introduced && known(soundId)
     }
 
-    /** Both cards of a syllable or word exist and have graduated. */
-    fun known(itemId: String): Boolean = CardKind.capitals.all { graduated(CardKey(itemId, it)) }
+    /**
+     * Both cards of an item have graduated, or its "voir et dire" has and its stepping
+     * stone was retired before it could (a word read so well that its listening card
+     * was never needed).
+     */
+    fun known(itemId: String): Boolean {
+        val listen = CardKey(itemId, CardKind.ListenAndChoose)
+        return graduated(CardKey(itemId, CardKind.SeeAndSay)) && (graduated(listen) || retired(listen))
+    }
 
     /** Syllables or words (by id prefix) met but not yet known. */
     fun itemsInLearning(prefix: String): Int = itemsOn.keys.count { it.startsWith(prefix) && !known(it) }
@@ -280,3 +303,6 @@ data class Progress(
 fun luluScheduler(): FsrsScheduler = FsrsScheduler(desiredRetention = DESIRED_RETENTION)
 
 const val DESIRED_RETENTION = 0.95
+
+/** Stability (days) of "voir et dire" from which its stepping-stone cards retire. */
+const val SCAFFOLD_RETIRES_AFTER_DAYS = 7.0

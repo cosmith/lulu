@@ -15,6 +15,7 @@ import com.cosmith.lulu.core.store.CardKind
 import com.cosmith.lulu.core.store.Judge
 import com.cosmith.lulu.core.store.Profile
 import com.cosmith.lulu.core.store.Progress
+import com.cosmith.lulu.core.store.SCAFFOLD_RETIRES_AFTER_DAYS
 import com.cosmith.lulu.core.store.luluScheduler
 import java.time.Duration
 import java.time.Instant
@@ -421,6 +422,47 @@ class SessionTest {
         direct = direct.record(key, Rating.Good, t0.plusSeconds(120), Judge.Parent, scheduler)
         assertEquals(direct.card(key), corrected.card(key))
         assertFalse(p.card(key) == corrected.card(key))
+    }
+
+    @Test
+    fun steppingStonesRetireOnceReadingIsSolidAndComeBackIfItSlips() {
+        val ou = Curriculum["ou"]
+        val listen = CardKey("ou", CardKind.ListenAndChoose)
+        val see = CardKey("ou", CardKind.SeeAndSay)
+        var p = Progress().introduce(ou, t0)
+        repeat(2) { p = p.record(listen, Rating.Good, t0, Judge.Tap, scheduler) }
+        var t = t0
+        while ((p.card(see)?.memory?.stability ?: 0.0) < SCAFFOLD_RETIRES_AFTER_DAYS) {
+            p = p.record(see, Rating.Good, t, Judge.Parent, scheduler)
+            t = p.card(see)!!.memory.due
+        }
+        assertTrue(p.retired(listen))
+        assertFalse(p.retired(see))
+        assertTrue(p.knows("ou"))
+        // Not asked any more, even when due.
+        val later = t.plus(Duration.ofDays(400))
+        val asked = play(p, later, maxSteps = 6).steps.filterIsInstance<Step.Card>().map { it.key }
+        assertTrue(listen !in asked, asked.toString())
+        // Reading slips: the stepping stone comes back.
+        p = p.record(see, Rating.Again, later, Judge.Parent, scheduler)
+        assertFalse(p.retired(listen))
+    }
+
+    @Test
+    fun aWordReadWellIsKnownEvenIfItsListeningCardRetiredFirst() {
+        val word = Words.find("word:chou")!!
+        val see = CardKey(word.id, CardKind.SeeAndSay)
+        var p = Progress().meet(word, t0)
+        var t = t0
+        repeat(6) {
+            p = p.record(see, Rating.Good, t, Judge.Parent, scheduler)
+            t = p.card(see)!!.memory.due
+        }
+        val listen = CardKey(word.id, CardKind.ListenAndChoose)
+        assertEquals(0, p.card(listen)!!.reviews)
+        assertTrue(p.retired(listen))
+        assertTrue(p.known(word.id))
+        assertEquals(0, p.itemsInLearning(Words.PREFIX))
     }
 
     @Test

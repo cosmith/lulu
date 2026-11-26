@@ -125,7 +125,8 @@ class SessionPlanner(
 
     private fun choose(progress: Progress, now: Instant): Step? {
         // Cards of items this version does not know (none today) are left aside.
-        val all = progress.cards.values.filter { Curriculum.item(it.key.itemId) != null }
+        // Cards of items this version does not know (none today) and retired stepping stones are left aside.
+        val all = progress.cards.values.filter { Curriculum.item(it.key.itemId) != null && !progress.retired(it.key) }
         val held = all.filter { (heldUntil[it.key.id] ?: 0) > cardsShown }.map { it.key.id }.toSet()
         val open = all.filter { it.key.id !in held && (shown[it.key.id] ?: 0) < MAX_SHOWS_PER_CARD }
         val seenLongestAgo = compareBy<CardProgress>({ lastShown[it.key.id] ?: -1 }, { it.memory.due })
@@ -245,14 +246,16 @@ class SessionPlanner(
     }
 
     /**
-     * Something new only once what is already there holds: not while [MAX_DUE_FOR_NEW]
-     * cards or more wait to be reviewed, not when more than [MAX_RECENT_MISSES] of the
+     * Something new only once what is already there holds: not while the cards waiting
+     * to be reviewed would take more than [REVIEW_SHARE] of the time left (about
+     * [SECONDS_PER_CARD] seconds each), not when more than [MAX_RECENT_MISSES] of the
      * last [RECENT_ANSWERS] answers (across sessions) were missed, not right after two
      * misses in this session, and not too late in the session to be asked about it.
      */
     private fun readyForSomethingNew(progress: Progress, dueNow: Int): Boolean {
         if (timeLeft?.let { it < NO_NEW_SOUND_AT_THE_END } == true) return false
-        if (dueNow >= MAX_DUE_FOR_NEW) return false
+        val cardsThatFit = (timeLeft ?: DEFAULT_SESSION).seconds / SECONDS_PER_CARD
+        if (dueNow > cardsThatFit * REVIEW_SHARE) return false
         val recent = progress.reviews.takeLast(RECENT_ANSWERS)
         if (recent.count { it.rating == Rating.Again } > MAX_RECENT_MISSES) return false
         val thisSession = progress.reviews.filter { r -> startedAt?.let { !r.at.isBefore(it) } == true }.takeLast(4)
@@ -363,7 +366,9 @@ class SessionPlanner(
         const val SYLLABLES_PER_DAY = 2
         const val WORDS_PER_DAY = 2
         const val LOWERCASE_PER_DAY = 1
-        const val MAX_DUE_FOR_NEW = 8
+        const val SECONDS_PER_CARD = 10L
+        const val REVIEW_SHARE = 0.6
+        private val DEFAULT_SESSION: Duration = Duration.ofMinutes(5)
         const val RECENT_ANSWERS = 20
         const val MAX_RECENT_MISSES = 4
         const val NEW_SOUND_SPACING = 4

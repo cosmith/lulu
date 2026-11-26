@@ -66,9 +66,10 @@ default). Lulu fills that time and picks each next card from the child's answers
 
 1. something new, after a warm-up of 3 cards and up to 3 a day: a sound (2 a day
    at most), a syllable (2), a word (2) or a lower case (1), the kinds taking
-   turns. Only once what is there holds: not while 8 cards or more wait to be
-   reviewed, not when more than 4 of the last 20 answers were missed, not right
-   after two misses, not in the last minute;
+   turns. Only once what is there holds: not while the cards waiting to be
+   reviewed would fill more than 60 % of the time left, not when more than 4 of
+   the last 20 answers were missed, not right after two misses, not in the last
+   minute;
 2. cards that are due, the most overdue first;
 3. practice on items being learned, early review, and then whatever was seen
    longest ago.
@@ -76,7 +77,10 @@ default). Lulu fills that time and picks each next card from the child's answers
 FSRS aims at 95 % recall rather than Anki's 90 %: its default parameters come
 from adults, and a 3-year-old's first weeks recalled less than they predicted.
 « Voir et dire » opens once the child picks the sound out by ear reliably (two
-successes): recognising comes before saying.
+successes): recognising comes before saying. Once « voir et dire » is solid,
+the stepping-stone cards (« écouter et choisir », capital to lower case) are not
+asked any more, so that reviews keep fitting in a short session; they come back
+if reading slips.
 
 An item just met waits for 3 other cards before its first question, so the
 child does not simply echo what Lulu said. When the child chooses by ear, no two
